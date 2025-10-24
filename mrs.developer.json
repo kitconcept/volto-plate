@@ -1,18 +1,18 @@
 {
-	"core": {
-		"output": "./",
-		"package": "@plone/volto",
-		"url": "git@github.com:plone/volto.git",
-		"https": "https://github.com/plone/volto.git",
-		"tag": "18.26.0",
-		"filterBlobs": true
-	},
-	"seven": {
-		"output": "./",
-		"package": "@plone/volto",
-		"url": "git@github.com:plone/volto.git",
-		"https": "https://github.com/plone/volto.git",
-		"branch": "seven",
-		"filterBlobs": true
-	}
+  "core": {
+    "output": "./",
+    "package": "@plone/volto",
+    "url": "git@github.com:plone/volto.git",
+    "https": "https://github.com/plone/volto.git",
+    "branch": "main",
+    "filterBlobs": true
+  },
+  "seven": {
+    "output": "./",
+    "package": "@plone/volto",
+    "url": "git@github.com:plone/volto.git",
+    "https": "https://github.com/plone/volto.git",
+    "branch": "plate-september-update",
+    "filterBlobs": true
+  }
 }

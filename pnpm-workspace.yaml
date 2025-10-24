@@ -3,3 +3,4 @@ packages:
   - 'core/packages/*'
   - 'packages/*'
   - 'packages/*/packages/*'
+  - 'seven/packages/plate'
