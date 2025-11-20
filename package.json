@@ -46,8 +46,12 @@
       "react-refresh": "^0.14.2",
       "react": "18.2.0",
       "react-dom": "18.2.0",
-      "@types/react": "^18",
-      "@types/react-dom": "^18"
+      "@types/react": "^18.3.1",
+      "@types/react-dom": "^18.3.1",
+      "storybook": "^9.1.15",
+      "@storybook/addon-docs": "^9.1.15",
+      "@storybook/addon-links": "^9.1.15",
+      "@storybook/react-vite": "^9.1.15"
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
@@ -60,9 +64,8 @@
       "full-icu",
       "lightningcss-cli",
       "msgpackr-extract",
-      "unrs-resolver",
-      "why"
+      "unrs-resolver"
     ]
   },
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.20.0"
 }
