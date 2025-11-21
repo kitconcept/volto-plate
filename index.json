@@ -1,1 +1,1 @@
-{"v":5,"entries":{}}
+{"v":5,"entries":{"slate-plate--multi-editor-plate":{"type":"story","id":"slate-plate--multi-editor-plate","name":"Multi Editor Plate","title":"Slate & Plate","importPath":"../../../packages/volto-plate/src/stories/SlateAndPlate.stories.tsx","componentPath":"../volto-slate/src/blocks/Text/DetachedTextBlockEditor.jsx","tags":["dev","test"]}}}
