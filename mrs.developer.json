@@ -12,7 +12,7 @@
     "package": "@plone/volto",
     "url": "git@github.com:plone/volto.git",
     "https": "https://github.com/plone/volto.git",
-    "branch": "seven",
+    "branch": "slate-converters",
     "filterBlobs": true
   }
 }

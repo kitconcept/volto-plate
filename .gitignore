@@ -13,3 +13,4 @@ yarn.lock
 /public
 
 /seven
+!/seven/packages/plate

@@ -5,6 +5,8 @@ import { IntlProvider } from 'react-intl';
 import enMessages from '@root/../locales/en.json';
 
 import '@root/theme';
+import '@plone/plate/output.css';
+import '../packages/volto-plate/src/stories/stories.css'
 
 export const parameters = {
   controls: {
