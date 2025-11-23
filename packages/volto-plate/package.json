@@ -30,21 +30,33 @@
     "@plone/plate"
   ],
   "dependencies": {
+    "@platejs/caption": "^49.0.0",
     "@plone/plate": "workspace:*"
   },
   "peerDependencies": {
+    "@platejs/dnd": "^50.3.1",
+    "@platejs/media": "^49.0.0",
+    "@platejs/resizable": "^49.0.0",
+    "@plone/registry": "workspace:*",
+    "@plone/types": "workspace:*",
+    "@plone/volto": "workspace:*",
+    "classnames": "^2.5.1",
+    "platejs": "^49.2.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "@plone/registry": "workspace:*",
-    "@plone/types": "workspace:*"
+    "semantic-ui-react": "^2.1.5"
   },
   "devDependencies": {
-    "@storybook/react": "^8.6.12",
+    "@platejs/dnd": "^50.3.1",
+    "@platejs/media": "^49.0.0",
+    "@platejs/resizable": "^49.0.0",
     "@plone/scripts": "workspace:*",
-    "@plone/volto-slate": "workspace:*",
     "@plone/types": "workspace:*",
+    "@plone/volto-slate": "workspace:*",
+    "@storybook/react": "^8.6.12",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
+    "platejs": "^49.2.21",
     "release-it": "^19.0.5",
     "typescript": "^5.7.3",
     "vitest": "^3.1.2"
