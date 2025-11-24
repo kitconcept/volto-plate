@@ -7,31 +7,16 @@ import { useStablePlateValue } from '@plone/volto-plate';
 import { BlocksApiProvider } from '../../../plate/context/BlocksApiContext';
 
 const TextBlockEdit = (props: BlockEditProps) => {
-  const { data, onChangeBlock, onInsertBlock, onSelectBlock, id, type } = props;
+  const { data, onChangeBlock, id } = props;
   const stableValue = useStablePlateValue(data.value as Value | undefined);
 
   return (
-    <BlocksApiProvider
-      value={{
-        data,
-        id,
-        type,
-        onChangeBlock,
-        onInsertBlock,
-        onSelectBlock,
-      }}
-    >
+    <BlocksApiProvider value={props}>
       <PlateEditor
         editorConfig={plateBlockConfig.editorConfig}
         value={stableValue}
-        blocksApi={{
-          data,
-          id,
-          type,
-          onChangeBlock,
-          onInsertBlock,
-          onSelectBlock,
-        }}
+        blocksApi={props}
+        intl={props.intl}
         onChange={(options) => {
           onChangeBlock(id, { ...data, value: options.value });
         }}
