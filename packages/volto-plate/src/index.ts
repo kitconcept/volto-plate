@@ -1,7 +1,6 @@
 import type { ConfigType } from '@plone/registry';
 import installSettings from './config/settings';
 import installBlocks from './config/blocks';
-import installUtilities from './config/utilities';
 import '@plone/plate/output.css';
 export { useStablePlateValue } from './hooks/use-stable-plate-value';
 export {
@@ -12,7 +11,6 @@ export {
 function applyConfig(config: ConfigType) {
   installSettings(config);
   installBlocks(config);
-  installUtilities(config);
 
   return config;
 }

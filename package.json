@@ -35,7 +35,8 @@
   "dependencies": {
     "@plone/registry": "workspace:*",
     "@plone/volto": "workspace:*",
-    "@plone/volto-plate": "workspace:*"
+    "@plone/volto-plate": "workspace:*",
+    "@kitconcept/volto-light-theme": "^8.0.0-alpha.7"
   },
   "devDependencies": {
     "mrs-developer": "^2.2.0"
@@ -60,6 +61,7 @@
       "full-icu",
       "lightningcss-cli",
       "msgpackr-extract",
+      "msw",
       "unrs-resolver"
     ]
   },
