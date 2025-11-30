@@ -9,7 +9,8 @@ import {
   useMediaState,
   Image as PlateImage,
 } from '@platejs/media/react';
-import { ResizableProvider, useResizableValue } from '@platejs/resizable';
+// import { ResizableProvider, useResizableValue } from '@platejs/resizable';
+import { ResizableProvider } from '@platejs/resizable';
 import {
   PlateElement,
   useEditorRef,
@@ -70,7 +71,7 @@ export const VoltoImageElement = withHOC(
     const readOnly = useReadOnly();
     const selected = useSelected();
     const { align = 'center', focused } = useMediaState();
-    const width = useResizableValue('width');
+    // const width = useResizableValue('width');
 
     const path = React.useMemo(
       () => editor.api.findPath(element),

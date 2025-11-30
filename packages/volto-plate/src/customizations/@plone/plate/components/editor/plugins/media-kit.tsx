@@ -2,7 +2,7 @@ import { CaptionPlugin } from '@platejs/caption/react';
 import {
   AudioPlugin,
   FilePlugin,
-  ImagePlugin,
+  // ImagePlugin,
   MediaEmbedPlugin,
   PlaceholderPlugin,
   VideoPlugin,
@@ -12,9 +12,9 @@ import { KEYS } from 'platejs';
 import { AudioElement } from '@plone/plate/components/ui/media-audio-node';
 import { MediaEmbedElement } from '@plone/plate/components/ui/media-embed-node';
 import { FileElement } from '@plone/plate/components/ui/media-file-node';
-import { ImageElement } from '@plone/plate/components/ui/media-image-node';
+// import { ImageElement } from '@plone/plate/components/ui/media-image-node';
 import { PlaceholderElement } from '@plone/plate/components/ui/media-placeholder-node';
-import { MediaPreviewDialog } from '@plone/plate/components/ui/media-preview-dialog';
+// import { MediaPreviewDialog } from '@plone/plate/components/ui/media-preview-dialog';
 import { MediaUploadToast } from '@plone/plate/components/ui/media-upload-toast';
 import { VideoElement } from '@plone/plate/components/ui/media-video-node';
 

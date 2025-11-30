@@ -1,4 +1,3 @@
-import React from 'react';
 import TextBlockEdit from './TextBlockEdit';
 import TextBlockView from './TextBlockView';
 
