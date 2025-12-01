@@ -1,0 +1,7 @@
+// Remove if going full BMv3
+.category-inline {
+  .block-inner-container {
+    @include narrow-container-width();
+    @include adjustMarginsToContainer($narrow-container-width);
+  }
+}

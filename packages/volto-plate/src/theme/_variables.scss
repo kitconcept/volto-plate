@@ -1,0 +1,6 @@
+// This is to prevent the clash of container classes coming from Tailwind.
+// The location is correct, we want it to be loaded first, then VLT styles override it
+// and we can only do this if it's in _variables.scss
+.q.container {
+  max-width: unset !important;
+}

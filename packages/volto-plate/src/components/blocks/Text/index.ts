@@ -5,7 +5,8 @@ const TextBlockInfo = {
   id: 'slate',
   view: TextBlockView,
   edit: TextBlockEdit,
-  category: 'text',
+  category: 'inline',
+  blockModel: 3,
 };
 
 export default TextBlockInfo;
