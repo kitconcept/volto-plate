@@ -7,6 +7,11 @@ export {
   VoltoImageElement,
   VoltoImagePlugin,
 } from './plate/plugins/volto-media-kit';
+export {
+  VoltoImageBlockElement,
+  VoltoImageBlockPlugin,
+} from './plate/plugins/volto-image-block';
+export { createVoltoBlockAdapter } from './plate/plugins/volto-block-adapter';
 
 function applyConfig(config: ConfigType) {
   installSettings(config);

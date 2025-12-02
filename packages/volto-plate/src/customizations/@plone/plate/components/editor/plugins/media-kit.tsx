@@ -18,10 +18,10 @@ import { PlaceholderElement } from '@plone/plate/components/ui/media-placeholder
 import { MediaUploadToast } from '@plone/plate/components/ui/media-upload-toast';
 import { VideoElement } from '@plone/plate/components/ui/media-video-node';
 
-import { VoltoImagePlugin } from '@plone/volto-plate/plate/plugins/volto-media-kit';
+import { VoltoImageBlockPlugin } from '@plone/volto-plate/plate/plugins/volto-image-block';
 
 export const MediaKit = [
-  VoltoImagePlugin,
+  VoltoImageBlockPlugin,
   MediaEmbedPlugin.withComponent(MediaEmbedElement),
   VideoPlugin.withComponent(VideoElement),
   AudioPlugin.withComponent(AudioElement),
