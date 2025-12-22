@@ -23,7 +23,7 @@ import ImageEdit from '@plone/volto/components/manage/Blocks/Image/Edit';
 import ImageView from '@plone/volto/components/manage/Blocks/Image/View';
 import config from '@plone/volto/registry';
 
-import { createVoltoBlockAdapter } from '@plone/volto-plate/plate/plugins/volto-block-adapter';
+import { createVoltoBlockAdapter } from '@kitconcept/volto-plate/plate/plugins/volto-block-adapter';
 
 type VoltoImageElement = {
   url?: string;

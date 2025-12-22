@@ -28,10 +28,7 @@ module.exports = {
           ['@plone/volto', `${coreLocation}/packages/volto/src`],
           ['@plone/volto-slate', `${coreLocation}/packages/volto-slate/src`],
           ['@plone/registry', `${coreLocation}/packages/registry/src`],
-          [
-            '@plone/volto-plate',
-            './packages/volto-plate/src',
-          ],
+          ['@kitconcept/volto-plate', './packages/volto-plate/src'],
           ...addonAliases,
         ],
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
