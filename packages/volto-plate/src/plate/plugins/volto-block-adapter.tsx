@@ -80,10 +80,7 @@ export function createVoltoBlockAdapter<
       return explicitId ? String(explicitId) : pathRef.current.join('-');
     }, [element]);
 
-    const blockData = React.useMemo(
-      () => toBlockData(element),
-      [element, toBlockData],
-    );
+    const blockData = React.useMemo(() => toBlockData(element), [element]);
 
     const handleChangeBlock = React.useCallback(
       (_block: string, data: TBlockData) => {
@@ -100,7 +97,7 @@ export function createVoltoBlockAdapter<
           editor.tf.setNodes(mapped, { at: pathRef.current });
         }
       },
-      [editor, element, fromBlockData],
+      [editor, element],
     );
 
     const handleSelectBlock = React.useCallback(() => {
@@ -114,14 +111,14 @@ export function createVoltoBlockAdapter<
 
     const extraEditProps = React.useMemo(
       () => (getEditProps ? getEditProps(context) : {}),
-      [context, getEditProps],
+      [context],
     );
 
     const extraViewProps = React.useMemo(
       () => (getViewProps ? getViewProps(context) : {}),
-      [context, getViewProps],
+      [context],
     );
-    console.log(props);
+
     return (
       <PlateElement {...props} contentEditable={false}>
         {readOnly ? (
