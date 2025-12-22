@@ -18,7 +18,7 @@ import { PlaceholderElement } from '@plone/plate/components/ui/media-placeholder
 import { MediaUploadToast } from '@plone/plate/components/ui/media-upload-toast';
 import { VideoElement } from '@plone/plate/components/ui/media-video-node';
 
-import { VoltoImageBlockPlugin } from '@plone/volto-plate/plate/plugins/volto-image-block';
+import { VoltoImageBlockPlugin } from '../../../../../../plate/plugins/volto-image-block';
 
 export const MediaKit = [
   VoltoImageBlockPlugin,

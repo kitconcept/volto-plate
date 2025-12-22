@@ -13,7 +13,7 @@ import { AudioElementStatic } from '@plone/plate/components/ui/media-audio-node-
 import { FileElementStatic } from '@plone/plate/components/ui/media-file-node-static';
 import { VideoElementStatic } from '@plone/plate/components/ui/media-video-node-static';
 
-import { VoltoImageBlockPlugin } from '@plone/volto-plate/plate/plugins/volto-image-block';
+import { VoltoImageBlockPlugin } from '../../../../../../plate/plugins/volto-image-block';
 
 // Override the base media kit to reuse the Volto image block (via the adapter)
 // for both edit and view, instead of the static Plate image element.

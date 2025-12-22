@@ -1,8 +1,8 @@
-# Volto Plate (@plone/volto-plate)
+# Volto Plate (@kitconcept/volto-plate)
 
 An add-on that adds a Plate.js block for Volto
 
-[![npm](https://img.shields.io/npm/v/@plone/volto-plate)](https://www.npmjs.com/package/@plone/volto-plate)
+[![npm](https://img.shields.io/npm/v/@kitconcept/volto-plate)](https://www.npmjs.com/package/@kitconcept/volto-plate)
 [![](https://img.shields.io/badge/-Storybook-ff4785?logo=Storybook&logoColor=white&style=flat-square)](https://collective.github.io/volto-plate/)
 [![Code analysis checks](https://github.com/collective/volto-plate/actions/workflows/code.yml/badge.svg)](https://github.com/collective/volto-plate/actions/workflows/code.yml)
 [![Unit tests](https://github.com/collective/volto-plate/actions/workflows/unit.yml/badge.svg)](https://github.com/collective/volto-plate/actions/workflows/unit.yml)
@@ -18,24 +18,24 @@ To install your project, you must choose the method appropriate to your version 
 
 ### Volto 18 and later
 
-Add `@plone/volto-plate` to your `package.json`:
+Add `@kitconcept/volto-plate` to your `package.json`:
 
 ```json
 "dependencies": {
-    "@plone/volto-plate": "*"
+    "@kitconcept/volto-plate": "*"
 }
 ```
 
-Add `@plone/volto-plate` to your `volto.config.js`:
+Add `@kitconcept/volto-plate` to your `volto.config.js`:
 
 ```javascript
-const addons = ['@plone/volto-plate'];
+const addons = ['@kitconcept/volto-plate'];
 ```
 
 If this package provides a Volto theme, and you want to activate it, then add the following to your `volto.config.js`:
 
 ```javascript
-const theme = '@plone/volto-plate';
+const theme = '@kitconcept/volto-plate';
 ```
 
 ### Volto 17 and earlier
@@ -43,20 +43,20 @@ const theme = '@plone/volto-plate';
 Create a new Volto project (you can skip this step if you already have one):
 
 ```
-npm install -g yo @plone/generator-volto
-yo @plone/volto my-volto-project --addon @plone/volto-plate
+npm install -g yo @kitconcept/generator-volto
+yo @kitconcept/volto my-volto-project --addon @kitconcept/volto-plate
 cd my-volto-project
 ```
 
-Add `@plone/volto-plate` to your package.json:
+Add `@kitconcept/volto-plate` to your package.json:
 
 ```JSON
 "addons": [
-    "@plone/volto-plate"
+    "@kitconcept/volto-plate"
 ],
 
 "dependencies": {
-    "@plone/volto-plate": "*"
+    "@kitconcept/volto-plate": "*"
 }
 ```
 

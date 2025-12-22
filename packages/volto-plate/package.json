@@ -1,5 +1,5 @@
 {
-  "name": "@plone/volto-plate",
+  "name": "@kitconcept/volto-plate",
   "version": "1.0.0-alpha.0",
   "description": "An add-on that adds a Plate.js block for Volto",
   "main": "src/index.ts",
@@ -8,13 +8,14 @@
     "volto-addon",
     "volto",
     "plone",
-    "react"
+    "react",
+    "plate"
   ],
-  "author": "Plone Community",
-  "homepage": "https://github.com/collective/volto-plate#readme",
+  "author": "kitconcept, GmbH",
+  "homepage": "https://github.com/kitconcept/volto-plate#readme",
   "repository": {
     "type": "git",
-    "url": "git@github.com:collective/volto-plate"
+    "url": "git@github.com:kitconcept/volto-plate"
   },
   "publishConfig": {
     "access": "public"

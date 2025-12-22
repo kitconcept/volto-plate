@@ -54,15 +54,15 @@ importers:
       '@kitconcept/volto-light-theme':
         specifier: ^8.0.0-alpha.8
         version: 8.0.0-alpha.8(classnames@2.5.1)(embla-carousel@8.6.0)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react-intl@3.12.1(@types/react@18.3.26)(react@18.2.0))(react-redux@8.1.2(@types/react-dom@18.3.7(@types/react@18.3.26))(@types/react@18.3.26)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(redux@4.2.1))(react-router-dom@5.2.0(react@18.2.0))(react@18.2.0)
+      '@kitconcept/volto-plate':
+        specifier: workspace:*
+        version: link:packages/volto-plate
       '@plone/registry':
         specifier: workspace:*
         version: link:core/packages/registry
       '@plone/volto':
         specifier: workspace:*
         version: link:core/packages/volto
-      '@plone/volto-plate':
-        specifier: workspace:*
-        version: link:packages/volto-plate
     devDependencies:
       mrs-developer:
         specifier: ^2.2.0

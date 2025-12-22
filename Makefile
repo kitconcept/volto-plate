@@ -26,7 +26,7 @@ DOCKER_IMAGE=plone/server-dev:${PLONE_VERSION}
 DOCKER_IMAGE_ACCEPTANCE=plone/server-acceptance:${PLONE_VERSION}
 API_PATH ?= http://127.0.0.1:55001/plone
 
-ADDON_NAME='@plone/volto-plate'
+ADDON_NAME='@kitconcept/volto-plate'
 
 .PHONY: help
 help: ## Show this help
@@ -99,7 +99,7 @@ test: ## Run unit tests
 ci-test: ## Run unit tests in CI
 	# Unit Tests need the i18n to be built
 	VOLTOCONFIG=$(pwd)/volto.config.js pnpm --filter @plone/volto i18n
-	CI=1 pnpm --filter @plone/volto-plate exec vitest --passWithNoTests
+	CI=1 pnpm --filter @kitconcept/volto-plate exec vitest --passWithNoTests
 
 .PHONY: backend-docker-start
 backend-docker-start:	## Starts a Docker-based backend for development
