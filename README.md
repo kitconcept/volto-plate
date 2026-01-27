@@ -1,15 +1,33 @@
-# Volto Plate (@kitconcept/volto-plate)
+<picture>
+  <source align="right" width="200" media="(prefers-color-scheme: dark)" srcset="https://kitconcept.com/kitconcept-white.svg">
+  <img align="right" width="200" alt="kitconcept, GmbH" src="https://kitconcept.com/kitconcept-black.svg">
+</picture>
 
-An add-on that adds a Plate.js block for Volto
+# Volto Plate.js support (@kitconcept/volto-plate)
+
+<div align="center">
+
+An add-on that adds a [Plate.js](https://www.platejs.org/) support in Volto.
 
 [![npm](https://img.shields.io/npm/v/@kitconcept/volto-plate)](https://www.npmjs.com/package/@kitconcept/volto-plate)
 [![](https://img.shields.io/badge/-Storybook-ff4785?logo=Storybook&logoColor=white&style=flat-square)](https://collective.github.io/volto-plate/)
 [![Code analysis checks](https://github.com/collective/volto-plate/actions/workflows/code.yml/badge.svg)](https://github.com/collective/volto-plate/actions/workflows/code.yml)
 [![Unit tests](https://github.com/collective/volto-plate/actions/workflows/unit.yml/badge.svg)](https://github.com/collective/volto-plate/actions/workflows/unit.yml)
 
+</div>
+
 ## Features
 
-<!-- List your awesome features here -->
+This package provides support for the [Plate.js](https://www.platejs.org/) rich text editor in Volto, including:
+
+-   A Volto block adapter to reuse existing Volto blocks inside Plate-based editors (e.g. rich text).
+-   A Plate plugin to reuse the Volto Image block inside Plate-based editors.
+-   A Plate-based Text block implementation for Volto, replacing the default Slate-based one.
+
+It keeps in place the default Volto rich text block (slate-based) assumptions, so you can have multiple plate.js-based blocks in the same page.
+However, pressing `ENTER` won't create a new block, instead, it will create a new paragraph inside the same block, as is standard behavior in rich text editors.
+You can create new blocks using the block chooser as usual, and using the `/` slash command inside the `plate.js`-based block.
+
 
 ## Installation
 
