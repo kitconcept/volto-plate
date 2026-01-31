@@ -5,9 +5,9 @@ on:
       - "*.js"
       - "*.json"
       - "*.yaml"
-      - "cypress/**"
       - "packages/**"
       - ".github/workflows/acceptance.yml"
+      - "playwright.config.ts"
 
 env:
   NODE_VERSION: 24
