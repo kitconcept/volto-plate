@@ -4,6 +4,13 @@ export default defineConfig({
   testDir: '.',
   testMatch: ['acceptance/tests/**/*.{spec,test}.{ts,tsx}'],
   outputDir: 'playwright/results',
+  testIgnore: [
+    '**/node_modules/**',
+    '**/core/**',
+    '**/seven/**',
+    '**/packages/**',
+    '**/playwright/**',
+  ],
   // Disable parallel tests to avoid conflicts creating/deleting content
   workers: 1,
   // Fail the build on CI if you accidentally left test.only in the source code.
