@@ -67,6 +67,9 @@ importers:
         specifier: workspace:*
         version: link:core/packages/volto
     devDependencies:
+      '@types/node':
+        specifier: ^24
+        version: 24.10.1
       mrs-developer:
         specifier: ^2.2.0
         version: 2.3.2

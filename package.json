@@ -40,7 +40,8 @@
     "@kitconcept/volto-light-theme": "^8.0.0-alpha.8"
   },
   "devDependencies": {
-    "mrs-developer": "^2.2.0"
+    "mrs-developer": "^2.2.0",
+    "@types/node": "^24"
   },
   "pnpm": {
     "overrides": {
