@@ -51,7 +51,6 @@ jobs:
         run: make install
 
       - name: Install Playwright browsers
-        working-directory: frontend/packages/volto-light-theme
         run: pnpm exec playwright install --with-deps chromium
 
       - uses: JarvusInnovations/background-action@v1
