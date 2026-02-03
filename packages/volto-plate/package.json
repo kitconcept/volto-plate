@@ -35,15 +35,10 @@
     "@plone/plate": "workspace:*"
   },
   "peerDependencies": {
-    "@platejs/dnd": "^50.3.1",
-    "@platejs/media": "^49.0.0",
-    "@platejs/resizable": "^49.0.0",
     "@plone/registry": "workspace:*",
     "@plone/types": "workspace:*",
-    "@plone/volto": "workspace:*",
     "classnames": "^2.5.1",
     "lodash": "^4.17.21",
-    "platejs": "^49.2.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "semantic-ui-react": "^2.1.5"

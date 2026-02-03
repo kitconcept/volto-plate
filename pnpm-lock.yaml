@@ -1376,9 +1376,6 @@ importers:
       '@plone/registry':
         specifier: workspace:*
         version: link:../../core/packages/registry
-      '@plone/volto':
-        specifier: workspace:*
-        version: link:../../core/packages/volto
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
