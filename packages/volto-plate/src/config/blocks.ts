@@ -7,5 +7,13 @@ export default function install(config: ConfigType) {
     ...TextBlockInfo,
   };
 
+  config.blocks.blocksConfig.plate = {
+    ...config.blocks.blocksConfig.slate,
+    ...TextBlockInfo,
+    id: 'plate',
+    title: 'Plate',
+  };
+  delete config.blocks.blocksConfig.plate.blockModel;
+
   return config;
 }

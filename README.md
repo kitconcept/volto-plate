@@ -10,10 +10,9 @@
 An add-on that adds a [Plate.js](https://www.platejs.org/) support in Volto.
 
 [![npm](https://img.shields.io/npm/v/@kitconcept/volto-plate)](https://www.npmjs.com/package/@kitconcept/volto-plate)
-[![](https://img.shields.io/badge/-Storybook-ff4785?logo=Storybook&logoColor=white&style=flat-square)](https://collective.github.io/volto-plate/)
-[![Code analysis checks](https://github.com/collective/volto-plate/actions/workflows/code.yml/badge.svg)](https://github.com/collective/volto-plate/actions/workflows/code.yml)
-[![Unit tests](https://github.com/collective/volto-plate/actions/workflows/unit.yml/badge.svg)](https://github.com/collective/volto-plate/actions/workflows/unit.yml)
-
+[![Code analysis checks](https://github.com/kitconcept/volto-plate/actions/workflows/code.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/code.yml)
+[![Unit tests](https://github.com/kitconcept/volto-plate/actions/workflows/unit.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/unit.yml)
+[![Acceptance tests](https://github.com/kitconcept/volto-plate/actions/workflows/acceptance.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/acceptance.yml)
 </div>
 
 ## Features

@@ -9,7 +9,7 @@ on:
       - ".github/workflows/unit.yml"
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 24
 
 jobs:
   unit:

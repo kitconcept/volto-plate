@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 24
   ADDON_NAME: volto-plate
 
 jobs:
