@@ -3,11 +3,7 @@
   <img align="right" width="200" alt="kitconcept, GmbH" src="https://kitconcept.com/kitconcept-black.svg">
 </picture>
 
-# Volto Plate.js support (@kitconcept/volto-plate)
-
-> WARNING: This package is in early development and should be used with caution in production environments.
-> It is subject to breaking changes and incomplete features.
-> Please test thoroughly and report any issues you encounter.
+# Volto Plate.js support <br/>(@kitconcept/volto-plate)
 
 <div align="center">
 
@@ -18,6 +14,11 @@ An add-on that adds a [Plate.js](https://www.platejs.org/) support in Volto.
 [![Unit tests](https://github.com/kitconcept/volto-plate/actions/workflows/unit.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/unit.yml)
 [![Acceptance tests](https://github.com/kitconcept/volto-plate/actions/workflows/acceptance.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/acceptance.yml)
 </div>
+
+> [!WARNING]
+> This package is in early development and should be used with caution in production environments.
+> It is subject to breaking changes and incomplete features.
+> Please test thoroughly and report any issues you encounter.
 
 ## Features
 
