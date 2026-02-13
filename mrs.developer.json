@@ -4,7 +4,7 @@
     "package": "@plone/volto",
     "url": "git@github.com:plone/volto.git",
     "https": "https://github.com/plone/volto.git",
-    "tag": "19.0.0-alpha.22",
+    "tag": "19.0.0-alpha.24",
     "filterBlobs": true
   },
   "seven": {
@@ -12,7 +12,7 @@
     "package": "@plone/volto",
     "url": "git@github.com:plone/volto.git",
     "https": "https://github.com/plone/volto.git",
-    "branch": "seven",
+    "branch": "somersault",
     "filterBlobs": true
   }
 }
