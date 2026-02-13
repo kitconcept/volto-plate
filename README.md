@@ -53,6 +53,10 @@ From the developer perspective, it provides:
 -   A Plate plugin to reuse the Volto Image block inside Plate-based editors.
 -   A Plate-based Text block implementation for Volto, replacing the default Slate-based one.
 
+## Compatibility
+
+This package is only compatible with Volto 19 and later versions.
+
 ## Installation
 
 To install your project, you must choose the method appropriate to your version of Volto.
