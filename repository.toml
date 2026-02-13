@@ -1,0 +1,32 @@
+[repository]
+name = "collective-addon"
+changelog = "CHANGELOG.md"
+version = "version.txt"
+version_format = "semver"
+container_images_prefix = "ghcr.io/kitconcept/collective-addon"
+compose = ["docker-compose.yml"]
+
+[repository.towncrier]
+section = "Project"
+settings = "towncrier.toml"
+
+[backend.package]
+name = "kitconcept.plate"
+path = "backend"
+changelog = "backend/CHANGELOG.md"
+towncrier_settings = "backend/pyproject.toml"
+base_package = "Products.CMFPlone"
+publish = true
+
+[frontend.package]
+name = "volto-kitconcept-plate"
+path = "frontend/packages/volto-kitconcept-plate"
+changelog = "frontend/packages/volto-kitconcept-plate/CHANGELOG.md"
+towncrier_settings = "frontend/packages/volto-kitconcept-plate/towncrier.toml"
+base_package = "@plone/volto"
+publish = true
+
+[cookieplone]
+template = "monorepo_addon"
+template_version = "2c5463046f43a87e36d11a7edc2b4176b2d593aa"
+generated_date = "2026-02-13 09:23:34"

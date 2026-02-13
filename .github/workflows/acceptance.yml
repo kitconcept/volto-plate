@@ -12,6 +12,10 @@ on:
 env:
   NODE_VERSION: 24
 
+defaults:
+  run:
+    working-directory: ./frontend
+
 jobs:
 
   acceptance:
