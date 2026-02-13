@@ -15,3 +15,7 @@ class TestSetupInstall:
     def test_latest_version(self, profile_last_version):
         """Test latest version of default profile."""
         assert profile_last_version(f"{PACKAGE_NAME}:default") == "1000"
+
+    def test_meeting_notes_type_installed(self, portal):
+        """Test that Meeting Notes type is registered."""
+        assert "MeetingNotes" in portal.portal_types.objectIds()

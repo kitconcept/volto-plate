@@ -22,8 +22,8 @@ make create-site
 
 ## Contribute
 
-- [Issue tracker](https://github.com/kitconcept/collective-addon/issues)
-- [Source code](https://github.com/kitconcept/collective-addon/)
+- [Issue tracker](https://github.com/kitconcept/volto-plate/issues)
+- [Source code](https://github.com/kitconcept/volto-plate/)
 
 ### Prerequisites ✅
 
@@ -38,8 +38,8 @@ make create-site
 1.  Clone this repository.
 
     ```shell
-    git clone git@github.com:kitconcept/collective-addon.git
-    cd collective-addon/backend
+    git clone git@github.com:kitconcept/volto-plate.git
+    cd volto-plate/backend
     ```
 
 2.  Install this code base.

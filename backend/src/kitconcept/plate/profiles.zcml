@@ -6,7 +6,7 @@
 
   <genericsetup:registerProfile
       name="default"
-      title="Collective Addon: Install"
+      title="kitconcept.plate: Install"
       description="A new add-on for Plone that includes both backend and Volto frontend"
       provides="Products.GenericSetup.interfaces.EXTENSION"
       directory="profiles/default"
@@ -14,7 +14,7 @@
 
   <genericsetup:registerProfile
       name="initial"
-      title="Collective Addon: Example content"
+      title="kitconcept.plate: Example content"
       description="Create example content to showcase this addon."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       directory="profiles/initial"
@@ -23,8 +23,8 @@
 
   <genericsetup:registerProfile
       name="uninstall"
-      title="Collective Addon: Uninstall"
-      description="Uninstall Collective Addon setup."
+      title="kitconcept.plate: Uninstall"
+      description="Uninstall kitconcept.plate setup."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       directory="profiles/uninstall"
       />

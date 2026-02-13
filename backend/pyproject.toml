@@ -39,10 +39,10 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/kitconcept/collective-addon"
+Homepage = "https://github.com/kitconcept/volto-plate"
 PyPI = "https://pypi.org/project/kitconcept.plate"
-Source = "https://github.com/kitconcept/collective-addon"
-Tracker = "https://github.com/kitconcept/collective-addon/issues"
+Source = "https://github.com/kitconcept/volto-plate"
+Tracker = "https://github.com/kitconcept/volto-plate/issues"
 
 
 [project.entry-points."z3c.autoinclude.plugin"]
@@ -75,7 +75,7 @@ filename = "CHANGELOG.md"
 start_string = "<!-- towncrier release notes start -->\n"
 title_format = "## {version} ({project_date})"
 template = "news/.changelog_template.jinja"
-issue_format = "[#{issue}](https://github.com/kitconcept/collective-addon/issues/{issue})"
+issue_format = "[#{issue}](https://github.com/kitconcept/volto-plate/issues/{issue})"
 underlines = ["", "", ""]
 
 [[tool.towncrier.type]]
