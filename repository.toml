@@ -1,9 +1,9 @@
 [repository]
-name = "collective-addon"
+name = "volto-plate"
 changelog = "CHANGELOG.md"
 version = "version.txt"
 version_format = "semver"
-container_images_prefix = "ghcr.io/kitconcept/collective-addon"
+container_images_prefix = "ghcr.io/kitconcept/volto-plate"
 compose = ["docker-compose.yml"]
 
 [repository.towncrier]
@@ -19,10 +19,10 @@ base_package = "Products.CMFPlone"
 publish = true
 
 [frontend.package]
-name = "volto-kitconcept-plate"
-path = "frontend/packages/volto-kitconcept-plate"
-changelog = "frontend/packages/volto-kitconcept-plate/CHANGELOG.md"
-towncrier_settings = "frontend/packages/volto-kitconcept-plate/towncrier.toml"
+name = "volto-plate"
+path = "frontend/packages/volto-plate"
+changelog = "frontend/packages/volto-plate/CHANGELOG.md"
+towncrier_settings = "frontend/packages/volto-plate/towncrier.toml"
 base_package = "@plone/volto"
 publish = true
 
