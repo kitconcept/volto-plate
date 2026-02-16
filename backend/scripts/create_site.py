@@ -45,7 +45,7 @@ newSecurityManager(None, admin)
 
 site_id = "Plone"
 payload = {
-    "title": "Collective Addon",
+    "title": "kitconcept.plate",
     "profile_id": _DEFAULT_PROFILE,
     "distribution_name": "volto",
     "setup_content": False,

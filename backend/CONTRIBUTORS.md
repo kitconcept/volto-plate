@@ -1,3 +1,3 @@
 # Contributors
 
-- Plone Foundation [info@kitconcept.com]
+- kitconcept, GmbH [info@kitconcept.com]

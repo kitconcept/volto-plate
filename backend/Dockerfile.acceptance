@@ -26,10 +26,10 @@ FROM plone/server-acceptance:${PLONE_VERSION}
 
 LABEL maintainer="kitconcept, GmbH <info@kitconcept.com>" \
       org.label-schema.name="kitconcept-plate-acceptance" \
-      org.label-schema.description="kitconcept.plate addon acceptance image." \
+      org.label-schema.description="kitconcept.plate backend acceptance image." \
       org.label-schema.vendor="kitconcept, GmbH"
 
-      ENV CONFIGURE_PACKAGES="plone.restapi,plone.volto,plone.volto.cors,kitconcept.plate"
+ENV CONFIGURE_PACKAGES="plone.restapi,plone.volto,plone.volto.cors,kitconcept.plate"
 ENV APPLY_PROFILES="kitconcept.plate:default"
 
 # Copy /app from builder

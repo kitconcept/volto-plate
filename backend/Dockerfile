@@ -26,7 +26,7 @@ FROM plone/server-prod-config:${PLONE_VERSION}
 
 LABEL maintainer="kitconcept, GmbH <info@kitconcept.com>" \
       org.label-schema.name="kitconcept-plate-backend" \
-      org.label-schema.description="kitconcept.plate addon backend image." \
+      org.label-schema.description="kitconcept.plate backend image." \
       org.label-schema.vendor="kitconcept, GmbH"
 
 # Copy /app from builder

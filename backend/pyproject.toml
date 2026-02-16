@@ -4,9 +4,9 @@ dynamic = ["version"]
 description = "A new add-on for Plone that includes both backend and Volto frontend"
 readme = "README.md"
 license = "GPL-2.0-only"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 authors = [
-    { name = "Plone Foundation", email = "info@kitconcept.com" },
+    { name = "kitconcept, GmbH", email = "info@kitconcept.com" },
 ]
 keywords = [
     "CMS",
@@ -16,13 +16,18 @@ keywords = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Web Environment",
-    "Framework :: Plone","Framework :: Plone :: 6.2",
+    "Framework :: Plone",
+    "Framework :: Plone :: 6.1",
+    "Framework :: Plone :: 6.2",
     "Framework :: Plone :: Addon",
     "Operating System :: OS Independent",
-    "Programming Language :: Python","Programming Language :: Python :: 3.12",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "Products.CMFPlone==6.2.0a1",
+    "Products.CMFPlone",
     "plone.api",
     "plone.restapi",
     "plone.volto",
@@ -35,7 +40,7 @@ test = [
     "plone.restapi[test]",
     "pytest",
     "pytest-cov",
-    "pytest-plone>=0.5.0",
+    "pytest-plone>=1.0.0a2",
 ]
 
 [project.urls]
@@ -45,7 +50,7 @@ Source = "https://github.com/kitconcept/volto-plate"
 Tracker = "https://github.com/kitconcept/volto-plate/issues"
 
 
-[project.entry-points."z3c.autoinclude.plugin"]
+[project.entry-points."plone.autoinclude.plugin"]
 target = "plone"
 
 [tool.uv]
