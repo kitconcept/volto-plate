@@ -53,12 +53,14 @@
     "@plone/types": "workspace:*",
     "@plone/volto-slate": "workspace:*",
     "@storybook/react": "^8.6.12",
+    "@tailwindcss/postcss": "^4.2.1",
     "@types/lodash": "^4.17.20",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "platejs": "^49.2.21",
     "playwright": "^1.58.0",
     "release-it": "^19.0.5",
+    "tailwindcss": "catalog:",
     "typescript": "^5.7.3",
     "vitest": "^3.1.2"
   }

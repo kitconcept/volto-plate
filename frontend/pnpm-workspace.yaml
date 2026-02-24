@@ -1,7 +1,9 @@
 packages:
-  # all packages in direct subdirs of packages/
-  - 'core/packages/*'
-  - 'packages/*'
-  - 'packages/*/packages/*'
-  - 'seven/packages/plate'
-  - 'seven/packages/helpers'
+  - core/packages/*
+  - packages/*
+  - packages/*/packages/*
+  - seven/packages/plate
+  - seven/packages/helpers
+
+catalog:
+  tailwindcss: 4.1.14
