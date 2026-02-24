@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { PlateEditor } from '@plone/plate/components/editor';
 
-import plateBlockConfig from '@plone/plate/config/presets/block';
+import plateBlockEditorConfig from '@plone/plate/config/presets/block-editor';
 import { DetachedTextBlockEditor } from '@plone/volto-slate/blocks/Text/DetachedTextBlockEditor';
 import { RealStoreWrapper as Wrapper } from '@plone/volto/storybook';
 import config from '@plone/volto/registry';
@@ -12,7 +12,7 @@ const meta = {
   component: DetachedTextBlockEditor,
 
   args: {
-    editorConfig: plateBlockConfig.editorConfig,
+    editorConfig: plateBlockEditorConfig,
     onChange: () => {},
     value: [
       {
