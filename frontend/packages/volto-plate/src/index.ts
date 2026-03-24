@@ -1,7 +1,6 @@
 import type { ConfigType } from '@plone/registry';
 import installSettings from './config/settings';
 import installBlocks from './config/blocks';
-// import '@plone/plate/output.css';
 import './theme/tailwind.css';
 
 export { useStablePlateValue } from './hooks/use-stable-plate-value';

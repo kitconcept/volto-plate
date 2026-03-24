@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         meta_type="Dexterity FTI"
-        name="MeetingNotes"
+        name="WikiPage"
         i18n:domain="kitconcept.plate"
 >
   <property name="title"
             i18n:translate=""
-  >Meeting Notes</property>
+  >Wiki Page</property>
   <property name="description"
             i18n:translate=""
-  >Structured notes for meetings.</property>
+  >A Plate-powered wiki page.</property>
 
   <property name="allow_discussion">False</property>
-  <property name="factory">MeetingNotes</property>
+  <property name="factory">WikiPage</property>
   <property name="icon_expr">string:contenttype/document</property>
   <property name="link_target" />
 
@@ -22,7 +22,7 @@
 
   <property name="add_permission">cmf.AddPortalContent</property>
   <property name="klass">plone.dexterity.content.Item</property>
-  <property name="schema">kitconcept.plate.content.meeting_notes.IMeetingNotes</property>
+  <property name="schema">kitconcept.plate.content.wiki_page.IWikiPage</property>
   <property name="model_file" />
   <property name="model_source" />
 
@@ -39,7 +39,7 @@
     <element value="volto.blocks" />
   </property>
 
-  <property name="add_view_expr">string:${folder_url}/++add++MeetingNotes</property>
+  <property name="add_view_expr">string:${folder_url}/++add++WikiPage</property>
   <property name="default_view">view</property>
   <property name="default_view_fallback">False</property>
   <property name="immediate_view">view</property>

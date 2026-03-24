@@ -41,7 +41,9 @@
     "lodash": "^4.17.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "semantic-ui-react": "^2.1.5"
+    "semantic-ui-react": "^2.1.5",
+    "@platejs/ai": "^50.3.7",
+    "lucide-react": "^0.544.0"
   },
   "devDependencies": {
     "@platejs/dnd": "^50.3.1",

@@ -4,6 +4,3 @@ packages:
   - packages/*/packages/*
   - seven/packages/plate
   - seven/packages/helpers
-
-catalog:
-  tailwindcss: 4.1.14

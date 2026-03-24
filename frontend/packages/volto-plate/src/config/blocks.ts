@@ -10,7 +10,7 @@ export default function install(config: ConfigType) {
   };
   delete config.blocks.blocksConfig.plate.blockModel;
 
-  config.blocks.initialBlocks.MeetingNotes = ['plate'];
+  config.blocks.initialBlocks.WikiPage = ['plate'];
 
   return config;
 }
