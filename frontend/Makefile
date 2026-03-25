@@ -24,7 +24,7 @@ GIT_FOLDER=$(CURRENT_DIR)/.git
 PLONE_VERSION=6
 DOCKER_IMAGE=plone/server-dev:${PLONE_VERSION}
 DOCKER_IMAGE_ACCEPTANCE=plone/server-acceptance:${PLONE_VERSION}
-API_PATH ?= http://127.0.0.1:55001/plone
+API_PATH ?= http://localhost:55001/plone
 
 ADDON_NAME='@kitconcept/volto-plate'
 
@@ -121,11 +121,11 @@ storybook-build: ## Build Storybook
 ## Acceptance
 .PHONY: acceptance-frontend-dev-start
 acceptance-frontend-dev-start: ## Start acceptance frontend in development mode
-	RAZZLE_API_PATH=http://127.0.0.1:55001/plone pnpm start
+	RAZZLE_INTERNAL_API_PATH=$(API_PATH) pnpm start
 
 .PHONY: acceptance-frontend-prod-start
 acceptance-frontend-prod-start: ## Start acceptance frontend in production mode
-	RAZZLE_API_PATH=$(API_PATH) pnpm build && pnpm start:prod
+	RAZZLE_INTERNAL_API_PATH=$(API_PATH) pnpm build && pnpm start:prod
 
 .PHONY: acceptance-backend-start
 acceptance-backend-start: ## Start backend acceptance server

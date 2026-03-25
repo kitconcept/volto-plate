@@ -2,7 +2,10 @@ import React from 'react';
 
 import { PlateEditor, type Value } from '@plone/plate/components/editor';
 import wikiEditorPreset from '../../plate/presets/wiki-editor';
-import { TITLE_BLOCK_TYPE } from '../../plate/plugins/volto-title';
+import {
+  TITLE_BLOCK_TYPE,
+  TitleMetadataContext,
+} from '../../plate/plugins/volto-title';
 
 const SOMERSAULT_KEY = '__somersault__';
 
@@ -32,6 +35,13 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
   const somersaultBlock = content?.blocks?.[SOMERSAULT_KEY];
   const metadataTitle = content?.title ?? '';
   const stableInitialValueRef = React.useRef<Value | null>(null);
+  const latestContentRef = React.useRef(content);
+  const latestOnChangeFormDataRef = React.useRef(onChangeFormData);
+
+  React.useEffect(() => {
+    latestContentRef.current = content;
+    latestOnChangeFormDataRef.current = onChangeFormData;
+  }, [content, onChangeFormData]);
 
   if (!stableInitialValueRef.current) {
     stableInitialValueRef.current =
@@ -41,23 +51,29 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
   }
 
   return (
-    <PlateEditor
-      editorConfig={wikiEditorPreset}
-      value={stableInitialValueRef.current}
-      intl={intl}
-      onChange={(options) => {
-        onChangeFormData?.({
-          blocks: {
-            ...(content?.blocks ?? {}),
-            [SOMERSAULT_KEY]: {
-              ...(somersaultBlock ?? {}),
-              '@type': SOMERSAULT_KEY,
-              value: options.value as Value,
+    <TitleMetadataContext.Provider value={metadataTitle}>
+      <PlateEditor
+        editorConfig={wikiEditorPreset}
+        value={stableInitialValueRef.current}
+        intl={intl}
+        onChange={(options) => {
+          const currentContent = latestContentRef.current;
+          const currentSomersaultBlock =
+            currentContent?.blocks?.[SOMERSAULT_KEY];
+
+          latestOnChangeFormDataRef.current?.({
+            blocks: {
+              ...(currentContent?.blocks ?? {}),
+              [SOMERSAULT_KEY]: {
+                ...(currentSomersaultBlock ?? {}),
+                '@type': SOMERSAULT_KEY,
+                value: options.value as Value,
+              },
             },
-          },
-        });
-      }}
-    />
+          });
+        }}
+      />
+    </TitleMetadataContext.Provider>
   );
 };
 
