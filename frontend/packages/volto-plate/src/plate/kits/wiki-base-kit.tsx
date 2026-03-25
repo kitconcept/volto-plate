@@ -1,3 +1,5 @@
+import { KEYS } from 'platejs';
+
 import { BaseAlignKit } from '@plone/plate/components/editor/plugins/align-base-kit';
 import { BaseBasicBlocksKit } from '@plone/plate/components/editor/plugins/basic-blocks-base-kit';
 import { BaseBasicMarksKit } from '@plone/plate/components/editor/plugins/basic-marks-base-kit';
@@ -16,9 +18,21 @@ import { BaseSuggestionKit } from '@plone/plate/components/editor/plugins/sugges
 import { BaseTableKit } from '@plone/plate/components/editor/plugins/table-base-kit';
 import { BaseTocKit } from '@plone/plate/components/editor/plugins/toc-base-kit';
 import { BaseToggleKit } from '@plone/plate/components/editor/plugins/toggle-base-kit';
+import { DEFAULT_BLOCK_WIDTH } from '@plone/plate/components/editor/plugins/block-width-plugin';
+
+import { overrideKitPlugin } from './override-kit-plugin';
+
+const wikiBaseBasicBlocksKit = overrideKitPlugin(BaseBasicBlocksKit, KEYS.p, {
+  options: {
+    blockWidth: {
+      defaultWidth: DEFAULT_BLOCK_WIDTH,
+      widths: [DEFAULT_BLOCK_WIDTH],
+    },
+  },
+});
 
 export const wikiBaseEditorKit = [
-  ...BaseBasicBlocksKit,
+  ...wikiBaseBasicBlocksKit,
   ...BaseCodeBlockKit,
   ...BaseTableKit,
   ...BaseToggleKit,

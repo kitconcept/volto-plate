@@ -1,5 +1,6 @@
 import { type Value, TrailingBlockPlugin } from 'platejs';
 import { type TPlateEditor, useEditorRef } from 'platejs/react';
+import { KEYS } from 'platejs';
 
 // import { AIKit } from '@plone/plate/components/editor/plugins/ai-kit';
 import { AlignKit } from '@plone/plate/components/editor/plugins/align-kit';
@@ -32,13 +33,25 @@ import { TableKit } from '@plone/plate/components/editor/plugins/table-kit';
 import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
 import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-hotkey';
+import { DEFAULT_BLOCK_WIDTH } from '@plone/plate/components/editor/plugins/block-width-plugin';
+
+import { overrideKitPlugin } from './override-kit-plugin';
+
+const wikiBasicBlocksKit = overrideKitPlugin(BasicBlocksKit, KEYS.p, {
+  options: {
+    blockWidth: {
+      defaultWidth: DEFAULT_BLOCK_WIDTH,
+      widths: [DEFAULT_BLOCK_WIDTH],
+    },
+  },
+});
 
 export const WikiEditorKit = [
   // ...AIKit,
   ...BlockMenuKit,
 
   // Elements
-  ...BasicBlocksKit,
+  ...wikiBasicBlocksKit,
   ...CodeBlockKit,
   ...TableKit,
   ...ToggleKit,
