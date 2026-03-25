@@ -1,7 +1,7 @@
 import { type Value, TrailingBlockPlugin } from 'platejs';
 import { type TPlateEditor, useEditorRef } from 'platejs/react';
 
-import { AIKit } from '@plone/plate/components/editor/plugins/ai-kit';
+// import { AIKit } from '@plone/plate/components/editor/plugins/ai-kit';
 import { AlignKit } from '@plone/plate/components/editor/plugins/align-kit';
 import { AutoformatKit } from '@plone/plate/components/editor/plugins/autoformat-kit';
 import { BasicBlocksKit } from '@plone/plate/components/editor/plugins/basic-blocks-kit';
@@ -34,7 +34,7 @@ import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-hotkey';
 
 export const WikiEditorKit = [
-  ...AIKit,
+  // ...AIKit,
   ...BlockMenuKit,
 
   // Elements
@@ -82,6 +82,6 @@ export const WikiEditorKit = [
   ...FloatingToolbarKit,
 ];
 
-export type MyEditor = TPlateEditor<Value, (typeof BlockEditorKit)[number]>;
+export type MyEditor = TPlateEditor<Value, (typeof WikiEditorKit)[number]>;
 
 export const useEditor = () => useEditorRef<MyEditor>();

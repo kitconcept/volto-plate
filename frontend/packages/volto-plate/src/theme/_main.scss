@@ -5,3 +5,10 @@
     @include adjustMarginsToContainer($narrow-container-width);
   }
 }
+
+.slate-editor {
+  h1.documentFirstHeading {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
