@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import type { Value } from 'platejs';
 
-import { normalizeLegacyValue } from '@plone/plate/components/editor/plugins/normalize-legacy';
+import { normalizeLegacyValue } from '@plone/plate/legacy/migrations';
 
 /**
  * Normalize a Plate value once (for legacy Slate shapes) and keep a stable
