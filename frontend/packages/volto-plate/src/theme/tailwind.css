@@ -1,1 +1,2 @@
 @import '@plone/plate/input.css';
+@source '../**/*.{ts,tsx,js,jsx}';

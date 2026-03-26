@@ -8,7 +8,7 @@ import { AutoformatKit } from '@plone/plate/components/editor/plugins/autoformat
 import { BasicBlocksKit } from '@plone/plate/components/editor/plugins/basic-blocks-kit';
 import { BasicMarksKit } from '@plone/plate/components/editor/plugins/basic-marks-kit';
 import { BlockMenuKit } from '@plone/plate/components/editor/plugins/block-menu-kit';
-import { BlockPlaceholderKit } from '@plone/plate/components/editor/plugins/block-placeholder-kit';
+import { BlockPlaceholderPlugin } from 'platejs/react';
 import { CalloutKit } from '@plone/plate/components/editor/plugins/callout-kit';
 import { CodeBlockKit } from '@plone/plate/components/editor/plugins/code-block-kit';
 import { ColumnKit } from '@plone/plate/components/editor/plugins/column-kit';
@@ -36,12 +36,27 @@ import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-
 import { DEFAULT_BLOCK_WIDTH } from '@plone/plate/components/editor/plugins/block-width-plugin';
 
 import { overrideKitPlugin } from './override-kit-plugin';
+import { TITLE_BLOCK_TYPE } from '../plugins/volto-title';
 
 const wikiBasicBlocksKit = overrideKitPlugin(BasicBlocksKit, KEYS.p, {
   options: {
     blockWidth: {
       defaultWidth: DEFAULT_BLOCK_WIDTH,
       widths: [DEFAULT_BLOCK_WIDTH],
+    },
+  },
+});
+
+const WikiBlockPlaceholderPlugin = BlockPlaceholderPlugin.extend({
+  options: {
+    className:
+      'before:absolute before:cursor-text before:text-muted-foreground/80 before:content-[attr(placeholder)]',
+    placeholders: {
+      [KEYS.p]: 'Type something...',
+      [TITLE_BLOCK_TYPE]: 'Type the title…',
+    },
+    query: ({ path }: { path: number[] }) => {
+      return path.length === 1;
     },
   },
 });
@@ -91,7 +106,7 @@ export const WikiEditorKit = [
   ...MarkdownKit,
 
   // UI
-  ...BlockPlaceholderKit,
+  WikiBlockPlaceholderPlugin,
   ...FloatingToolbarKit,
 ];
 

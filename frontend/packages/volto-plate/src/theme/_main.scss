@@ -10,5 +10,21 @@
   h1.documentFirstHeading {
     margin-right: auto;
     margin-left: auto;
+
+    &[placeholder]::before {
+      display: block;
+      // position: absolute;
+      // top: 0;
+      // left: 0;
+      width: unset;
+      height: unset;
+      border-bottom: unset;
+      content: attr(placeholder);
+      // color: var(--muted-foreground);
+      // content: attr(placeholder);
+      // cursor: text;
+      // opacity: 0.8;
+      // pointer-events: none;
+    }
   }
 }

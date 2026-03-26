@@ -70,3 +70,53 @@ test('Plate title block updates the metadata title', async ({ page }) => {
   await metadataTitleInput.click();
   await expect(metadataTitleInput).toHaveValue('Editor updated title');
 });
+
+test('Empty plate title block shows the translated placeholder', async ({
+  page,
+}) => {
+  await openTitleSyncPage(page, {
+    contentId: 'title-sync-page-placeholder',
+    contentTitle: 'Original title',
+  });
+
+  const editorTitle = page.locator('[data-slate-editor] h1').first();
+
+  await editorTitle.fill('');
+
+  await expect(editorTitle).toHaveAttribute('placeholder', 'Type the title…');
+});
+
+test('Title placeholder is visually rendered through the h1 pseudo-element', async ({
+  page,
+}) => {
+  await openTitleSyncPage(page, {
+    contentId: 'title-sync-page-placeholder-style',
+    contentTitle: 'Original title',
+  });
+
+  const editorTitle = page.locator('[data-slate-editor] h1').first();
+
+  await editorTitle.fill('');
+
+  await expect
+    .poll(async () => {
+      return await editorTitle.evaluate((element) => {
+        const before = window.getComputedStyle(element, '::before');
+
+        return {
+          className: element.className,
+          placeholder: element.getAttribute('placeholder'),
+          beforeContent: before.content,
+          beforeDisplay: before.display,
+          beforePosition: before.position,
+        };
+      });
+    })
+    .toEqual({
+      className: expect.stringContaining('slate-title'),
+      placeholder: 'Type the title…',
+      beforeContent: '"Type the title…"',
+      beforeDisplay: 'block',
+      beforePosition: 'absolute',
+    });
+});

@@ -138,9 +138,9 @@ function TitleMetadataSync() {
 export function VoltoTitleBlockElement(props: PlateElementProps) {
   return (
     <PlateElement
+      {...props}
       as="h1"
       className="documentFirstHeading font-heading mt-[1.6em] pb-1 text-4xl font-bold"
-      {...props}
     >
       {props.children}
     </PlateElement>
