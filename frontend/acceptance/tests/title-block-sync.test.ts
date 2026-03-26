@@ -2,6 +2,7 @@ import { expect, test } from './test';
 import { login } from './login';
 import { createContent } from './content';
 import { waitForPlateEditorReady } from './plate';
+import { getEditorHandle, getSelection } from '@platejs/playwright';
 
 function withSomersaultBody(body: Record<string, unknown>) {
   const title = typeof body.title === 'string' ? body.title : '';
@@ -54,6 +55,24 @@ test('Metadata title updates the plate title block', async ({ page }) => {
   await expect(editorTitle).toHaveText('Metadata updated title');
 });
 
+test('Plate editor autofocuses the title block on load', async ({ page }) => {
+  await openTitleSyncPage(page, {
+    contentId: 'title-sync-page-autofocus',
+    contentTitle: 'Original title',
+  });
+
+  const editorHandle = await getEditorHandle(
+    page,
+    page.locator('.slate-editor[data-slate-editor]'),
+  );
+  const selection = await getSelection(page, editorHandle);
+
+  expect(selection).toEqual({
+    anchor: { offset: 0, path: [0, 0] },
+    focus: { offset: 0, path: [0, 0] },
+  });
+});
+
 test('Plate title block updates the metadata title', async ({ page }) => {
   await openTitleSyncPage(page, {
     contentId: 'title-sync-page-editor',
@@ -98,25 +117,25 @@ test('Title placeholder is visually rendered through the h1 pseudo-element', asy
 
   await editorTitle.fill('');
 
-  await expect
-    .poll(async () => {
-      return await editorTitle.evaluate((element) => {
-        const before = window.getComputedStyle(element, '::before');
+  await expect(editorTitle).toHaveAttribute('placeholder', 'Type the title…');
 
-        return {
-          className: element.className,
-          placeholder: element.getAttribute('placeholder'),
-          beforeContent: before.content,
-          beforeDisplay: before.display,
-          beforePosition: before.position,
-        };
-      });
-    })
-    .toEqual({
-      className: expect.stringContaining('slate-title'),
-      placeholder: 'Type the title…',
-      beforeContent: '"Type the title…"',
-      beforeDisplay: 'block',
-      beforePosition: 'absolute',
-    });
+  const placeholderStyles = await editorTitle.evaluate((element) => {
+    const before = window.getComputedStyle(element, '::before');
+
+    return {
+      className: element.className,
+      placeholder: element.getAttribute('placeholder'),
+      beforeContent: before.content,
+      beforeDisplay: before.display,
+      beforePosition: before.position,
+    };
+  });
+
+  expect(placeholderStyles).toEqual({
+    className: expect.stringContaining('slate-title'),
+    placeholder: 'Type the title…',
+    beforeContent: '"Type the title…"',
+    beforeDisplay: 'block',
+    beforePosition: 'absolute',
+  });
 });

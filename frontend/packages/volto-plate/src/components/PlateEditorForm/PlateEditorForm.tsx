@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { PlateEditor, type Value } from '@plone/plate/components/editor';
+import { useEditorRef } from 'platejs/react';
 import wikiEditorPreset from '../../plate/presets/wiki-editor';
 import {
   TITLE_BLOCK_TYPE,
@@ -29,6 +30,27 @@ type PlateEditorFormProps = {
   intl?: unknown;
   onChangeFormData?: (data: Record<string, unknown>) => void;
 };
+
+function InitialEditorFocus() {
+  const editor = useEditorRef();
+  const hasFocusedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (hasFocusedRef.current) return;
+
+    hasFocusedRef.current = true;
+
+    const frameId = window.requestAnimationFrame(() => {
+      editor.tf.focus({ edge: 'start' });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [editor]);
+
+  return null;
+}
 
 const PlateEditorForm = (props: PlateEditorFormProps) => {
   const { content, intl, onChangeFormData } = props;
@@ -72,7 +94,9 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
             },
           });
         }}
-      />
+      >
+        <InitialEditorFocus />
+      </PlateEditor>
     </TitleMetadataContext.Provider>
   );
 };
