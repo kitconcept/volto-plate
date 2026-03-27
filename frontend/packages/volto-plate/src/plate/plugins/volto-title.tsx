@@ -19,6 +19,7 @@ type TitleData = {
 };
 
 const DEFAULT_BLOCK_WIDTH = 'var(--default-container-width)';
+const TITLE_PLACEHOLDER = 'Type the title...';
 
 const isTitleNode = (node: unknown) =>
   ElementApi.isElement(node) && node.type === TITLE_BLOCK_TYPE;
@@ -136,12 +137,26 @@ function TitleMetadataSync() {
 }
 
 export function VoltoTitleBlockElement(props: PlateElementProps) {
+  const showPlaceholder = getNodeText(props.element) === '';
+
   return (
     <PlateElement
       {...props}
       as="h1"
-      className="documentFirstHeading font-heading mt-[1.6em] pb-1 text-4xl font-bold"
+      className="documentFirstHeading font-heading relative mt-[1.6em] pb-1 text-4xl font-bold"
     >
+      {showPlaceholder ? (
+        <span
+          aria-hidden="true"
+          contentEditable={false}
+          className={`
+            pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-muted-foreground/80
+            select-none
+          `}
+        >
+          {TITLE_PLACEHOLDER}
+        </span>
+      ) : null}
       {props.children}
     </PlateElement>
   );
