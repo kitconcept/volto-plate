@@ -27,7 +27,7 @@ import { MarkdownKit } from '@plone/plate/components/editor/plugins/markdown-kit
 import { MediaKit } from '@plone/plate/components/editor/plugins/media-kit';
 import { MentionKit } from '@plone/plate/components/editor/plugins/mention-kit';
 import { BlockWidthKit } from '@plone/plate/components/editor/plugins/block-width-kit';
-import { SlashKit } from '@plone/plate/components/editor/plugins/slash-kit';
+import { createSlashKit } from '@plone/plate/components/editor/plugins/slash-kit';
 import { SuggestionKit } from '@plone/plate/components/editor/plugins/suggestion-kit';
 import { TableKit } from '@plone/plate/components/editor/plugins/table-kit';
 import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
@@ -37,6 +37,7 @@ import { DEFAULT_BLOCK_WIDTH } from '@plone/plate/components/editor/plugins/bloc
 
 import { overrideKitPlugin } from './override-kit-plugin';
 import { TITLE_BLOCK_TYPE } from '../plugins/volto-title';
+import { slashMenu } from '../wiki/slash-menu';
 
 const wikiBasicBlocksKit = overrideKitPlugin(BasicBlocksKit, KEYS.p, {
   options: {
@@ -59,6 +60,10 @@ const WikiBlockPlaceholderPlugin = BlockPlaceholderPlugin.extend({
       return path.length === 1;
     },
   },
+});
+
+const WikiSlashKit = createSlashKit({
+  menu: slashMenu,
 });
 
 export const WikiEditorKit = [
@@ -93,7 +98,7 @@ export const WikiEditorKit = [
   ...SuggestionKit,
 
   // Editing
-  ...SlashKit,
+  ...WikiSlashKit,
   ...AutoformatKit,
   ...CursorOverlayKit,
   // ...DndKit,
