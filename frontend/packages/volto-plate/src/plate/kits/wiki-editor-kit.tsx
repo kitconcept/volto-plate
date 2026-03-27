@@ -7,7 +7,7 @@ import { AutoformatKit } from '@plone/plate/components/editor/plugins/autoformat
 import { BasicBlocksKit } from '@plone/plate/components/editor/plugins/basic-blocks-kit';
 import { BasicMarksKit } from '@plone/plate/components/editor/plugins/basic-marks-kit';
 import { BlockMenuKit } from '@plone/plate/components/editor/plugins/block-menu-kit';
-import { BlockPlaceholderPlugin } from 'platejs/react';
+import { BlockPlaceholderKit } from '@plone/plate/components/editor/plugins/block-placeholder-kit';
 import { CalloutKit } from '@plone/plate/components/editor/plugins/callout-kit';
 import { CodeBlockKit } from '@plone/plate/components/editor/plugins/code-block-kit';
 import { ColumnKit } from '@plone/plate/components/editor/plugins/column-kit';
@@ -84,7 +84,7 @@ export const WikiEditorKit = [
   ...MarkdownKit,
 
   // UI
-  BlockPlaceholderPlugin,
+  ...BlockPlaceholderKit,
   ...FloatingToolbarKit,
 ];
 
