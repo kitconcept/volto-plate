@@ -21,6 +21,7 @@ import { BaseToggleKit } from '@plone/plate/components/editor/plugins/toggle-bas
 import { DEFAULT_BLOCK_WIDTH } from '@plone/plate/components/editor/plugins/block-width-plugin';
 
 import { overrideKitPlugin } from './override-kit-plugin';
+import { VoltoLinkElementStatic } from '../plugins/volto-link-node-static';
 
 const wikiBaseBasicBlocksKit = overrideKitPlugin(BaseBasicBlocksKit, KEYS.p, {
   options: {
@@ -28,6 +29,12 @@ const wikiBaseBasicBlocksKit = overrideKitPlugin(BaseBasicBlocksKit, KEYS.p, {
       defaultWidth: DEFAULT_BLOCK_WIDTH,
       widths: [DEFAULT_BLOCK_WIDTH],
     },
+  },
+});
+
+const wikiBaseLinkKit = overrideKitPlugin(BaseLinkKit, KEYS.link, {
+  node: {
+    component: VoltoLinkElementStatic,
   },
 });
 
@@ -40,7 +47,7 @@ export const wikiBaseEditorKit = [
   ...BaseMediaKit,
   ...BaseCalloutKit,
   ...BaseColumnKit,
-  ...BaseLinkKit,
+  ...wikiBaseLinkKit,
   ...BaseMentionKit,
   ...BaseBasicMarksKit,
   ...BaseFontKit,

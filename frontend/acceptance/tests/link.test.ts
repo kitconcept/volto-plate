@@ -1,9 +1,10 @@
-import { expect, test } from './test';
-import { login } from './login';
-import { createContent } from './content';
-import { waitForPlateEditorReady } from './plate';
 import type { Page } from '@playwright/test';
 import { getEditorHandle, setSelection } from '@platejs/playwright';
+
+import { createContent } from './content';
+import { login } from './login';
+import { waitForPlateEditorReady } from './plate';
+import { expect, test } from './test';
 
 function withSomersaultBody(bodyText: string) {
   return (body: Record<string, unknown>) => {
@@ -81,6 +82,21 @@ async function expectEditorLink(
 
   await expect(link).toBeVisible();
   await expect(link).toHaveAttribute('href', href);
+}
+
+function findFirstLinkNode(node: unknown): Record<string, unknown> | null {
+  if (!node || typeof node !== 'object') return null;
+
+  const record = node as Record<string, unknown>;
+  if (record.type === 'a') return record;
+
+  const children = Array.isArray(record.children) ? record.children : [];
+  for (const child of children) {
+    const linkNode = findFirstLinkNode(child);
+    if (linkNode) return linkNode;
+  }
+
+  return null;
 }
 
 test.describe('Plate link features', () => {
@@ -176,5 +192,61 @@ test.describe('Plate link features', () => {
       href: '/link-target-browser',
       text: 'Link this',
     });
+  });
+
+  test('an internal absolute URL is flattened to an app path', async ({
+    page,
+  }) => {
+    await createContent(page, {
+      contentType: 'WikiPage',
+      contentId: 'link-target-existing',
+      contentTitle: 'LinkTargetExisting',
+      transition: 'publish',
+      bodyModifier: withSomersaultBody('Target body'),
+    });
+
+    await openWikiPageEditor(page, {
+      contentId: 'link-source-existing',
+      contentTitle: 'Link source existing',
+    });
+
+    const internalAbsoluteUrl = new URL(
+      '/link-target-existing',
+      page.url(),
+    ).toString();
+
+    await selectParagraphText(page, { start: 0, end: 9 });
+    await openLinkToolbar(page);
+
+    const input = page.getByPlaceholder('Paste link or search content');
+    await input.fill(internalAbsoluteUrl);
+    await input.press('Enter');
+
+    const editorHandle = await getEditorHandle(
+      page,
+      page.locator('.slate-editor[data-slate-editor]'),
+    );
+    const editorChildren = (await page.evaluate(
+      (editor) => editor.children,
+      editorHandle,
+    )) as unknown[];
+    const linkNode =
+      editorChildren.map((node) => findFirstLinkNode(node)).find(Boolean) ?? {};
+
+    expect(linkNode.type).toBe('a');
+    expect(linkNode.url).toBe('/link-target-existing');
+
+    const insertedLink = page
+      .locator('.slate-editor[data-slate-editor]')
+      .getByRole('link', { name: 'Link this' })
+      .first();
+    await insertedLink.click();
+    await expect(page.getByRole('button', { name: 'Edit link' })).toBeVisible();
+    await page.getByRole('button', { name: 'Edit link' }).click();
+    await expect(
+      page.getByPlaceholder('Paste link or search content').filter({
+        visible: true,
+      }),
+    ).toHaveValue('/link-target-existing');
   });
 });

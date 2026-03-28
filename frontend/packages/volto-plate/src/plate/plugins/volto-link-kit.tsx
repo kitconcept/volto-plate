@@ -38,14 +38,17 @@ import {
 import { searchContent } from '@plone/volto/actions/search/search';
 import ObjectBrowserBody from '@plone/volto/components/manage/Sidebar/ObjectBrowserBody';
 import SidebarPopup from '@plone/volto/components/manage/Sidebar/SidebarPopup';
-import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
-
-import { LinkElement } from '@plone/plate/components/ui/link-node';
+import {
+  flattenToAppURL,
+  getBaseUrl,
+  isInternalURL,
+} from '@plone/volto/helpers/Url/Url';
 
 import { buttonVariants } from '@plone/plate/components/ui/button';
 import { Separator } from '@plone/plate/components/ui/separator';
 
 import { LegacyLinkPlugin } from '@plone/plate/components/editor/plugins/legacy-link-plugin';
+import { VoltoLinkElement } from './volto-link-node';
 
 const popoverVariants = cva(
   'z-50 w-[380px] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-hidden',
@@ -88,6 +91,17 @@ const shouldSearchForInput = (value: string) => {
   if (isDirectLinkInput(trimmed)) return false;
 
   return true;
+};
+
+const normalizeLinkUrl = (value: string) => {
+  const trimmed = value.trim();
+
+  if (!trimmed) return trimmed;
+  if (isInternalURL(trimmed)) {
+    return flattenToAppURL(trimmed);
+  }
+
+  return trimmed;
 };
 
 type SearchItem = {
@@ -235,6 +249,15 @@ function VoltoLinkFloatingToolbar({
     }
   }, [selection]);
 
+  React.useEffect(() => {
+    if (!mode || !url) return;
+
+    const normalizedUrl = normalizeLinkUrl(url);
+    if (normalizedUrl !== url) {
+      setOption('url', normalizedUrl);
+    }
+  }, [mode, setOption, url]);
+
   const floatingOptions: UseVirtualFloatingOptions = React.useMemo(() => {
     return {
       middleware: [
@@ -320,8 +343,10 @@ function VoltoLinkFloatingToolbar({
 
   const applyLink = React.useCallback(
     (nextUrl: string, fallbackText?: string) => {
+      const normalizedUrl = normalizeLinkUrl(nextUrl);
+
       restoreSelection();
-      setOption('url', nextUrl);
+      setOption('url', normalizedUrl);
 
       const preservedText = text.trim() || pendingTextRef.current.trim();
       const selectionToRestore =
@@ -345,7 +370,7 @@ function VoltoLinkFloatingToolbar({
   );
 
   const handleSubmit = React.useCallback(() => {
-    const nextUrl = url.trim();
+    const nextUrl = normalizeLinkUrl(url);
     if (!nextUrl) return;
     if (!shouldSearchForInput(nextUrl)) {
       applyLink(nextUrl);
@@ -520,8 +545,11 @@ function VoltoLinkFloatingToolbar({
 export const VoltoLinkKit = [
   ...LegacyLinkPlugin,
   LinkPlugin.configure({
+    options: {
+      transformInput: normalizeLinkUrl,
+    },
     render: {
-      node: LinkElement,
+      node: VoltoLinkElement,
       afterEditable: () => <VoltoLinkFloatingToolbar />,
     },
   }),
