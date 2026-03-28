@@ -32,11 +32,14 @@
   ],
   "dependencies": {
     "@platejs/caption": "^49.0.0",
+    "@platejs/floating": "^49.0.0",
+    "@platejs/link": "^49.0.0",
     "@plone/plate": "workspace:*"
   },
   "peerDependencies": {
     "@plone/registry": "workspace:*",
     "@plone/types": "workspace:*",
+    "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "lodash": "^4.17.21",
     "react": "18.2.0",

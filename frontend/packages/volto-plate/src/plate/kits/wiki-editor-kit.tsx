@@ -20,7 +20,6 @@ import { ExitBreakKit } from '@plone/plate/components/editor/plugins/exit-break-
 import { FloatingToolbarKit } from '@plone/plate/components/editor/plugins/floating-toolbar-kit';
 import { FontKit } from '@plone/plate/components/editor/plugins/font-kit';
 import { LineHeightKit } from '@plone/plate/components/editor/plugins/line-height-kit';
-import { LinkKit } from '@plone/plate/components/editor/plugins/link-kit';
 import { ListKit } from '@plone/plate/components/editor/plugins/list-kit';
 import { MarkdownKit } from '@plone/plate/components/editor/plugins/markdown-kit';
 import { MediaKit } from '@plone/plate/components/editor/plugins/media-kit';
@@ -33,6 +32,7 @@ import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
 import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-hotkey';
 
+import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { slashMenu } from '../wiki/slash-menu';
 
 const WikiSlashKit = createSlashKit({
@@ -52,7 +52,7 @@ export const WikiEditorKit = [
   ...MediaKit,
   ...CalloutKit,
   ...ColumnKit,
-  ...LinkKit,
+  ...VoltoLinkKit,
   ...MentionKit,
 
   // Marks
