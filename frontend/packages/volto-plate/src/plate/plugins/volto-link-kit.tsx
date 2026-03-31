@@ -25,7 +25,6 @@ import {
   Link,
   LoaderCircle,
   Search,
-  Text,
   Unlink,
 } from 'lucide-react';
 import { KEYS, RangeApi } from 'platejs';
@@ -33,6 +32,7 @@ import {
   useEditorPlugin,
   useEditorRef,
   useEditorSelection,
+  useFormInputProps,
   usePluginOption,
 } from 'platejs/react';
 import { searchContent } from '@plone/volto/actions/search/search';
@@ -111,6 +111,14 @@ type SearchItem = {
   [key: string]: unknown;
 };
 
+const getInternalLinkTarget = (value?: string | null) => {
+  if (!value) return null;
+
+  const normalizedUrl = normalizeLinkUrl(value);
+
+  return normalizedUrl.startsWith('/') ? normalizedUrl : null;
+};
+
 function LinkOpenButton() {
   const editor = useEditorRef();
   useEditorSelection();
@@ -146,15 +154,17 @@ function VoltoLinkInput({
   onSubmit,
   onOpenBrowser,
   searching,
+  inputProps,
 }: {
   url: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
   onOpenBrowser: () => void;
   searching: boolean;
+  inputProps: ReturnType<typeof useFormInputProps>;
 }) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1" {...inputProps}>
       <div className="flex items-center pr-1 pl-2 text-muted-foreground">
         <Link className="size-4" />
       </div>
@@ -221,6 +231,9 @@ function VoltoLinkFloatingToolbar({
       '/',
   );
   const { setOption } = useEditorPlugin(LinkPlugin);
+  const inputProps = useFormInputProps({
+    preventDefaultOnEnterKeydown: true,
+  });
   const activeCommentId = usePluginOption({ key: KEYS.comment }, 'activeId');
   const activeSuggestionId = usePluginOption(
     { key: KEYS.suggestion },
@@ -229,7 +242,6 @@ function VoltoLinkFloatingToolbar({
   const mode = usePluginOption(LinkPlugin, 'mode');
   const isEditing = usePluginOption(LinkPlugin, 'isEditing');
   const url = usePluginOption(LinkPlugin, 'url') ?? '';
-  const text = usePluginOption(LinkPlugin, 'text') ?? '';
   const searchSubrequest = React.useMemo(
     () => `${editor.id}-volto-link-search`,
     [editor.id],
@@ -240,23 +252,19 @@ function VoltoLinkFloatingToolbar({
   const [isObjectBrowserOpen, setObjectBrowserOpen] = React.useState(false);
   const lastSelectionRef = React.useRef(selection);
   const pendingSelectionRef = React.useRef<any>(null);
-  const pendingTextRef = React.useRef('');
   const debouncedUrl = React.useDeferredValue(url);
+  const [objectBrowserHref, setObjectBrowserHref] = React.useState<
+    string | undefined
+  >(undefined);
+  const activeLinkEntry = editor.api.node<TLinkElement>({
+    match: { type: editor.getType(KEYS.link) },
+  });
 
   React.useEffect(() => {
     if (selection) {
       lastSelectionRef.current = selection;
     }
   }, [selection]);
-
-  React.useEffect(() => {
-    if (!mode || !url) return;
-
-    const normalizedUrl = normalizeLinkUrl(url);
-    if (normalizedUrl !== url) {
-      setOption('url', normalizedUrl);
-    }
-  }, [mode, setOption, url]);
 
   const floatingOptions: UseVirtualFloatingOptions = React.useMemo(() => {
     return {
@@ -333,13 +341,17 @@ function VoltoLinkFloatingToolbar({
 
   const openObjectBrowser = React.useCallback(() => {
     const currentSelection = editor.selection ?? lastSelectionRef.current;
+    const activeLinkUrl =
+      activeLinkEntry && typeof activeLinkEntry[0]?.url === 'string'
+        ? activeLinkEntry[0].url
+        : '';
+    const nextObjectBrowserHref =
+      getInternalLinkTarget(url) ?? getInternalLinkTarget(activeLinkUrl);
 
     pendingSelectionRef.current = currentSelection;
-    pendingTextRef.current =
-      text.trim() ||
-      (currentSelection ? editor.api.string(currentSelection) : '');
+    setObjectBrowserHref(nextObjectBrowserHref ?? undefined);
     setObjectBrowserOpen(true);
-  }, [editor, text]);
+  }, [activeLinkEntry, editor, url]);
 
   const applyLink = React.useCallback(
     (nextUrl: string, fallbackText?: string) => {
@@ -348,34 +360,27 @@ function VoltoLinkFloatingToolbar({
       restoreSelection();
       setOption('url', normalizedUrl);
 
-      const preservedText = text.trim() || pendingTextRef.current.trim();
       const selectionToRestore =
         pendingSelectionRef.current ?? lastSelectionRef.current;
+      const selectedText = selectionToRestore
+        ? editor.api.string(selectionToRestore).trim()
+        : '';
       const shouldUseFallbackText =
-        !preservedText &&
+        !selectedText &&
         selectionToRestore &&
         RangeApi.isCollapsed(selectionToRestore);
 
-      if (preservedText) {
-        setOption('text', preservedText);
+      if (selectedText) {
+        setOption('text', selectedText);
       } else if (shouldUseFallbackText && fallbackText) {
         setOption('text', fallbackText);
       }
 
       submitFloatingLink(editor);
       pendingSelectionRef.current = null;
-      pendingTextRef.current = '';
     },
-    [editor, restoreSelection, setOption, text],
+    [editor, restoreSelection, setOption],
   );
-
-  const handleSubmit = React.useCallback(() => {
-    const nextUrl = normalizeLinkUrl(url);
-    if (!nextUrl) return;
-    if (!shouldSearchForInput(nextUrl)) {
-      applyLink(nextUrl);
-    }
-  }, [applyLink, url]);
 
   const handleResultSelect = React.useCallback(
     (item: SearchItem) => {
@@ -385,11 +390,27 @@ function VoltoLinkFloatingToolbar({
     [applyLink],
   );
 
-  const results = shouldSearchForInput(url)
-    ? (searchResults?.items as SearchItem[] | undefined) ?? []
-    : [];
+  const results = React.useMemo(
+    () =>
+      shouldSearchForInput(url)
+        ? (searchResults?.items as SearchItem[] | undefined) ?? []
+        : [],
+    [searchResults?.items, url],
+  );
   const searching =
     shouldSearchForInput(url) && Boolean(searchResults?.loading);
+
+  const handleSubmit = React.useCallback(() => {
+    const nextUrl = normalizeLinkUrl(url);
+    if (!nextUrl) return;
+    if (shouldSearchForInput(nextUrl) && results.length > 0) {
+      handleResultSelect(results[0]);
+      return;
+    }
+    if (!shouldSearchForInput(nextUrl)) {
+      applyLink(nextUrl);
+    }
+  }, [applyLink, handleResultSelect, results, url]);
 
   const input = (
     <div
@@ -402,6 +423,7 @@ function VoltoLinkFloatingToolbar({
         onSubmit={handleSubmit}
         onOpenBrowser={openObjectBrowser}
         searching={searching}
+        inputProps={inputProps}
       />
 
       {shouldSearchForInput(url) ? (
@@ -416,7 +438,10 @@ function VoltoLinkFloatingToolbar({
                 <button
                   key={item['@id']}
                   type="button"
-                  className={resultButtonVariants()}
+                  className={`${resultButtonVariants()} ${
+                    item['@id'] === results[0]?.['@id'] ? 'bg-muted' : ''
+                  }`}
+                  data-selected={item['@id'] === results[0]?.['@id']}
                   onMouseDown={(event) => {
                     event.preventDefault();
                   }}
@@ -438,26 +463,6 @@ function VoltoLinkFloatingToolbar({
           </div>
         </>
       ) : null}
-
-      <Separator className="my-1" />
-      <div className="flex items-center">
-        <div className="flex items-center pr-1 pl-2 text-muted-foreground">
-          <Text className="size-4" />
-        </div>
-        <input
-          className={inputVariants()}
-          placeholder="Text to display"
-          data-plate-focus
-          value={text}
-          onChange={(event) => setOption('text', event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key !== 'Enter') return;
-
-            event.preventDefault();
-            handleSubmit();
-          }}
-        />
-      </div>
     </div>
   );
 
@@ -527,10 +532,10 @@ function VoltoLinkFloatingToolbar({
       >
         <ObjectBrowserBody
           block={`${editor.id}-link`}
-          data={{}}
+          data={objectBrowserHref ? { href: objectBrowserHref } : {}}
           mode="link"
           onChangeBlock={() => {}}
-          contextURL={getBaseUrl(pathname)}
+          contextURL={getBaseUrl(objectBrowserHref || pathname)}
           closeObjectBrowser={() => setObjectBrowserOpen(false)}
           onSelectItem={(selectedUrl: string, item: SearchItem) => {
             setObjectBrowserOpen(false);
