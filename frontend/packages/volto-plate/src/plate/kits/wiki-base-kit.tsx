@@ -18,19 +18,9 @@ import { BaseSuggestionKit } from '@plone/plate/components/editor/plugins/sugges
 import { BaseTableKit } from '@plone/plate/components/editor/plugins/table-base-kit';
 import { BaseTocKit } from '@plone/plate/components/editor/plugins/toc-base-kit';
 import { BaseToggleKit } from '@plone/plate/components/editor/plugins/toggle-base-kit';
-import { DEFAULT_BLOCK_WIDTH } from '@plone/plate/components/editor/plugins/block-width-plugin';
 
 import { overrideKitPlugin } from './override-kit-plugin';
 import { VoltoLinkElementStatic } from '../plugins/volto-link-node-static';
-
-const wikiBaseBasicBlocksKit = overrideKitPlugin(BaseBasicBlocksKit, KEYS.p, {
-  options: {
-    blockWidth: {
-      defaultWidth: DEFAULT_BLOCK_WIDTH,
-      widths: [DEFAULT_BLOCK_WIDTH],
-    },
-  },
-});
 
 const wikiBaseLinkKit = overrideKitPlugin(BaseLinkKit, KEYS.link, {
   node: {
@@ -39,7 +29,7 @@ const wikiBaseLinkKit = overrideKitPlugin(BaseLinkKit, KEYS.link, {
 });
 
 export const wikiBaseEditorKit = [
-  ...wikiBaseBasicBlocksKit,
+  ...BaseBasicBlocksKit,
   ...BaseCodeBlockKit,
   ...BaseTableKit,
   ...BaseToggleKit,

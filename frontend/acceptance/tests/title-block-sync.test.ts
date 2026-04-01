@@ -102,10 +102,12 @@ test('Empty plate title block shows the translated placeholder', async ({
 
   await editorTitle.fill('');
 
-  await expect(editorTitle).toHaveAttribute('placeholder', 'Type the title…');
+  await expect(
+    editorTitle.locator('.block-inner-container [aria-hidden="true"]').first(),
+  ).toHaveText('Type the title...');
 });
 
-test('Title placeholder is visually rendered through the h1 pseudo-element', async ({
+test('Title placeholder is rendered inside the width-constrained inner container', async ({
   page,
 }) => {
   await openTitleSyncPage(page, {
@@ -117,25 +119,45 @@ test('Title placeholder is visually rendered through the h1 pseudo-element', asy
 
   await editorTitle.fill('');
 
-  await expect(editorTitle).toHaveAttribute('placeholder', 'Type the title…');
-
   const placeholderStyles = await editorTitle.evaluate((element) => {
-    const before = window.getComputedStyle(element, '::before');
+    const innerContainer = element.querySelector('.block-inner-container');
+    const placeholder = innerContainer?.querySelector(
+      '[aria-hidden="true"]',
+    ) as HTMLElement | null;
+    const contentWrapper = innerContainer?.lastElementChild as HTMLElement | null;
 
     return {
       className: element.className,
-      placeholder: element.getAttribute('placeholder'),
-      beforeContent: before.content,
-      beforeDisplay: before.display,
-      beforePosition: before.position,
+      innerContainerClassName: innerContainer?.className,
+      innerContainerPosition: innerContainer
+        ? window.getComputedStyle(innerContainer).position
+        : null,
+      placeholderText: placeholder?.textContent,
+      placeholderPosition: placeholder
+        ? window.getComputedStyle(placeholder).position
+        : null,
+      placeholderZIndex: placeholder
+        ? window.getComputedStyle(placeholder).zIndex
+        : null,
+      contentWrapperTag: contentWrapper?.tagName,
+      contentWrapperPosition: contentWrapper
+        ? window.getComputedStyle(contentWrapper).position
+        : null,
+      contentWrapperZIndex: contentWrapper
+        ? window.getComputedStyle(contentWrapper).zIndex
+        : null,
     };
   });
 
   expect(placeholderStyles).toEqual({
-    className: expect.stringContaining('slate-title'),
-    placeholder: 'Type the title…',
-    beforeContent: '"Type the title…"',
-    beforeDisplay: 'block',
-    beforePosition: 'absolute',
+    className: expect.stringContaining('documentFirstHeading'),
+    innerContainerClassName: expect.stringContaining('block-inner-container'),
+    innerContainerPosition: 'relative',
+    placeholderText: 'Type the title...',
+    placeholderPosition: 'absolute',
+    placeholderZIndex: '0',
+    contentWrapperTag: 'SPAN',
+    contentWrapperPosition: 'relative',
+    contentWrapperZIndex: '10',
   });
 });

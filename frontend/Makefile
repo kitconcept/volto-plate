@@ -60,8 +60,11 @@ core/packages/registry/dist: $(shell find core/packages/registry/src -type f)
 core/packages/components/dist: $(shell find core/packages/components/src -type f)
 	pnpm --filter @plone/components build
 
+seven/packages/helpers/dist: $(shell find seven/packages/helpers/src -type f)
+	pnpm --filter @plone/helpers build
+
 .PHONY: build-deps
-build-deps: core/packages/registry/dist core/packages/components/dist ## Build dependencies
+build-deps: core/packages/registry/dist core/packages/components/dist seven/packages/helpers/dist ## Build dependencies
 
 .PHONY: i18n
 i18n: ## Sync i18n

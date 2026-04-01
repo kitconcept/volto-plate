@@ -49,6 +49,7 @@ describe('volto title block plugin', () => {
   it('exposes the expected title block type key', () => {
     expect(TITLE_BLOCK_TYPE).toBe('title');
     expect(BaseVoltoTitleBlockPlugin.key).toBe(TITLE_BLOCK_TYPE);
+    expect(BaseVoltoTitleBlockPlugin.options.blockWidth).toBeUndefined();
   });
 
   describe('sync direction', () => {
@@ -108,9 +109,11 @@ describe('volto title block plugin', () => {
         } as any,
       } as any);
 
-      const children = Array.isArray(element.props.children)
-        ? element.props.children
-        : [element.props.children];
+      expect(element.props.children.type.name).toBe('BlockInnerContainer');
+
+      const children = Array.isArray(element.props.children.props.children)
+        ? element.props.children.props.children
+        : [element.props.children.props.children];
       const placeholder = children.find(
         (child: any) => child?.props?.['aria-hidden'] === 'true',
       );
@@ -128,9 +131,9 @@ describe('volto title block plugin', () => {
         } as any,
       } as any);
 
-      const children = Array.isArray(element.props.children)
-        ? element.props.children
-        : [element.props.children];
+      const children = Array.isArray(element.props.children.props.children)
+        ? element.props.children.props.children
+        : [element.props.children.props.children];
       const placeholder = children.find(
         (child: any) => child?.props?.['aria-hidden'] === 'true',
       );

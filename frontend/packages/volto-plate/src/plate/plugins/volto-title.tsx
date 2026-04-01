@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { BlockInnerContainer } from '@plone/plate/components/ui/block-inner-container';
 import { setFormData } from '@plone/volto/actions/form/form';
 import { createSlatePlugin, ElementApi, PathApi } from 'platejs';
 import {
@@ -18,7 +19,6 @@ type TitleData = {
   [key: string]: unknown;
 };
 
-const DEFAULT_BLOCK_WIDTH = 'var(--default-container-width)';
 const TITLE_PLACEHOLDER = 'Type the title...';
 
 const isTitleNode = (node: unknown) =>
@@ -145,19 +145,21 @@ export function VoltoTitleBlockElement(props: PlateElementProps) {
       as="h1"
       className="documentFirstHeading font-heading relative mt-[1.6em] pb-1 text-4xl font-bold"
     >
-      {showPlaceholder ? (
-        <span
-          aria-hidden="true"
-          contentEditable={false}
-          className={`
-            pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-muted-foreground/80
-            select-none
-          `}
-        >
-          {TITLE_PLACEHOLDER}
-        </span>
-      ) : null}
-      {props.children}
+      <BlockInnerContainer className="relative">
+        {showPlaceholder ? (
+          <span
+            aria-hidden="true"
+            contentEditable={false}
+            className={`
+              pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 text-muted-foreground/80
+              select-none
+            `}
+          >
+            {TITLE_PLACEHOLDER}
+          </span>
+        ) : null}
+        <span className="relative z-10">{props.children}</span>
+      </BlockInnerContainer>
     </PlateElement>
   );
 }
@@ -198,12 +200,6 @@ export const BaseVoltoTitleBlockPlugin = createSlatePlugin({
     component: VoltoTitleBlockElement,
     isElement: true,
     type: TITLE_BLOCK_TYPE,
-  },
-  options: {
-    blockWidth: {
-      defaultWidth: DEFAULT_BLOCK_WIDTH,
-      widths: [DEFAULT_BLOCK_WIDTH],
-    },
   },
   extendEditor: ({ editor }) => {
     const insertBreak = editor.tf.insertBreak;
