@@ -49,6 +49,13 @@ jobs:
       node-version: ${{ inputs.node-version }}
       working-directory: ${{ inputs.working-directory }}
 
+  acceptance:
+    name: "Frontend: Acceptance tests"
+    uses: ./.github/workflows/frontend-acceptance.yml
+    with:
+      node-version: ${{ inputs.node-version }}
+      working-directory: ${{ inputs.working-directory }}
+
   storybook:
     name: "Storybook"
     uses: plone/meta/.github/workflows/frontend-storybook.yml@2.x
@@ -68,6 +75,7 @@ jobs:
       - code-analysis
       - i18n
       - unit
+      - acceptance
       - storybook
     permissions:
       contents: read
@@ -92,6 +100,7 @@ jobs:
       - code-analysis
       - i18n
       - unit
+      - acceptance
       - storybook
       - release
     steps:
@@ -103,5 +112,6 @@ jobs:
           echo '| code-analysis | ${{ needs.code-analysis.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| i18n | ${{ needs.i18n.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| unit | ${{ needs.unit.result }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| acceptance | ${{ needs.acceptance.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| storybook | ${{ needs.storybook.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| release | ${{ needs.release.result }} |' >> $GITHUB_STEP_SUMMARY
