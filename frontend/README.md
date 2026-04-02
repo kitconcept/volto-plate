@@ -28,30 +28,21 @@ It provides "on-the-fly" conversion between Slate.js and Plate.js data models, a
 The conversion is only one-way: from Slate.js to Plate.js when loading data into the editor. Once in Plate.js, the data remains in Plate.js format.
 In the future, we may considering adding a backend package providing scripts for batch converting back and forth between the two formats if needed.
 
-Plate.js uses the concept of "blocks" that collide with the Volto ones. From now on, we will refer to Volto blocks as "Volto blocks" and Plate.js blocks as "Plate blocks" to avoid confusion.
+Plate.js uses the concept of "blocks" that collide with the Volto ones. From now on, we will refer to Volto blocks as "Plone blocks" and Plate.js blocks as "Plate blocks" to avoid confusion.
 
 From the user perspective, it provides:
--   A total replacement of slate (text) default block using Plate.js (by default) using block model 3.
--   A new `Plate` block type, which uses Plate.js as the rich text editor.
+-   A new editor based on Plone 7's `@plone/plate` library, the wiki-editor.
+-   It can be used in any Plone content type, via a `config.settings.PlateEditorContentTypes` registry setting.
+-   If set, it replaces the default Volto block editor engine with the wiki-editor.
 -   Basic features using the inline floating toolbar, extending the default Volto one with experimental additions.
--   Slash commands to insert both Plate blocks and Volto blocks.
--   Split block in here slash command.
--   Add new block slash command.
+-   Slash commands to insert Plate blocks.
 -   Ability to insert a Volto image block as a Plate image block (inline).
--   Ability to insert existing "normal" Volto blocks via the (+) button inside the Plate block.
-
-## Behavior notes
-
-It keeps in place the default Volto rich text block (slate-based) assumptions, so you can have multiple plate.js-based blocks in the same page.
-However, pressing `ENTER` won't create a new block, instead, it will create a new paragraph inside the same block, as is standard behavior in rich text editors.
-You can create new blocks using the block chooser as usual, and using the `/` slash command inside the `plate.js`-based block.
 
 ## Developer features
 
 From the developer perspective, it provides:
 -   A Volto block adapter to reuse existing Volto blocks inside Plate-based editors (e.g. rich text).
 -   A Plate plugin to reuse the Volto Image block inside Plate-based editors.
--   A Plate-based Text block implementation for Volto, replacing the default Slate-based one.
 
 ## Compatibility
 

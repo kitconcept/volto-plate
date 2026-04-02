@@ -17,5 +17,4 @@ function applyConfig(config: ConfigType) {
   return config;
 }
 
-export { asDefault } from './config/blocks';
 export default applyConfig;
