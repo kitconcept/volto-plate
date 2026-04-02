@@ -132,11 +132,11 @@ acceptance-frontend-prod-start: ## Start acceptance frontend in production mode
 
 .PHONY: acceptance-backend-start
 acceptance-backend-start: ## Start backend acceptance server
-	docker run -it --rm -p 55001:55001 $(DOCKER_IMAGE_ACCEPTANCE)
+	$(MAKE) -C "../backend/" acceptance-backend-start
 
 .PHONY: ci-acceptance-backend-start
 ci-acceptance-backend-start: ## Start backend acceptance server in headless mode for CI
-	docker run -i --rm -p 55001:55001 $(DOCKER_IMAGE_ACCEPTANCE)
+	$(MAKE) -C "../backend/" acceptance-backend-start
 
 .PHONY: acceptance-test
 acceptance-test: ## Start Cypress in interactive mode
