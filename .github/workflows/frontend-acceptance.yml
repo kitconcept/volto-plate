@@ -47,9 +47,9 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      - run: make ci-acceptance-backend-start
+      # - run: make ci-acceptance-backend-start
 
-      # - run: make acceptance-frontend-prod-start &
+      - run: make acceptance-frontend-prod-start
 
       - uses: JarvusInnovations/background-action@v1
         name: Start Servers

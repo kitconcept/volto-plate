@@ -33,13 +33,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-  docs:
-    uses: ./.github/workflows/docs.yml
-    needs:
-        - config
-    with:
-      python-version: ${{ needs.config.outputs.python-version }}
-    if: ${{ needs.config.outputs.docs == 'true' }}
 
   frontend:
     uses: ./.github/workflows/frontend.yml
@@ -64,7 +57,6 @@ jobs:
       - config
       - backend
       - frontend
-      - docs
     steps:
       - name: Write report
         run: |
@@ -74,4 +66,3 @@ jobs:
           echo '| config | ${{ needs.config.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| backend | ${{ needs.backend.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| frontend | ${{ needs.frontend.result }} |' >> $GITHUB_STEP_SUMMARY
-          echo '| docs | ${{ needs.docs.result }} |' >> $GITHUB_STEP_SUMMARY
