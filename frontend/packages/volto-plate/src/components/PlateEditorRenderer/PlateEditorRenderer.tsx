@@ -5,8 +5,7 @@ import {
   type Value,
 } from '@plone/plate/components/editor';
 import wikiEditorRenderer from '../../plate/presets/wiki-renderer';
-
-const SOMERSAULT_KEY = '__somersault__';
+import { SOMERSAULT_KEY } from '../../constants';
 
 type PlateEditorRendererProps = {
   content: Content;

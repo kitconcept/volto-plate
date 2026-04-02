@@ -7,8 +7,7 @@ import {
   TITLE_BLOCK_TYPE,
   TitleMetadataContext,
 } from '../../plate/plugins/volto-title';
-
-const SOMERSAULT_KEY = '__somersault__';
+import { SOMERSAULT_KEY } from '../../constants';
 
 const getDefaultSomersaultValue = (title = ''): Value => [
   {

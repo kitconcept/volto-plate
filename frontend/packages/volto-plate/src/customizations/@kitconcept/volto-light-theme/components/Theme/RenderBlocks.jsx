@@ -17,6 +17,7 @@ import ErrorBoundary from '@kitconcept/volto-light-theme/components/Blocks/Block
 
 import StyleWrapperV3 from '@kitconcept/volto-light-theme/components/Theme/StyleWrapperV3';
 import RenderBlocksV2 from '@kitconcept/volto-light-theme/components/Theme/RenderBlocksV2';
+import { SOMERSAULT_KEY } from '../../../../../constants';
 
 const messages = defineMessages({
   unknownBlock: {
@@ -29,7 +30,6 @@ const messages = defineMessages({
   },
 });
 
-const SOMERSAULT_KEY = '__somersault__';
 const PlateEditorRenderer = loadable(
   () =>
     import(
