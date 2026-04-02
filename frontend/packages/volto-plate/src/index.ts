@@ -5,10 +5,6 @@ import './theme/tailwind.css';
 
 export { useStablePlateValue } from './hooks/use-stable-plate-value';
 export {
-  VoltoImageElement,
-  VoltoImagePlugin,
-} from './plate/plugins/volto-media-kit';
-export {
   VoltoImageBlockElement,
   VoltoImageBlockPlugin,
 } from './plate/plugins/volto-image-block';

@@ -25,7 +25,7 @@ import config from '@plone/volto/registry';
 
 import { createVoltoBlockAdapter } from '@kitconcept/volto-plate/plate/plugins/volto-block-adapter';
 
-type VoltoImageElement = {
+type VoltoImageBlockData = {
   url?: string;
   alt?: string;
   image_field?: string;
@@ -40,7 +40,7 @@ type VoltoImageElement = {
 
 const DEFAULTS = { '@type': 'image', align: 'center', size: 'l' } as const;
 
-const toBlockData = (element: VoltoImageElement) => ({
+const toBlockData = (element: VoltoImageBlockData) => ({
   ...DEFAULTS,
   ...element,
   '@type': 'image',
