@@ -3,7 +3,7 @@ import * as React from 'react';
 import type { PlateEditor } from 'platejs/react';
 
 import config from '@plone/registry';
-import Icon from '@plone/plate/legacy/Icon';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
 import {
   getBlocksApi,
   splitEditorAtCursor,
