@@ -37,22 +37,19 @@ jobs:
         name: Setup pnpm cache
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles(format('{0}/pnpm-lock.yaml', inputs.working-directory)) }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-
-      - name: Cache Cypress Binary
-        id: cache-cypress-binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Cypress
-          key: binary-${{ inputs.node-version }}-${{ hashFiles(format('{0}/pnpm-lock.yaml', inputs.working-directory)) }}
 
       - name: Install dependencies
         run: make install
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
+
+      - run: make ci-acceptance-backend-start &
+
+      - run: make acceptance-frontend-prod-start &
 
       - uses: JarvusInnovations/background-action@v1
         name: Start Servers
