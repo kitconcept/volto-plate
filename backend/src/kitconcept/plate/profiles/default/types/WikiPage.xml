@@ -17,11 +17,11 @@
   <property name="link_target" />
 
   <property name="allowed_content_types" />
-  <property name="filter_content_types">True</property>
+  <property name="filter_content_types">False</property>
   <property name="global_allow">True</property>
 
   <property name="add_permission">cmf.AddPortalContent</property>
-  <property name="klass">plone.dexterity.content.Item</property>
+  <property name="klass">plone.dexterity.content.Container</property>
   <property name="schema">kitconcept.plate.content.wiki_page.IWikiPage</property>
   <property name="model_file" />
   <property name="model_source" />
