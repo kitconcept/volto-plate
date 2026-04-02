@@ -47,10 +47,6 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      # - run: make ci-acceptance-backend-start
-
-      - run: make acceptance-frontend-prod-start
-
       - uses: JarvusInnovations/background-action@v1
         name: Start Servers
         with:
@@ -61,10 +57,10 @@ jobs:
             http-get://localhost:55001/plone
             http://localhost:3000
           tail: true
-          log-output-resume: stderr
           wait-for: 10m
           log-output: stderr,stdout
           log-output-if: failure
+          # log-output-resume: stderr
 
       - name: Run acceptance tests
         run: pnpm exec playwright test --reporter=list,html
