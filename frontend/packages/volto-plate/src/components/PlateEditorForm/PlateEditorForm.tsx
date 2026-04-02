@@ -65,10 +65,11 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
   }, [content, onChangeFormData]);
 
   if (!stableInitialValueRef.current) {
-    stableInitialValueRef.current =
-      (((somersaultBlock as any)?.value as Value | undefined) ?? []).length > 0
-        ? ((somersaultBlock as any).value as Value)
-        : getDefaultSomersaultValue(metadataTitle);
+    const somersaultValue = somersaultBlock?.value;
+
+    stableInitialValueRef.current = somersaultValue?.length
+      ? somersaultValue
+      : getDefaultSomersaultValue(metadataTitle);
   }
 
   return (
