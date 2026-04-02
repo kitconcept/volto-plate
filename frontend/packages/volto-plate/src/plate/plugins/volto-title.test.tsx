@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import {
+  TITLE_BLOCK_TYPE,
+  BaseVoltoTitleBlockPlugin,
+  VoltoTitleBlockElement,
+  getTitleSyncAction,
+} from './volto-title';
+
 vi.mock('react-redux', () => ({
   useDispatch: () => vi.fn(),
   useSelector: () => ({}),
@@ -10,9 +17,8 @@ vi.mock('@plone/volto/actions/form/form', () => ({
 }));
 
 vi.mock('platejs/react', async () => {
-  const actual = await vi.importActual<typeof import('platejs/react')>(
-    'platejs/react',
-  );
+  const actual =
+    await vi.importActual<typeof import('platejs/react')>('platejs/react');
 
   return {
     ...actual,
@@ -37,13 +43,6 @@ vi.mock('platejs/react', async () => {
     useEditorSelector: () => null,
   };
 });
-
-import {
-  TITLE_BLOCK_TYPE,
-  BaseVoltoTitleBlockPlugin,
-  VoltoTitleBlockElement,
-  getTitleSyncAction,
-} from './volto-title';
 
 describe('volto title block plugin', () => {
   it('exposes the expected title block type key', () => {

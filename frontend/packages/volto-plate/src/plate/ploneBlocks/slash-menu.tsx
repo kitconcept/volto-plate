@@ -64,9 +64,9 @@ const buildVoltoBlocksGroup = (
       typeof block.title === 'string'
         ? block.title
         : typeof block.title?.id === 'string'
-          ? (translate?.(block.title.id) ??
+          ? translate?.(block.title.id) ??
             block.title.defaultMessage ??
-            block.title.id)
+            block.title.id
           : String(block.title);
     const icon = block.icon ? (
       <Icon name={block.icon} size="16px" />
@@ -102,7 +102,9 @@ export const slashMenu: SlashMenuConfig = {
           return {
             ...group,
             group: 'Basic blocks',
-            items: group.items.filter((item) => item.value !== TITLE_BLOCK_TYPE),
+            items: group.items.filter(
+              (item) => item.value !== TITLE_BLOCK_TYPE,
+            ),
           };
         }
 
