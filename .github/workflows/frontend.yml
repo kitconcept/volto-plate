@@ -56,17 +56,17 @@ jobs:
       node-version: ${{ inputs.node-version }}
       working-directory: ${{ inputs.working-directory }}
 
-  storybook:
-    name: "Storybook"
-    uses: plone/meta/.github/workflows/frontend-storybook.yml@2.x
-    needs:
-      - code-analysis
-      - unit
-      - i18n
-    with:
-      node-version: ${{ inputs.node-version }}
-      working-directory: ${{ inputs.working-directory }}
-      deploy: ${{ inputs.storybook-deploy }}
+  # storybook:
+  #   name: "Storybook"
+  #   uses: plone/meta/.github/workflows/frontend-storybook.yml@2.x
+  #   needs:
+  #     - code-analysis
+  #     - unit
+  #     - i18n
+  #   with:
+  #     node-version: ${{ inputs.node-version }}
+  #     working-directory: ${{ inputs.working-directory }}
+  #     deploy: ${{ inputs.storybook-deploy }}
 
   release:
     name: "Frontend: Build and publish container image"
@@ -76,7 +76,7 @@ jobs:
       - i18n
       - unit
       - acceptance
-      - storybook
+      # - storybook
     permissions:
       contents: read
       packages: write
@@ -101,7 +101,7 @@ jobs:
       - i18n
       - unit
       - acceptance
-      - storybook
+      # - storybook
       - release
     steps:
       - name: Write report
@@ -113,5 +113,5 @@ jobs:
           echo '| i18n | ${{ needs.i18n.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| unit | ${{ needs.unit.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| acceptance | ${{ needs.acceptance.result }} |' >> $GITHUB_STEP_SUMMARY
-          echo '| storybook | ${{ needs.storybook.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| release | ${{ needs.release.result }} |' >> $GITHUB_STEP_SUMMARY
+# echo '| storybook | ${{ needs.storybook.result }} |' >> $GITHUB_STEP_SUMMARY
