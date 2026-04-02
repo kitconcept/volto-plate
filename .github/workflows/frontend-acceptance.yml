@@ -59,7 +59,7 @@ jobs:
           tail: true
           wait-for: 10m
           log-output: stderr,stdout
-          log-output-if: failure
+          working-directory: ${{ inputs.working-directory }}
           # log-output-resume: stderr
 
       - name: Run acceptance tests
