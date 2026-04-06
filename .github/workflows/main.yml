@@ -72,6 +72,7 @@ jobs:
       - config
       - backend
       - frontend
+      - acceptance
     steps:
       - name: Write report
         run: |
@@ -81,3 +82,4 @@ jobs:
           echo '| config | ${{ needs.config.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| backend | ${{ needs.backend.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| frontend | ${{ needs.frontend.result }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| acceptance | ${{ needs.acceptance.result }} |' >> $GITHUB_STEP_SUMMARY
