@@ -1,4 +1,4 @@
-name: Frontend Acceptance CI
+name: Acceptance CI
 
 on:
   workflow_call:

@@ -51,7 +51,6 @@ jobs:
       packages: write
 
   acceptance:
-    name: "Frontend: Acceptance tests"
     uses: ./.github/workflows/acceptance.yml
     needs:
         - config
