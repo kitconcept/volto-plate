@@ -50,6 +50,20 @@ jobs:
       contents: read
       packages: write
 
+  acceptance:
+    name: "Frontend: Acceptance tests"
+    uses: ./.github/workflows/acceptance.yml
+    needs:
+        - config
+    with:
+        node-version: ${{ needs.config.outputs.node-version }}
+        python-version: ${{ needs.config.outputs.python-version }}
+        plone-version: ${{ needs.config.outputs.plone-version }}
+    if: ${{ needs.config.outputs.frontend == 'true' }}
+    permissions:
+      contents: read
+      packages: write
+
   report:
     name: "Final report"
     if: ${{ always() }}

@@ -10,6 +10,16 @@ on:
         required: false
         type: string
         default: frontend
+      backend-working-directory:
+        required: false
+        type: string
+        default: backend
+      python-version:
+        required: true
+        type: string
+      plone-version:
+        required: true
+        type: string
 
 jobs:
   acceptance:
@@ -19,6 +29,13 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: plone/meta/.github/actions/setup_backend_uv@2.x
+        with:
+          python-version: ${{ inputs.python-version }}
+          plone-version: ${{ inputs.plone-version }}
+          working-directory: ${{ inputs.backend-working-directory }}
 
       - name: Use Node.js ${{ inputs.node-version }}
         uses: actions/setup-node@v4
