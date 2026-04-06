@@ -194,6 +194,11 @@ acceptance-frontend-dev-start:
 	@echo "Start acceptance frontend"
 	$(MAKE) -C "./frontend/" acceptance-frontend-dev-start
 
+.PHONY: acceptance-frontend-prod-start
+acceptance-frontend-prod-start:
+	@echo "Start acceptance frontend (prod)"
+	$(MAKE) -C "./frontend/" acceptance-frontend-prod-start
+
 .PHONY: acceptance-test
 acceptance-test:
 	@echo "Start acceptance tests in interactive mode"
