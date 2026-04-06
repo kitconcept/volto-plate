@@ -12,6 +12,7 @@ on:
       - "docker-compose*"
       - "docs/**"
       - .readthedocs.yaml
+      - "Makefile"
 
   workflow_dispatch:
 
