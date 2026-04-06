@@ -57,60 +57,26 @@ From the developer perspective, it provides:
 
 This package is only compatible with Volto 19 and later versions.
 
-## Installation
-
-To install your project, you must choose the method appropriate to your version of Volto.
-
-
-### Volto 18 and later
-
-Add `@kitconcept/volto-plate` to your `package.json`:
-
-```json
-"dependencies": {
-    "@kitconcept/volto-plate": "*"
-}
-```
-
-Add `@kitconcept/volto-plate` to your `volto.config.js`:
-
-```javascript
-const addons = ['@kitconcept/volto-plate'];
-```
-
-If this package provides a Volto theme, and you want to activate it, then add the following to your `volto.config.js`:
-
-```javascript
-const theme = '@kitconcept/volto-plate';
-```
-
-## Test installation
-
-Visit http://localhost:3000/ in a browser, login, and check the awesome new features.
-
-
-## Development
-
-The development of this add-on is done in isolation using a new approach using pnpm workspaces and latest `mrs-developer` and other Volto core improvements.
-For this reason, it only works with pnpm and Volto 18 (currently in alpha).
-
+## Quick Start 🏁
 
 ### Prerequisites ✅
 
 -   An [operating system](https://6.docs.plone.org/install/create-project-cookieplone.html#prerequisites-for-installation) that runs all the requirements mentioned.
+-   [uv](https://6.docs.plone.org/install/create-project-cookieplone.html#uv)
 -   [nvm](https://6.docs.plone.org/install/create-project-cookieplone.html#nvm)
--   [Node.js and pnpm](https://6.docs.plone.org/install/create-project.html#node-js) 22
+-   [Node.js and pnpm](https://6.docs.plone.org/install/create-project.html#node-js) 24
 -   [Make](https://6.docs.plone.org/install/create-project-cookieplone.html#make)
 -   [Git](https://6.docs.plone.org/install/create-project-cookieplone.html#git)
 -   [Docker](https://docs.docker.com/get-started/get-docker/) (optional)
+
 
 ### Installation 🔧
 
 1.  Clone this repository, then change your working directory.
 
     ```shell
-    git clone git@github.com:collective/volto-plate.git
-    cd volto-plate
+    git clone git@github.com:kitconcept/collective-addon.git
+    cd collective-addon
     ```
 
 2.  Install this code base.
@@ -120,116 +86,114 @@ For this reason, it only works with pnpm and Volto 18 (currently in alpha).
     ```
 
 
-### Make convenience commands
+### Fire Up the Servers 🔥
 
-Run `make help` to list the available commands.
+1.  Create a new Plone site on your first run.
 
-```text
-help                             Show this help
-install                          Installs the add-on in a development environment
-start                            Starts Volto, allowing reloading of the add-on during development
-build                            Build a production bundle for distribution of the project with the add-on
-i18n                             Sync i18n
-ci-i18n                          Check if i18n is not synced
-format                           Format codebase
-lint                             Lint, or catch and remove problems, in code base
-release                          Release the add-on on npmjs.org
-release-dry-run                  Dry-run the release of the add-on on npmjs.org
-test                             Run unit tests
-ci-test                          Run unit tests in CI
-backend-docker-start             Starts a Docker-based backend for development
-storybook-start                  Start Storybook server on port 6006
-storybook-build                  Build Storybook
-acceptance-frontend-dev-start    Start acceptance frontend in development mode
-acceptance-frontend-prod-start   Start acceptance frontend in production mode
-acceptance-backend-start         Start backend acceptance server
-ci-acceptance-backend-start      Start backend acceptance server in headless mode for CI
-acceptance-test                  Start acceptance tests in interactive mode
-ci-acceptance-test               Run acceptance tests in headless mode for CI
-```
+    ```shell
+    make backend-create-site
+    ```
 
-### Development environment set up
+2.  Start the backend at http://localhost:8080/.
 
-Install package requirements.
+    ```shell
+    make backend-start
+    ```
 
-```shell
-make install
-```
+3.  In a new shell session, start the frontend at http://localhost:3000/.
 
-### Start developing
+    ```shell
+    make frontend-start
+    ```
 
-Start the backend.
+Voila! Your Plone site should be live and kicking! 🎉
+
+### Local Stack Deployment 📦
+
+Deploy a local Docker Compose environment that includes the following.
+
+- Docker images for Backend and Frontend 🖼️
+- A stack with a Traefik router and a PostgreSQL database 🗃️
+- Accessible at [http://collective-addon.localhost](http://collective-addon.localhost) 🌐
+
+Run the following commands in a shell session.
 
 ```shell
-make backend-docker-start
+make stack-create-site
+make stack-start
 ```
 
-In a separate terminal session, start the frontend.
+And... you're all set! Your Plone site is up and running locally! 🚀
+
+## Project structure 🏗️
+
+This monorepo consists of the following distinct sections:
+
+- **backend**: Houses the API and Plone installation, utilizing pip instead of buildout, and includes a policy package named kitconcept.plate.
+- **frontend**: Contains the React (Volto) package.
+- **devops**: Encompasses Docker stack, Ansible playbooks, and cache settings.
+- **docs**: Scaffold for writing documentation for your project.
+
+### Why this structure? 🤔
+
+- All necessary codebases to run the site are contained within the repository (excluding existing add-ons for Plone and React).
+- Specific GitHub Workflows are triggered based on changes in each codebase (refer to .github/workflows).
+- Simplifies the creation of Docker images for each codebase.
+- Demonstrates Plone installation/setup without buildout.
+
+## Code quality assurance 🧐
+
+To check your code against quality standards, run the following shell command.
 
 ```shell
-make start
+make check
 ```
 
-### Lint code
+### Format the codebase
 
-Run ESlint, Prettier, and Stylelint in analyze mode.
-
-```shell
-make lint
-```
-
-### Format code
-
-Run ESlint, Prettier, and Stylelint in fix mode.
+To format and rewrite the code base, ensuring it adheres to quality standards, run the following shell command.
 
 ```shell
 make format
 ```
 
-### i18n
+| Section | Tool | Description | Configuration |
+| --- | --- | --- | --- |
+| backend | Ruff | Python code formatting, imports sorting  | [`backend/pyproject.toml`](./backend/pyproject.toml) |
+| backend | `zpretty` | XML and ZCML formatting  | -- |
+| frontend | ESLint | Fixes most common frontend issues | [`frontend/.eslintrc.js`](.frontend/.eslintrc.js) |
+| frontend | prettier | Format JS and Typescript code  | [`frontend/.prettierrc`](.frontend/.prettierrc) |
+| frontend | Stylelint | Format Styles (css, less, sass)  | [`frontend/.stylelintrc`](.frontend/.stylelintrc) |
 
-Extract the i18n messages to locales.
+Formatters can also be run within the `backend` or `frontend` folders.
+
+### Linting the codebase
+or `lint`:
+
+ ```shell
+make lint
+```
+
+| Section | Tool | Description | Configuration |
+| --- | --- | --- | --- |
+| backend | Ruff | Checks code formatting, imports sorting  | [`backend/pyproject.toml`](./backend/pyproject.toml) |
+| backend | Pyroma | Checks Python package metadata  | -- |
+| backend | check-python-versions | Checks Python version information  | -- |
+| backend | `zpretty` | Checks XML and ZCML formatting  | -- |
+| frontend | ESLint | Checks JS / Typescript lint | [`frontend/.eslintrc.js`](.frontend/.eslintrc.js) |
+| frontend | prettier | Check JS / Typescript formatting  | [`frontend/.prettierrc`](.frontend/.prettierrc) |
+| frontend | Stylelint | Check Styles (css, less, sass) formatting  | [`frontend/.stylelintrc`](.frontend/.stylelintrc) |
+
+Linters can be run individually within the `backend` or `frontend` folders.
+
+## Internationalization 🌐
+
+Generate translation files for Plone and Volto with ease:
 
 ```shell
 make i18n
 ```
 
-### Unit tests
-
-Run unit tests.
-
-```shell
-make test
-```
-
-### Run Acceptance tests
-
-This project uses Playwright for acceptance testing.
-
-Run each of these steps in separate terminal sessions.
-
-In the first session, start the frontend in development mode.
-
-```shell
-make acceptance-frontend-dev-start
-```
-
-In the second session, start the backend acceptance server.
-
-```shell
-make acceptance-backend-start
-```
-
-In the third session, start the acceptance tests in interactive mode.
-
-```shell
-make acceptance-test
-```
-
-## License
-
-The project is licensed under the MIT license.
-
 ## Credits and acknowledgements 🙏
 
-Generated using [Cookieplone (0.9.8)](https://github.com/plone/cookieplone) and [cookieplone-templates (1d2012a)](https://github.com/plone/cookieplone-templates/commit/1d2012a950e4374f91c3f93e9531fde44b330ab3) on 2025-09-23 09:45:10.835983. A special thanks to all contributors and supporters!
+Generated using [Cookieplone (0.9.10)](https://github.com/plone/cookieplone) and [cookieplone-templates (2c54630)](https://github.com/plone/cookieplone-templates/commit/2c5463046f43a87e36d11a7edc2b4176b2d593aa) on 2026-02-13 10:21:42.975825. A special thanks to all contributors and supporters!

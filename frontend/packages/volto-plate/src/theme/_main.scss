@@ -1,0 +1,23 @@
+// Remove if going full BMv3
+.category-inline {
+  .block-inner-container {
+    @include narrow-container-width();
+    @include adjustMarginsToContainer($narrow-container-width);
+  }
+}
+
+.slate-editor {
+  h1.documentFirstHeading {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.block-inner-container {
+  // in here, the display can't be grid.
+  // TODO: review if we can get along with non-grid display everywhere.
+  display: block;
+  width: 100%;
+  max-width: var(--block-width);
+  margin-inline: auto;
+}
