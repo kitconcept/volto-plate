@@ -60,7 +60,7 @@ jobs:
           wait-for: 10m
           log-output: stderr,stdout
           log-output-resume: stderr
-          # working-directory: ${{ inputs.working-directory }}
+          working-directory: ${{ github.workspace }}
 
       - name: Run acceptance tests
         run: pnpm exec playwright test --reporter=list,html
