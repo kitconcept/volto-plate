@@ -64,10 +64,6 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: test
-        run: make ci-acceptance-backend-start &
-        working-directory: ${{ github.workspace }}
-
       - uses: JarvusInnovations/background-action@v1
         name: Start Servers
         with:
