@@ -87,6 +87,8 @@ jobs:
           echo "hostname=${{ vars.HOSTNAME }}" >> "$GITHUB_OUTPUT"
           echo "hash=${{ needs.config.outputs.base-tag }}" >> "$GITHUB_OUTPUT"
           echo "image-prefix=${{ needs.config.outputs.image-name-prefix }}" >> "$GITHUB_OUTPUT"
+          echo "image-backend=${{ vars.IMAGE_BACKEND }}" >> "$GITHUB_OUTPUT"
+          echo "image-frontend=${{ vars.IMAGE_FRONTEND }}" >> "$GITHUB_OUTPUT"
           echo "image-tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
 
       - name: Deploy to cluster
@@ -115,7 +117,7 @@ jobs:
             IMAGE_FRONTEND=${{ vars.IMAGE_FRONTEND }}
             IMAGE_TAG=${{ github.ref_name }}
             BASIC_AUTH_USER=${{ vars.BASIC_AUTH_USER }}
-            BASIC_AUTH_PASSWORD_HASH=${{ vars.BASIC_AUTH_PASSWORD }}
+            BASIC_AUTH_PASSWORD_HASH=${{ vars.BASIC_AUTH_PASSWORD_HASH }}
             FRONTEND_MIDDLEWARES=${{ vars.FRONTEND_MIDDLEWARES }}
             GIT_HASH=${{ needs.config.outputs.base-tag }}
 
