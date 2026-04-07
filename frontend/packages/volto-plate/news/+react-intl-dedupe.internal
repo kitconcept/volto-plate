@@ -1,0 +1,1 @@
+Pin `react`, `react-dom`, and `@types/react*` to 18.x in the catalog appended at Docker build time, so `react-intl` resolves to a single virtual instance and the `IntlProvider` context is shared across the bundle. @ericof
