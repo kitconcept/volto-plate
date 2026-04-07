@@ -10,8 +10,7 @@
 An add-on that adds a [Plate.js](https://www.platejs.org/) support in Volto.
 
 [![npm](https://img.shields.io/npm/v/@kitconcept/volto-plate)](https://www.npmjs.com/package/@kitconcept/volto-plate)
-[![Code analysis checks](https://github.com/kitconcept/volto-plate/actions/workflows/code.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/code.yml)
-[![Unit tests](https://github.com/kitconcept/volto-plate/actions/workflows/unit.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/unit.yml)
+[![CI](https://github.com/kitconcept/volto-plate/actions/workflows/main.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/main.yml)
 [![Acceptance tests](https://github.com/kitconcept/volto-plate/actions/workflows/acceptance.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/acceptance.yml)
 </div>
 

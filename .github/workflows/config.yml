@@ -15,6 +15,10 @@ on:
         required: false
         type: string
         default: "3.13"
+      environment:
+        required: false
+        type: string
+        default: "plate.kitconcept.dev"
     outputs:
       acceptance:
         description: "Flag reporting if we should run the acceptance jobs"
@@ -37,6 +41,12 @@ on:
       image-name-prefix:
         description: "Image name prefix for container images"
         value: ${{ inputs.image-name-prefix }}
+      environment:
+        description: "Environment to be used for the deployment"
+        value: ${{ inputs.environment }}
+      deploy-manual:
+        description: "Flag reporting if we should allow running the manual deployment jobs"
+        value: ${{ jobs.config.outputs.deploy-manual }}
       node-version:
         description: "Node version to be used"
         value: ${{ inputs.node-version }}
@@ -62,18 +72,28 @@ jobs:
       base-tag: ${{ steps.vars.outputs.base-tag }}
       plone-version: ${{ steps.vars.outputs.plone-version }}
       volto-version: ${{ steps.vars.outputs.volto-version }}
+      deploy-manual: ${{ steps.vars.outputs.deploy-manual }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
+
+      - name: Setup uv
+        uses: plone/meta/.github/actions/setup_uv@2.x
+        with:
+          python-version: ${{ inputs.python-version }}
+          working-directory: '.'
 
       - name: Compute several vars needed for the CI
         id: vars
         shell: bash
         run: |
-          echo "base-tag=sha-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "plone-version=$(cat backend/version.txt)" >> $GITHUB_OUTPUT
-          python3 -c 'import json; data = json.load(open("./frontend/mrs.developer.json")); print("volto-version=" + (data["core"].get("tag") or "latest"))' >> $GITHUB_OUTPUT
+          REPOSITORY_SETTINGS="$(uvx repoplone settings dump)"
+          echo "image-name-prefix=$(jq -r '.container_images_prefix' <<< "$REPOSITORY_SETTINGS")" >> "$GITHUB_OUTPUT"
+          echo "plone-version=$(jq -r '.backend.base_package_version' <<< "$REPOSITORY_SETTINGS")" >> "$GITHUB_OUTPUT"
+          echo "volto-version=$(jq -r '.frontend.volto_version' <<< "$REPOSITORY_SETTINGS")" >> "$GITHUB_OUTPUT"
+          echo "base-tag=sha-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "deploy-manual=${{ startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags') }}" >> "$GITHUB_OUTPUT"
 
       - uses: dorny/paths-filter@v4.0.1
         id: filter
@@ -98,12 +118,21 @@ jobs:
 
       - name: Test vars
         run: |
-          echo "base-tag: ${{ steps.vars.outputs.base-tag }}"
-          echo 'plone-version: ${{ steps.vars.outputs.plone-version }}'
-          echo 'volto-version: ${{ steps.vars.outputs.volto-version }}'
-          echo 'event-name: ${{ github.event_name }}'
-          echo 'Paths - acceptance: ${{ steps.filter.outputs.acceptance }}'
-          echo 'Paths - backend: ${{ steps.filter.outputs.backend }}'
-          echo 'Paths - devops: ${{ steps.filter.outputs.devops }}'
-          echo 'Paths - docs: ${{ steps.filter.outputs.docs }}'
-          echo 'Paths - frontend: ${{ steps.filter.outputs.frontend }}'
+          echo '# Config Settings' >> $GITHUB_STEP_SUMMARY
+          echo '| Variable | Value |' >> $GITHUB_STEP_SUMMARY
+          echo '| --- | --- |' >> $GITHUB_STEP_SUMMARY
+          echo "| environment | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| github.ref-name | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| github.ref | ${{ github.ref }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| base-tag | ${{ steps.vars.outputs.base-tag }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| plone-version | ${{ steps.vars.outputs.plone-version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| volto-version | ${{ steps.vars.outputs.volto-version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| website-version | ${{ steps.vars.outputs.website-version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| event-name | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| devops | ${{ steps.filter.outputs.devops }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| deploy-manual | ${{ steps.vars.outputs.deploy-manual }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - acceptance | ${{ steps.filter.outputs.acceptance }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - backend | ${{ steps.filter.outputs.backend }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - devops | ${{ steps.filter.outputs.devops }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - docs | ${{ steps.filter.outputs.docs }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - frontend | ${{ steps.filter.outputs.frontend }} |" >> $GITHUB_STEP_SUMMARY

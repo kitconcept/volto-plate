@@ -76,6 +76,27 @@ jobs:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
+  release-demo:
+    name: "Backend: Build and publish Container Image for Demo"
+    uses: plone/meta/.github/workflows/container-image-build-push.yml@2.x
+    needs:
+      - release
+    permissions:
+      contents: read
+      packages: write
+    with:
+      base-tag: ${{ inputs.base-tag }}
+      image-name-prefix: ${{ inputs.image-name-prefix }}
+      image-name-suffix: demo
+      working-directory: ${{ inputs.working-directory }}
+      dockerfile: Dockerfile.demo
+      build-args: |
+        BASE_TAG=${{ inputs.base-tag }}
+      push: ${{ github.event_name != 'pull_request' }}
+    secrets:
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+
   report:
     name: "Final report"
     if: ${{ always() }}
@@ -85,6 +106,7 @@ jobs:
       - test
       - coverage
       - release
+      - release-demo
     steps:
       - name: Write report
         run: |
@@ -95,3 +117,4 @@ jobs:
           echo '| test | ${{ needs.test.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| coverage | ${{ needs.coverage.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| release | ${{ needs.release.result }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| release-demo | ${{ needs.release-demo.result }} |' >> $GITHUB_STEP_SUMMARY

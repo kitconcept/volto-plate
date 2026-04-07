@@ -26,7 +26,9 @@ endif
 REPOSITORY_SETTINGS := $(shell uvx repoplone settings dump)
 IMAGE_NAME_PREFIX := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.container_images_prefix')
 IMAGE_TAG=latest
-IMAGE_NAME=$(IMAGE_NAME_PREFIX)-backend:$(IMAGE_TAG)
+IMAGE_NAME_BACKEND=$(IMAGE_NAME_PREFIX)-backend
+IMAGE_NAME=$(IMAGE_NAME_BACKEND):$(IMAGE_TAG)
+IMAGE_NAME_DEMO=$(IMAGE_NAME_PREFIX)-demo:$(IMAGE_TAG)
 
 PLONE_SITE_ID=Plone
 BACKEND_FOLDER=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
@@ -58,6 +60,7 @@ debug-settings:  ## Debug settings
 	@echo "PACKAGE_NAME: $(PACKAGE_NAME)"
 	@echo "EXAMPLE_CONTENT_FOLDER: $(EXAMPLE_CONTENT_FOLDER)"
 	@echo "IMAGE_NAME: $(IMAGE_NAME)"
+	@echo "IMAGE_NAME_DEMO: $(IMAGE_NAME_DEMO)"
 
 
 requirements-mxdev.txt: pyproject.toml mx.ini ## Generate constraints file
@@ -153,6 +156,7 @@ test-coverage: $(VENV_FOLDER) ## run tests with coverage
 .PHONY: build-image
 build-image:  ## Build Docker Images
 	@docker build . -t $(IMAGE_NAME) -f Dockerfile --build-arg PLONE_VERSION=$(PLONE_VERSION)
+	@docker build . -t $(IMAGE_NAME_DEMO) -f Dockerfile.demo --build-arg BASE_IMAGE=$(IMAGE_NAME_BACKEND) --build-arg BASE_TAG=$(IMAGE_TAG)
 
 # Acceptance tests
 .PHONY: acceptance-backend-start
