@@ -13,14 +13,16 @@ settings = "towncrier.toml"
 [backend.package]
 name = "kitconcept.plate"
 path = "backend"
+code_path = "src/kitconcept/plate"
 changelog = "backend/CHANGELOG.md"
 towncrier_settings = "backend/pyproject.toml"
 base_package = "Products.CMFPlone"
 publish = true
 
 [frontend.package]
-name = "volto-plate"
+name = "@kitconcept/volto-plate"
 path = "frontend/packages/volto-plate"
+code_path = "src"
 changelog = "frontend/packages/volto-plate/CHANGELOG.md"
 towncrier_settings = "frontend/packages/volto-plate/towncrier.toml"
 base_package = "@plone/volto"
