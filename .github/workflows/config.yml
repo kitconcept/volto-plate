@@ -125,9 +125,9 @@ jobs:
           echo "| github.ref-name | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| github.ref | ${{ github.ref }} |" >> $GITHUB_STEP_SUMMARY
           echo "| base-tag | ${{ steps.vars.outputs.base-tag }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| image-name-prefix | ${{ steps.vars.outputs.image-name-prefix }} |" >> $GITHUB_STEP_SUMMARY
           echo "| plone-version | ${{ steps.vars.outputs.plone-version }} |" >> $GITHUB_STEP_SUMMARY
           echo "| volto-version | ${{ steps.vars.outputs.volto-version }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| website-version | ${{ steps.vars.outputs.website-version }} |" >> $GITHUB_STEP_SUMMARY
           echo "| event-name | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| devops | ${{ steps.filter.outputs.devops }} |" >> $GITHUB_STEP_SUMMARY
           echo "| deploy-manual | ${{ steps.vars.outputs.deploy-manual }} |" >> $GITHUB_STEP_SUMMARY

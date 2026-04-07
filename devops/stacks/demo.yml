@@ -4,7 +4,7 @@ version: '3.9'
 services:
 
   frontend:
-    image: ${IMAGE_FRONTEND}:${IMAGE_FRONTEND_TAG:-${IMAGE_TAG:-latest}}
+    image: ${IMAGE_FRONTEND}:${IMAGE_TAG:-latest}
     environment:
       RAZZLE_INTERNAL_API_PATH: http://${STACK_NAME}_backend:8080/Plone
     networks:
@@ -38,7 +38,7 @@ services:
         - traefik.http.routers.rt-${STACK_PREFIX}-frontend.middlewares=${FRONTEND_MIDDLEWARES:-gzip}
 
   backend:
-    image: ${IMAGE_BACKEND}:${IMAGE_BACKEND_TAG:-${IMAGE_TAG:-latest}}
+    image: ${IMAGE_BACKEND}:${IMAGE_TAG:-latest}
     environment:
       # Signoz / OpenTelemetry settings
       OTEL_EXPORTER_OTLP_ENDPOINT: http://signoz_otel-agent:4318
