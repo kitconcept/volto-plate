@@ -2,22 +2,34 @@
 const fs = require('fs');
 const path = require('path');
 
-const catalogPath = path.resolve(__dirname, './seven/catalog.json');
+function loadCatalog(relativePath) {
+  const catalogPath = path.resolve(__dirname, relativePath);
 
-let catalog = {};
-if (fs.existsSync(catalogPath)) {
+  if (!fs.existsSync(catalogPath)) {
+    console.error('Catalog file does not exist at:', catalogPath);
+    return {};
+  }
+
   const catalogData = fs.readFileSync(catalogPath, 'utf-8');
-  catalog = JSON.parse(catalogData);
-} else {
-  console.error('Catalog file does not exist at:', catalogPath);
+  return JSON.parse(catalogData);
 }
+
+const coreCatalog = loadCatalog('./core/catalog.json');
+const sevenCatalog = loadCatalog('./seven/catalog.json');
+const mergedCatalog = {
+  ...coreCatalog,
+  ...sevenCatalog,
+};
 
 module.exports = {
   hooks: {
     updateConfig(config) {
-      if (config.catalogs) {
-        config.catalogs.default ??= catalog;
-      }
+      config.catalogs ??= {};
+      config.catalogs.default = {
+        ...(config.catalogs.default ?? {}),
+        ...mergedCatalog,
+      };
+
       return config;
     },
   },
