@@ -19,7 +19,7 @@ jobs:
       repository: ${{ steps.filter.outputs.repository }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: dorny/paths-filter@v3.0.2
         id: filter
@@ -43,7 +43,7 @@ jobs:
     needs:
       - config
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           # Fetch all history
           fetch-depth: '0'
@@ -69,7 +69,7 @@ jobs:
       run:
         working-directory: ./frontend
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           # Fetch all history
           fetch-depth: '0'
@@ -117,7 +117,7 @@ jobs:
     needs:
       - config
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           # Fetch all history
           fetch-depth: '0'
