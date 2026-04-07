@@ -61,6 +61,29 @@ jobs:
   #     working-directory: ${{ inputs.working-directory }}
   #     deploy: ${{ inputs.storybook-deploy }}
 
+  release:
+    name: "Frontend: Build and publish container image"
+    uses: plone/meta/.github/workflows/container-image-build-push.yml@2.x
+    needs:
+      - code-analysis
+      - i18n
+      - unit
+      # - storybook
+    permissions:
+      contents: read
+      packages: write
+    with:
+      base-tag: ${{ inputs.base-tag }}
+      image-name-prefix: ${{ inputs.image-name-prefix }}
+      image-name-suffix: ${{ inputs.image-name-suffix }}
+      working-directory: ${{ inputs.working-directory }}
+      build-args: |
+        VOLTO_VERSION=${{ inputs.volto-version }}
+      push: ${{ github.event_name != 'pull_request' }}
+    secrets:
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+
   report:
     name: "Final report"
     if: ${{ always() }}
@@ -70,6 +93,7 @@ jobs:
       - i18n
       - unit
       # - storybook
+      - release
     steps:
       - name: Write report
         run: |
@@ -79,4 +103,4 @@ jobs:
           echo '| code-analysis | ${{ needs.code-analysis.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| i18n | ${{ needs.i18n.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| unit | ${{ needs.unit.result }} |' >> $GITHUB_STEP_SUMMARY
-# echo '| storybook | ${{ needs.storybook.result }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| release | ${{ needs.release.result }} |' >> $GITHUB_STEP_SUMMARY

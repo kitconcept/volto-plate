@@ -74,8 +74,8 @@ This package is only compatible with Volto 19 and later versions.
 1.  Clone this repository, then change your working directory.
 
     ```shell
-    git clone git@github.com:kitconcept/collective-addon.git
-    cd collective-addon
+    git clone git@github.com:kitconcept/volto-plate.git
+    cd volto-plate
     ```
 
 2.  Install this code base.
@@ -113,7 +113,7 @@ Deploy a local Docker Compose environment that includes the following.
 
 - Docker images for Backend and Frontend 🖼️
 - A stack with a Traefik router and a PostgreSQL database 🗃️
-- Accessible at [http://collective-addon.localhost](http://collective-addon.localhost) 🌐
+- Accessible at [http://volto-plate.localhost](http://volto-plate.localhost) 🌐
 
 Run the following commands in a shell session.
 
