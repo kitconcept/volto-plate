@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1
+ARG BASE_IMAGE=ghcr.io/kitconcept/volto-plate-backend
+ARG BASE_TAG=latest
+FROM ${BASE_IMAGE}:${BASE_TAG} AS base
+
+LABEL maintainer="kitconcept, GmbH <info@kitconcept.com>" \
+      org.label-schema.name="volto-plate-demo" \
+      org.label-schema.description="volto-plate backend image." \
+      org.label-schema.vendor="kitconcept, GmbH"
+
+RUN <<EOT
+    set -e
+    ln -s /data /app/var
+    # Create a new site with content
+    cat ${SEED} > /app/__created__.txt
+    SEED=${SEED} ./docker-entrypoint.sh create-site
+EOT
