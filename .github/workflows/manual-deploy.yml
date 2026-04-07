@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           echo "environment=${{ needs.config.outputs.environment}}" >> "$GITHUB_OUTPUT"
-          echo "hostname=${{ vars.HOSTNAME }}" >> "$GITHUB_OUTPUT"
+          echo "hostname=${{ vars.DEPLOY_HOSTNAME }}" >> "$GITHUB_OUTPUT"
           echo "hash=${{ needs.config.outputs.base-tag }}" >> "$GITHUB_OUTPUT"
           echo "image-prefix=${{ needs.config.outputs.image-name-prefix }}" >> "$GITHUB_OUTPUT"
           echo "image-tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
@@ -57,7 +57,7 @@ jobs:
             STACK_ENV=${{ vars.STACK_ENV }}
             STACK_FRONT_REPLICAS=2
             STACK_BACK_REPLICAS=2
-            DEPLOY_HOSTNAME=${{ vars.HOSTNAME }}
+            DEPLOY_HOSTNAME=${{ vars.DEPLOY_HOSTNAME }}
             CERTRESOLVER=${{ vars.CERTRESOLVER }}
             IMAGE_BACKEND=${{ vars.IMAGE_BACKEND }}
             IMAGE_FRONTEND=${{ vars.IMAGE_FRONTEND }}
