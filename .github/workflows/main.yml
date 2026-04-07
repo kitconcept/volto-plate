@@ -109,8 +109,8 @@ jobs:
             STACK_NAME=${{ vars.STACK_NAME }}
             STACK_PREFIX=${{ vars.STACK_PREFIX }}
             STACK_ENV=${{ vars.STACK_ENV }}
-            STACK_FRONT_REPLICAS=2
-            STACK_BACK_REPLICAS=2
+            STACK_FRONT_REPLICAS=1
+            STACK_BACK_REPLICAS=1
             DEPLOY_HOSTNAME=${{ vars.HOSTNAME }}
             CERTRESOLVER=${{ vars.CERTRESOLVER }}
             IMAGE_BACKEND=${{ vars.IMAGE_BACKEND }}
