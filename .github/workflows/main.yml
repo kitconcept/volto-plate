@@ -111,16 +111,12 @@ jobs:
             STACK_BACK_REPLICAS=2
             DEPLOY_HOSTNAME=${{ vars.HOSTNAME }}
             CERTRESOLVER=${{ vars.CERTRESOLVER }}
-            IMAGE_PREFIX=${{ needs.config.outputs.image-name-prefix }}
+            IMAGE_BACKEND=${{ vars.IMAGE_BACKEND }}
+            IMAGE_FRONTEND=${{ vars.IMAGE_FRONTEND }}
             IMAGE_TAG=${{ github.ref_name }}
             BASIC_AUTH_USER=${{ vars.BASIC_AUTH_USER }}
             BASIC_AUTH_PASSWORD_HASH=${{ vars.BASIC_AUTH_PASSWORD }}
             FRONTEND_MIDDLEWARES=${{ vars.FRONTEND_MIDDLEWARES }}
-            DB_NAME=${{ vars.DB_NAME }}
-            DB_USER=${{ vars.DB_USER }}
-            DB_HOST=${{ vars.DB_HOST }}
-            DB_PASSWORD=${{ vars.DB_PASSWORD }}
-            DB_PORT=${{ vars.DB_PORT }}
             GIT_HASH=${{ needs.config.outputs.base-tag }}
 
   report:
