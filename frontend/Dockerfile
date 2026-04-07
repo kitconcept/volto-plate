@@ -16,6 +16,7 @@ RUN --mount=type=cache,id=pnpm,target=/app/.pnpm-store,uid=1000 <<EOT
     pnpm dlx mrs-developer missdev --no-config --fetch-https
     python3 -c "import json; catalog = json.load(open('seven/catalog.json')); open('pnpm-workspace.yaml', 'a').write('\ncatalog: ' + json.dumps(catalog) + '\n')"
     pnpm install && pnpm build:deps
+    pnpm --filter @plone/helpers build
     pnpm build
     # This is necessary because the build is trying to recreate the node_modules folder
     # by telling it to CI=1 it will just recreate them
