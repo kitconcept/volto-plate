@@ -118,15 +118,21 @@ jobs:
 
       - name: Test vars
         run: |
+          echo '# Config Settings' >> $GITHUB_STEP_SUMMARY
+          echo '| Variable | Value |' >> $GITHUB_STEP_SUMMARY
+          echo '| --- | --- |' >> $GITHUB_STEP_SUMMARY
           echo "| environment | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
           echo "| github.ref-name | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| github.ref | ${{ github.ref }} |" >> $GITHUB_STEP_SUMMARY
-          echo "base-tag: ${{ steps.vars.outputs.base-tag }}"
-          echo 'plone-version: ${{ steps.vars.outputs.plone-version }}'
-          echo 'volto-version: ${{ steps.vars.outputs.volto-version }}'
-          echo 'event-name: ${{ github.event_name }}'
-          echo 'Paths - acceptance: ${{ steps.filter.outputs.acceptance }}'
-          echo 'Paths - backend: ${{ steps.filter.outputs.backend }}'
-          echo 'Paths - devops: ${{ steps.filter.outputs.devops }}'
-          echo 'Paths - docs: ${{ steps.filter.outputs.docs }}'
-          echo 'Paths - frontend: ${{ steps.filter.outputs.frontend }}'
+          echo "| base-tag | ${{ steps.vars.outputs.base-tag }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| plone-version | ${{ steps.vars.outputs.plone-version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| volto-version | ${{ steps.vars.outputs.volto-version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| website-version | ${{ steps.vars.outputs.website-version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| event-name | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| devops | ${{ steps.filter.outputs.devops }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| deploy-manual | ${{ steps.vars.outputs.deploy-manual }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - acceptance | ${{ steps.filter.outputs.acceptance }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - backend | ${{ steps.filter.outputs.backend }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - devops | ${{ steps.filter.outputs.devops }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - docs | ${{ steps.filter.outputs.docs }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths - frontend | ${{ steps.filter.outputs.frontend }} |" >> $GITHUB_STEP_SUMMARY
