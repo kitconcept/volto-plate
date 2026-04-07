@@ -78,6 +78,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup uv
+        uses: plone/meta/.github/actions/setup_uv@2.x
+        with:
+          python-version: ${{ inputs.python-version }}
+          working-directory: '.'
+
       - name: Compute several vars needed for the CI
         id: vars
         shell: bash
