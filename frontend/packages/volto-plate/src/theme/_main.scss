@@ -21,3 +21,10 @@
   max-width: var(--block-width);
   margin-inline: auto;
 }
+
+.slate-a,
+.slate-a:hover {
+  color: var(--link-foreground-color, --theme-foreground-color);
+  text-decoration: underline;
+  text-underline-offset: initial;
+}
