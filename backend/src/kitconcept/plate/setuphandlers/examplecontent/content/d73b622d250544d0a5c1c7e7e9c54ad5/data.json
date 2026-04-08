@@ -265,7 +265,7 @@
     "admin"
   ],
   "description": "Welcome to my wiki page",
-  "effective": null,
+  "effective": "2026-04-08T00:31:15+00:00",
   "exclude_from_nav": false,
   "expires": null,
   "exportimport.constrains": {},
@@ -278,8 +278,8 @@
     "locked": false,
     "stealable": true
   },
-  "modified": "2026-04-07T17:04:07+00:00",
-  "review_state": "private",
+  "modified": "2026-04-08T00:31:15+00:00",
+  "review_state": "published",
   "rights": "",
   "subjects": [],
   "title": "Wiki Page",
@@ -294,6 +294,13 @@
         "comments": "",
         "review_state": "private",
         "time": "2026-04-07T17:04:07+00:00"
+      },
+      {
+        "action": "publish",
+        "actor": "admin",
+        "comments": "",
+        "review_state": "published",
+        "time": "2026-04-08T00:31:15+00:00"
       }
     ]
   },
