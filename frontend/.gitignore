@@ -11,6 +11,7 @@ node_modules
 results
 yarn.lock
 /public
+/playwright-report
 
 /seven
 !/seven/packages/plate

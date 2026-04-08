@@ -44,7 +44,10 @@ test('Metadata title updates the plate title block', async ({ page }) => {
     contentTitle: 'Original title',
   });
 
-  const metadataTitleInput = page.getByRole('textbox', { name: 'Title' });
+  const metadataTitleInput = page.getByRole('textbox', {
+    name: 'Title',
+    exact: true,
+  });
   const editorTitle = page.locator('[data-slate-editor] h1').first();
 
   await expect(editorTitle).toHaveText('Original title');
@@ -79,7 +82,10 @@ test('Plate title block updates the metadata title', async ({ page }) => {
     contentTitle: 'Original title',
   });
 
-  const metadataTitleInput = page.getByRole('textbox', { name: 'Title' });
+  const metadataTitleInput = page.getByRole('textbox', {
+    name: 'Title',
+    exact: true,
+  });
   const editorTitle = page.locator('[data-slate-editor] h1').first();
 
   await expect(editorTitle).toHaveText('Original title');
@@ -124,7 +130,8 @@ test('Title placeholder is rendered inside the width-constrained inner container
     const placeholder = innerContainer?.querySelector(
       '[aria-hidden="true"]',
     ) as HTMLElement | null;
-    const contentWrapper = innerContainer?.lastElementChild as HTMLElement | null;
+    const contentWrapper =
+      innerContainer?.lastElementChild as HTMLElement | null;
 
     return {
       className: element.className,
