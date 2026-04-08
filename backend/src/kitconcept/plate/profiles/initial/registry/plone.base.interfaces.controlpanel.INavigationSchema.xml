@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<registry>
+  <records interface="plone.base.interfaces.controlpanel.INavigationSchema"
+           prefix="plone"
+  >
+    <value key="displayed_types">
+      <element>Event</element>
+      <element>Folder</element>
+      <element>Link</element>
+      <element>Document</element>
+      <element>WikiPage</element>
+    </value>
+  </records>
+</registry>
