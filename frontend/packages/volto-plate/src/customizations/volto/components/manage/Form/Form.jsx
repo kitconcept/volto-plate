@@ -766,6 +766,7 @@ class Form extends Component {
       metadataFieldsets,
       component,
       buttonComponent,
+      isEditForm,
     } = this.props;
     const formData = this.state.formData;
     const schema = this.removeBlocksLayoutFields(originalSchema);
@@ -787,9 +788,12 @@ class Form extends Component {
 
           <Container>
             <>
-              {config.settings.PlateEditorContentTypes?.includes(
-                this.props.content?.['@type'],
-              ) || config.settings.PlateEditorContentTypes?.includes(type) ? (
+              {(!isEditForm &&
+                config.settings.PlateEditorContentTypes?.includes(type)) ||
+              (isEditForm &&
+                config.settings.PlateEditorContentTypes?.includes(
+                  this.props.content?.['@type'],
+                )) ? (
                 <PlateEditorForm
                   content={formData}
                   intl={this.props.intl}
