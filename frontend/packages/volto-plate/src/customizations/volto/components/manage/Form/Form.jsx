@@ -9,7 +9,7 @@ import { Field, BlocksForm } from '@plone/volto/components/manage/Form';
 import BlocksToolbar from '@plone/volto/components/manage/Form/BlocksToolbar';
 import UndoToolbar from '@plone/volto/components/manage/Form/UndoToolbar';
 import { difference } from '@plone/volto/helpers/Utils/Utils';
-import withSaveAsDraft from '@plone/volto/helpers/Utils/withSaveAsDraft';
+// import withSaveAsDraft from '@plone/volto/helpers/Utils/withSaveAsDraft';
 import FormValidation from '@plone/volto/helpers/FormValidation/FormValidation';
 import {
   getBlocksFieldname,
@@ -292,12 +292,12 @@ class Form extends Component {
     let errors = {};
     let activeIndex = 0;
 
-    if (!prevProps.schema && this.props.schema) {
-      this.props.checkSavedDraft(
-        this.state.formData,
-        this.updateFormDataWithSaved,
-      );
-    }
+    // if (!prevProps.schema && this.props.schema) {
+    //   this.props.checkSavedDraft(
+    //     this.state.formData,
+    //     this.updateFormDataWithSaved,
+    //   );
+    // }
     if (!this.props.isFormSelected && prevProps.isFormSelected) {
       this.props.setUIState({
         selected: null,
@@ -324,9 +324,9 @@ class Form extends Component {
       }
     }
     // on each formData update it will save the form to the localStorage
-    if (!isEqual(prevState?.formData, this.state.formData)) {
-      this.props.onSaveDraft(this.state.formData);
-    }
+    // if (!isEqual(prevState?.formData, this.state.formData)) {
+    //   this.props.onSaveDraft(this.state.formData);
+    // }
     if (
       this.props.global &&
       !isEqual(this.props.globalData, prevProps.globalData)
@@ -419,13 +419,13 @@ class Form extends Component {
    */
   componentDidMount() {
     this.setState({ isClient: true });
-    if (this.props.schema) {
-      this.props.checkSavedDraft(
-        this.state.formData,
-        this.updateFormDataWithSaved,
-      );
-      return;
-    }
+    // if (this.props.schema) {
+    //   this.props.checkSavedDraft(
+    //     this.state.formData,
+    //     this.updateFormDataWithSaved,
+    //   );
+    //   return;
+    // }
   }
 
   /**
@@ -684,7 +684,7 @@ class Form extends Component {
           this.props.setFormData(this.props.formData);
         }
       }
-      this.props.onCancelDraft();
+      // this.props.onCancelDraft();
     }
   }
 
@@ -1194,5 +1194,5 @@ export default compose(
     null,
     { forwardRef: true },
   ),
-  withSaveAsDraft({ forwardRef: true }),
+  // withSaveAsDraft({ forwardRef: true }),
 )(FormIntl);
