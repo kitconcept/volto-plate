@@ -3,7 +3,6 @@ import installSettings from './config/settings';
 import installBlocks from './config/blocks';
 import './theme/tailwind.css';
 
-export { useStablePlateValue } from './hooks/use-stable-plate-value';
 export {
   VoltoImageBlockElement,
   VoltoImageBlockPlugin,
