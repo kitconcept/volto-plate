@@ -1,6 +1,5 @@
-from plone import api
-
 from kitconcept.plate.content.wiki_page import IWikiPage
+from plone import api
 
 
 class TestWikiPage:

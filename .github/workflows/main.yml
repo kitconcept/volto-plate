@@ -63,6 +63,64 @@ jobs:
       contents: read
       packages: write
 
+
+  # Deploy to dev environment if we are on main and no previous dependency steps
+  deploy:
+    name: "Deploy to ${{ needs.config.outputs.environment}}"
+    if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && !contains(needs.*.result, 'failure') }}
+    needs:
+      - config
+      - backend
+      - frontend
+      - acceptance
+    runs-on: ubuntu-latest
+    environment: ${{ needs.config.outputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Annotate deployment
+        id: vars
+        shell: bash
+        run: |
+          echo "environment=${{ needs.config.outputs.environment}}" >> "$GITHUB_OUTPUT"
+          echo "hostname=${{ vars.DEPLOY_HOSTNAME }}" >> "$GITHUB_OUTPUT"
+          echo "hash=${{ needs.config.outputs.base-tag }}" >> "$GITHUB_OUTPUT"
+          echo "image-prefix=${{ needs.config.outputs.image-name-prefix }}" >> "$GITHUB_OUTPUT"
+          echo "image-backend=${{ vars.IMAGE_BACKEND }}" >> "$GITHUB_OUTPUT"
+          echo "image-frontend=${{ vars.IMAGE_FRONTEND }}" >> "$GITHUB_OUTPUT"
+          echo "image-tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to cluster
+        uses: kitconcept/docker-stack-deploy@v1.4.0
+        with:
+          registry: "ghcr.io"
+          username: ${{ github.actor }}
+          password: ${{ secrets.DEPLOY_GHCR_READ_TOKEN }}
+          remote_host: ${{ secrets.DEPLOY_HOST }}
+          remote_port: ${{ secrets.DEPLOY_PORT }}
+          remote_user: ${{ secrets.DEPLOY_USER }}
+          remote_private_key: ${{ secrets.DEPLOY_SSH }}
+          stack_file: devops/stacks/demo.yml
+          stack_name: ${{ vars.STACK_NAME }}
+          stack_param: ${{ github.ref_name }}
+          deploy_timeout: 480
+          env_file: |
+            STACK_NAME=${{ vars.STACK_NAME }}
+            STACK_PREFIX=${{ vars.STACK_PREFIX }}
+            STACK_ENV=${{ vars.STACK_ENV }}
+            STACK_FRONT_REPLICAS=1
+            STACK_BACK_REPLICAS=1
+            DEPLOY_HOSTNAME=${{ vars.DEPLOY_HOSTNAME }}
+            CERTRESOLVER=${{ vars.CERTRESOLVER }}
+            IMAGE_BACKEND=${{ vars.IMAGE_BACKEND }}
+            IMAGE_FRONTEND=${{ vars.IMAGE_FRONTEND }}
+            IMAGE_TAG=${{ github.ref_name }}
+            BASIC_AUTH_USER=${{ vars.BASIC_AUTH_USER }}
+            BASIC_AUTH_PASSWORD_HASH=${{ vars.BASIC_AUTH_PASSWORD_HASH }}
+            FRONTEND_MIDDLEWARES=${{ vars.FRONTEND_MIDDLEWARES }}
+            GIT_HASH=${{ needs.config.outputs.base-tag }}
+
   report:
     name: "Final report"
     if: ${{ always() }}
@@ -72,6 +130,7 @@ jobs:
       - backend
       - frontend
       - acceptance
+      - deploy
     steps:
       - name: Write report
         run: |
@@ -82,3 +141,4 @@ jobs:
           echo '| backend | ${{ needs.backend.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| frontend | ${{ needs.frontend.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| acceptance | ${{ needs.acceptance.result }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| deploy | ${{ needs.deploy.result }} |' >> $GITHUB_STEP_SUMMARY

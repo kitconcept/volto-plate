@@ -21,3 +21,16 @@
   max-width: var(--block-width);
   margin-inline: auto;
 }
+
+.slate-a,
+.slate-a:hover {
+  color: var(--link-foreground-color, --theme-foreground-color);
+  text-decoration: underline;
+  text-underline-offset: initial;
+}
+
+// Fixes the alignment of the logo in the footer, which is currently broken due
+// to the tailwind reset. Remove when fixed in VLT.
+.post-footer .colophon a img {
+  display: inline;
+}

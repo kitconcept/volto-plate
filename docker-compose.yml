@@ -1,5 +1,5 @@
 ---
-name: collective-addon
+name: volto-plate
 
 services:
   traefik:
@@ -44,7 +44,7 @@ services:
       - traefik.http.services.svc-frontend.loadbalancer.server.port=3000
       # Routers
       ## /
-      - traefik.http.routers.rt-frontend.rule=Host(`collective-addon.localhost`)
+      - traefik.http.routers.rt-frontend.rule=Host(`volto-plate.localhost`)
       - traefik.http.routers.rt-frontend.entrypoints=http
       - traefik.http.routers.rt-frontend.service=svc-frontend
       - traefik.http.routers.rt-frontend.middlewares=gzip
@@ -67,11 +67,11 @@ services:
       # Middlewares
       ## VHM rewrite /++api++/
       - "traefik.http.middlewares.mw-backend-vhm-api.replacepathregex.regex=^/\\+\\+api\\+\\+($$|/.*)"
-      - "traefik.http.middlewares.mw-backend-vhm-api.replacepathregex.replacement=/VirtualHostBase/http/collective-addon.localhost/Plone/++api++/VirtualHostRoot$$1"
+      - "traefik.http.middlewares.mw-backend-vhm-api.replacepathregex.replacement=/VirtualHostBase/http/volto-plate.localhost/Plone/++api++/VirtualHostRoot$$1"
 
       ## VHM rewrite /ClassicUI/
       - "traefik.http.middlewares.mw-backend-vhm-classic.replacepathregex.regex=^/ClassicUI($$|/.*)"
-      - "traefik.http.middlewares.mw-backend-vhm-classic.replacepathregex.replacement=/VirtualHostBase/http/collective-addon.localhost/Plone/VirtualHostRoot/_vh_ClassicUI$$1"
+      - "traefik.http.middlewares.mw-backend-vhm-classic.replacepathregex.replacement=/VirtualHostBase/http/volto-plate.localhost/Plone/VirtualHostRoot/_vh_ClassicUI$$1"
 
       ## Basic Authentication
       ### Note: all dollar signs in the hash need to be doubled for escaping.
@@ -81,12 +81,12 @@ services:
       - traefik.http.middlewares.mw-backend-auth.basicauth.headerField=X-Auth-ClassicUI
       - traefik.http.middlewares.mw-backend-auth.basicauth.users=admin:$$apr1$$uZPT5Fgu$$AmlIdamxT5ipBvPlsdfD70
       # Routers
-      - traefik.http.routers.rt-backend-api.rule=Host(`collective-addon.localhost`) && (PathPrefix(`/++api++`))
+      - traefik.http.routers.rt-backend-api.rule=Host(`volto-plate.localhost`) && (PathPrefix(`/++api++`))
       - traefik.http.routers.rt-backend-api.entrypoints=http
       - traefik.http.routers.rt-backend-api.service=svc-backend
       - traefik.http.routers.rt-backend-api.middlewares=gzip,mw-backend-vhm-api
       ## /ClassicUI
-      - traefik.http.routers.rt-backend-classic.rule=Host(`collective-addon.localhost`) && PathPrefix(`/ClassicUI`)
+      - traefik.http.routers.rt-backend-classic.rule=Host(`volto-plate.localhost`) && PathPrefix(`/ClassicUI`)
       - traefik.http.routers.rt-backend-classic.entrypoints=http
       - traefik.http.routers.rt-backend-classic.service=svc-backend
       - traefik.http.routers.rt-backend-classic.middlewares=gzip,mw-backend-auth,mw-backend-vhm-classic

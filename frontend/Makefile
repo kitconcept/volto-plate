@@ -21,19 +21,34 @@ YELLOW=`tput setaf 3`
 
 GIT_FOLDER=$(CURRENT_DIR)/.git
 
-PLONE_VERSION=6
+REPOSITORY_SETTINGS := $(shell uvx repoplone settings dump)
+
 DOCKER_IMAGE=plone/server-dev:${PLONE_VERSION}
 DOCKER_IMAGE_ACCEPTANCE=plone/server-acceptance:${PLONE_VERSION}
 API_PATH ?= http://localhost:55001/plone
 
-ADDON_NAME='@kitconcept/volto-plate'
+ADDON_NAME := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.frontend.name')
+IMAGE_NAME_PREFIX := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.container_images_prefix')
+IMAGE_TAG=latest
+IMAGE_NAME=$(IMAGE_NAME_PREFIX)-frontend
+
+# Environment variables to be exported
+export VOLTO_VERSION := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.frontend.volto_version')
+export PLONE_VERSION := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.backend.base_package_version')
 
 .PHONY: help
 help: ## Show this help
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
-# Dev Helpers
+.PHONY: debug-settings
+debug-settings:  ## Debug settings
+	@echo "VOLTO_VERSION: $(VOLTO_VERSION)"
+	@echo "PLONE_VERSION: $(PLONE_VERSION)"
+	@echo "ADDON_NAME: $(ADDON_NAME)"
+	@echo "IMAGE_NAME: $(IMAGE_NAME)"
+	@echo "IMAGE_TAG: $(IMAGE_TAG)"
 
+# Dev Helpers
 .PHONY: clean
 clean: ## Clean environment
 	@echo "$(RED)==> Cleaning Volto core and node_modules$(RESET)"
@@ -145,3 +160,7 @@ acceptance-test: ## Start Cypress in interactive mode
 .PHONY: ci-acceptance-test
 ci-acceptance-test: ## Run cypress tests in headless mode for CI
 	pnpm --filter @plone/volto exec cypress run --config-file $(CURRENT_DIR)/cypress.config.js --config specPattern=$(CURRENT_DIR)'/cypress/tests/**/*.{js,jsx,ts,tsx}' --env API_PATH="$(API_PATH)"
+
+.PHONY: build-image
+build-image:  ## Build Docker Image
+	@DOCKER_BUILDKIT=1 docker build . -t $(IMAGE_NAME):$(IMAGE_TAG) -f Dockerfile --build-arg VOLTO_VERSION=$(VOLTO_VERSION) --progress=plain
