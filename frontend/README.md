@@ -187,3 +187,5 @@ make i18n
 ## Credits and acknowledgements 🙏
 
 Generated using [Cookieplone (0.9.10)](https://github.com/plone/cookieplone) and [cookieplone-templates (2c54630)](https://github.com/plone/cookieplone-templates/commit/2c5463046f43a87e36d11a7edc2b4176b2d593aa) on 2026-02-13 10:21:42.975825. A special thanks to all contributors and supporters!
+
+.
