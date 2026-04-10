@@ -33,6 +33,7 @@ import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-hotkey';
 
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
+import { SidebarPlugin } from '../plugins/volto-sidebar';
 import { slashMenu } from '../wiki/slash-menu';
 
 const WikiSlashKit = createSlashKit({
@@ -76,6 +77,7 @@ export const WikiEditorKit = [
   ...CursorOverlayKit,
   // ...DndKit,
   ...ExitBreakKit,
+  SidebarPlugin,
   SplitHotkeyPlugin,
   TrailingBlockPlugin,
 

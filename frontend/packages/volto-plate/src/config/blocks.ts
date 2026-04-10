@@ -1,7 +1,12 @@
 import type { ConfigType } from '@plone/registry';
+import { ImageSchema } from '../components/Blocks/Image/schema';
+import type { BlockConfigBase } from '@plone/types';
 
 // Backport Seven's typings
 declare module '@plone/types' {
+  export interface BlocksConfigData {
+    plateimage: BlockConfigBase;
+  }
   export interface PlateBlocksConfigData {
     [key: string]: PlateBlockConfigBase;
   }
@@ -24,6 +29,15 @@ export default function install(config: ConfigType) {
   if (!config.blocks.plateBlocksConfig) {
     config.blocks.plateBlocksConfig = {};
   }
+
+  config.blocks.blocksConfig.plateimage = {
+    ...config.blocks.blocksConfig.image,
+    ...config.blocks.blocksConfig.plateimage,
+    blockSchema: ImageSchema,
+    restricted: true,
+    schemaEnhancer: undefined,
+  };
+
   config.blocks.plateBlocksConfig.title = {
     ...config.blocks.plateBlocksConfig.title,
     blockWidth: {
