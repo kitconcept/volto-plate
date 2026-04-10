@@ -2,6 +2,7 @@
 import React from 'react';
 import isEqual from 'lodash/isEqual';
 
+import { BlockInnerContainer } from '@plone/plate/components/ui/block-inner-container';
 import type { TElement } from 'platejs';
 import type { PlateElementProps } from 'platejs/react';
 
@@ -121,18 +122,20 @@ export function createVoltoBlockAdapter<
 
     return (
       <PlateElement {...props} contentEditable={false}>
-        {readOnly ? (
-          <View data={blockData} {...extraViewProps} />
-        ) : (
-          <Edit
-            data={blockData}
-            block={blockId}
-            selected={selected}
-            onChangeBlock={handleChangeBlock}
-            onSelectBlock={handleSelectBlock}
-            {...extraEditProps}
-          />
-        )}
+        <BlockInnerContainer>
+          {readOnly ? (
+            <View data={blockData} {...extraViewProps} />
+          ) : (
+            <Edit
+              data={blockData}
+              block={blockId}
+              selected={selected}
+              onChangeBlock={handleChangeBlock}
+              onSelectBlock={handleSelectBlock}
+              {...extraEditProps}
+            />
+          )}
+        </BlockInnerContainer>
         {props.children}
       </PlateElement>
     );
