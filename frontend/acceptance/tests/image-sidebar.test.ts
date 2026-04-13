@@ -121,41 +121,6 @@ test('Selecting a Volto-adapted Plate image shows the sidebar form', async ({
   await openImageSidebarPage(page);
   await expect(page.getByLabel('Alt text')).toHaveCount(0);
   await openSelectedImageBlockSidebar(page);
-
-  const debugInfo = await page.evaluate(() => {
-    const editable = document.querySelector(
-      '.slate-editor[data-slate-editor]',
-    ) as HTMLElement | null;
-    const adapter = window.platePlaywrightAdapter;
-    const editor = editable ? adapter?.EDITABLE_TO_EDITOR?.get(editable) : null;
-    const nodeAt2 = editor?.api?.node?.([2])?.[0];
-    const nodeAt20 = editor?.api?.node?.([2, 0])?.[0];
-
-    return {
-      selection: editor?.selection ?? null,
-      nodeAt2: nodeAt2
-        ? {
-            type: nodeAt2.type,
-            blockType: nodeAt2['@type'],
-            keys: Object.keys(nodeAt2),
-          }
-        : null,
-      nodeAt20: nodeAt20
-        ? {
-            text: nodeAt20.text,
-            keys: Object.keys(nodeAt20),
-          }
-        : null,
-      hasImageSchema: Boolean(
-        (globalThis as any).__CLIENT_CONFIG__?.blocks?.blocksConfig?.plateimage
-          ?.blockSchema,
-      ),
-      sidebarPropertiesChildren:
-        document.getElementById('sidebar-properties')?.children.length ?? null,
-    };
-  });
-
-  console.log('image-sidebar debug', JSON.stringify(debugInfo));
   await expect(page.getByLabel('Alt text')).toHaveValue('Inline test image');
 });
 

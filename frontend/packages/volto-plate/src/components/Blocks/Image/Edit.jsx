@@ -8,7 +8,7 @@ import config from '@plone/volto/registry';
 import { ImageInput } from '@plone/volto/components/manage/Widgets/ImageWidget';
 
 function Edit(props) {
-  const { data } = props;
+  const { block, data, onChangeBlock } = props;
   const Image = config.getComponent({ name: 'Image' }).component;
 
   const handleChange = React.useCallback(
@@ -19,15 +19,15 @@ function Edit(props) {
           ? image['@id'] || image
           : '';
 
-      props.onChangeBlock(props.block, {
-        ...props.data,
+      onChangeBlock(block, {
+        ...data,
         url: flattenToAppURL(url),
         image_field,
         image_scales,
-        alt: props.data.alt || title || '',
+        alt: data.alt || title || '',
       });
     },
-    [props],
+    [block, data, onChangeBlock],
   );
 
   return (
@@ -85,8 +85,8 @@ function Edit(props) {
           <ImageInput
             onChange={handleChange}
             placeholderLinkInput={data.placeholder}
-            block={props.block}
-            id={props.block}
+            block={block}
+            id={block}
             objectBrowserPickerType={'image'}
           />
         )}

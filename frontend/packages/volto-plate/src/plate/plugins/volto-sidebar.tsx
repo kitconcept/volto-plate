@@ -16,8 +16,9 @@ import { useIntl } from 'react-intl';
 
 type SelectedNativeBlock = {
   key: string;
+  node: Record<string, unknown>;
   path: number[];
-  data: Record<string, unknown> & { '@type': string };
+  blockType: string;
 };
 
 const getVoltoBlockConfig = (
@@ -128,18 +129,11 @@ const getSelectedNativeBlock = (editor: any): SelectedNativeBlock | null => {
   const blockConfig = getVoltoBlockConfig(blockType);
   if (!blockConfig?.blockSchema) return null;
 
-  const data = { ...node } as Record<string, unknown>;
-  delete data.id;
-  delete data.type;
-  delete data.children;
-
   return {
     key: path.join('-'),
+    node: node as Record<string, unknown>,
     path,
-    data: {
-      ...data,
-      '@type': blockType,
-    },
+    blockType,
   };
 };
 
@@ -152,12 +146,33 @@ export function SidebarAfterEditable() {
   const intl = useIntl();
   const selectedNativeBlock = getSelectedNativeBlock(editor);
   const blocksConfig = config.blocks.blocksConfig;
+  const selectedPathRef = React.useRef<number[] | null>(null);
 
-  const schema = React.useMemo(() => {
+  selectedPathRef.current = selectedNativeBlock?.path ?? null;
+
+  const formData = React.useMemo(() => {
     if (!selectedNativeBlock) return null;
 
+    const data = { ...selectedNativeBlock.node };
+    delete data.id;
+    delete data.type;
+    delete data.children;
+
+    return {
+      ...data,
+      '@type': selectedNativeBlock.blockType,
+    };
+  }, [
+    selectedNativeBlock?.key,
+    selectedNativeBlock?.node,
+    selectedNativeBlock?.blockType,
+  ]);
+
+  const schema = React.useMemo(() => {
+    if (!selectedNativeBlock || !formData) return null;
+
     const blockSchema = getVoltoBlockConfig(
-      selectedNativeBlock.data['@type'],
+      selectedNativeBlock.blockType,
     )?.blockSchema;
 
     if (!blockSchema) return null;
@@ -165,21 +180,22 @@ export function SidebarAfterEditable() {
     return typeof blockSchema === 'function'
       ? blockSchema({
           intl,
-          formData: selectedNativeBlock.data,
+          formData,
         })
       : blockSchema;
-  }, [intl, selectedNativeBlock]);
+  }, [formData, intl, selectedNativeBlock?.blockType]);
 
   const onFormDataChange = React.useCallback(
     (next: Record<string, unknown>) => {
-      if (!selectedNativeBlock) return;
+      const path = selectedPathRef.current;
+      if (!path) return;
       const patch = { ...next };
       delete patch.id;
       delete patch.type;
       delete patch.children;
-      editor.tf.setNodes(patch as any, { at: selectedNativeBlock.path });
+      editor.tf.setNodes(patch as any, { at: path });
     },
-    [editor, selectedNativeBlock],
+    [editor, selectedNativeBlock?.key],
   );
 
   const sidebar =
@@ -197,14 +213,14 @@ export function SidebarAfterEditable() {
       block={selectedNativeBlock.key}
       schema={schema}
       title={schema.title}
-      formData={selectedNativeBlock.data}
+      formData={formData}
       blocksConfig={blocksConfig}
       onChangeBlock={(_block: string, next: Record<string, unknown>) =>
         onFormDataChange(next)
       }
       onChangeField={(id: string, value: unknown) =>
         onFormDataChange({
-          ...selectedNativeBlock.data,
+          ...formData,
           [id]: value,
         })
       }
