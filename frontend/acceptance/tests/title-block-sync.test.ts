@@ -38,6 +38,18 @@ async function openTitleSyncPage(
   await waitForPlateEditorReady(page);
 }
 
+async function openMetadataSidebar(
+  page: Parameters<typeof test>[0]['page'],
+) {
+  await page.getByRole('button', { name: 'Wiki Page' }).click();
+  await expect(
+    page.getByRole('textbox', {
+      name: 'Title',
+      exact: true,
+    }),
+  ).toBeVisible();
+}
+
 test('Metadata title updates the plate title block', async ({ page }) => {
   await openTitleSyncPage(page, {
     contentId: 'title-sync-page-metadata',
@@ -51,6 +63,7 @@ test('Metadata title updates the plate title block', async ({ page }) => {
   const editorTitle = page.locator('[data-slate-editor] h1').first();
 
   await expect(editorTitle).toHaveText('Original title');
+  await openMetadataSidebar(page);
   await expect(metadataTitleInput).toHaveValue('Original title');
 
   await metadataTitleInput.fill('Metadata updated title');
@@ -89,9 +102,11 @@ test('Plate title block updates the metadata title', async ({ page }) => {
   const editorTitle = page.locator('[data-slate-editor] h1').first();
 
   await expect(editorTitle).toHaveText('Original title');
+  await openMetadataSidebar(page);
   await expect(metadataTitleInput).toHaveValue('Original title');
 
   await editorTitle.fill('Editor updated title');
+  await openMetadataSidebar(page);
   await metadataTitleInput.click();
   await expect(metadataTitleInput).toHaveValue('Editor updated title');
 });
