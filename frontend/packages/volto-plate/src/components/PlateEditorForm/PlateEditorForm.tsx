@@ -1,6 +1,8 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 
 import { PlateEditor, type Value } from '@plone/plate/components/editor';
+import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
 import { useEditorRef } from 'platejs/react';
 import wikiEditorPreset from '../../plate/presets/wiki-editor';
 import {
@@ -8,6 +10,7 @@ import {
   TitleMetadataContext,
 } from '../../plate/plugins/volto-title';
 import { SOMERSAULT_KEY } from '../../constants';
+import { ErrorBoundary } from '../Blocks/ErrorBoundary';
 
 const getDefaultSomersaultValue = (title = ''): Value => [
   {
@@ -53,6 +56,7 @@ function InitialEditorFocus() {
 
 const PlateEditorForm = (props: PlateEditorFormProps) => {
   const { content, intl, onChangeFormData } = props;
+  const dispatch = useDispatch();
   const somersaultBlock = content?.blocks?.[SOMERSAULT_KEY];
   const metadataTitle = content?.title ?? '';
   const stableInitialValueRef = React.useRef<Value | null>(null);
@@ -64,6 +68,10 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
     latestOnChangeFormDataRef.current = onChangeFormData;
   }, [content, onChangeFormData]);
 
+  React.useEffect(() => {
+    dispatch(setSidebarTab(1));
+  }, [dispatch]);
+
   if (!stableInitialValueRef.current) {
     const somersaultValue = somersaultBlock?.value;
 
@@ -73,31 +81,33 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
   }
 
   return (
-    <TitleMetadataContext.Provider value={metadataTitle}>
-      <PlateEditor
-        editorConfig={wikiEditorPreset}
-        value={stableInitialValueRef.current}
-        intl={intl}
-        onChange={(options) => {
-          const currentContent = latestContentRef.current;
-          const currentSomersaultBlock =
-            currentContent?.blocks?.[SOMERSAULT_KEY];
+    <ErrorBoundary isEdit type="plate editor">
+      <TitleMetadataContext.Provider value={metadataTitle}>
+        <PlateEditor
+          editorConfig={wikiEditorPreset}
+          value={stableInitialValueRef.current}
+          intl={intl}
+          onChange={(options) => {
+            const currentContent = latestContentRef.current;
+            const currentSomersaultBlock =
+              currentContent?.blocks?.[SOMERSAULT_KEY];
 
-          latestOnChangeFormDataRef.current?.({
-            blocks: {
-              ...(currentContent?.blocks ?? {}),
-              [SOMERSAULT_KEY]: {
-                ...(currentSomersaultBlock ?? {}),
-                '@type': SOMERSAULT_KEY,
-                value: options.value as Value,
+            latestOnChangeFormDataRef.current?.({
+              blocks: {
+                ...(currentContent?.blocks ?? {}),
+                [SOMERSAULT_KEY]: {
+                  ...(currentSomersaultBlock ?? {}),
+                  '@type': SOMERSAULT_KEY,
+                  value: options.value as Value,
+                },
               },
-            },
-          });
-        }}
-      >
-        <InitialEditorFocus />
-      </PlateEditor>
-    </TitleMetadataContext.Provider>
+            });
+          }}
+        >
+          <InitialEditorFocus />
+        </PlateEditor>
+      </TitleMetadataContext.Provider>
+    </ErrorBoundary>
   );
 };
 

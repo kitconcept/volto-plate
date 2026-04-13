@@ -1,7 +1,7 @@
 import type { TImageElement } from 'platejs';
 
 import { ImagePlugin } from '@platejs/media/react';
-import ImageEdit from '@plone/volto/components/manage/Blocks/Image/Edit';
+import ImageEdit from '../../components/Blocks/Image/Edit';
 import ImageView from '@plone/volto/components/manage/Blocks/Image/View';
 import config from '@plone/volto/registry';
 
@@ -24,7 +24,7 @@ type VoltoImageBlockData = VoltoImagePlateElement & { '@type'?: string };
 const DEFAULTS: Required<
   Pick<VoltoImageBlockData, '@type' | 'align' | 'size'>
 > = {
-  '@type': 'image',
+  '@type': 'plateimage',
   align: 'center',
   size: 'l',
 };
@@ -32,14 +32,17 @@ const DEFAULTS: Required<
 const toBlockData = (element: VoltoImagePlateElement): VoltoImageBlockData => ({
   ...DEFAULTS,
   ...element,
-  '@type': 'image',
+  '@type': 'plateimage',
 });
 
 const fromBlockData = (
   data: VoltoImageBlockData,
 ): Partial<VoltoImagePlateElement> => {
-  const { '@type': _ignored, ...rest } = data;
-  return rest;
+  const { '@type': blockType = 'plateimage', ...rest } = data;
+  return {
+    ...rest,
+    '@type': blockType,
+  };
 };
 
 export const VoltoImageBlockElement = createVoltoBlockAdapter<
