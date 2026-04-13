@@ -1,6 +1,8 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 
 import { PlateEditor, type Value } from '@plone/plate/components/editor';
+import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
 import { useEditorRef } from 'platejs/react';
 import wikiEditorPreset from '../../plate/presets/wiki-editor';
 import {
@@ -53,6 +55,7 @@ function InitialEditorFocus() {
 
 const PlateEditorForm = (props: PlateEditorFormProps) => {
   const { content, intl, onChangeFormData } = props;
+  const dispatch = useDispatch();
   const somersaultBlock = content?.blocks?.[SOMERSAULT_KEY];
   const metadataTitle = content?.title ?? '';
   const stableInitialValueRef = React.useRef<Value | null>(null);
@@ -63,6 +66,10 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
     latestContentRef.current = content;
     latestOnChangeFormDataRef.current = onChangeFormData;
   }, [content, onChangeFormData]);
+
+  React.useEffect(() => {
+    dispatch(setSidebarTab(1));
+  }, [dispatch]);
 
   if (!stableInitialValueRef.current) {
     const somersaultValue = somersaultBlock?.value;
