@@ -1,8 +1,4 @@
-import type {
-  BlocksFormData,
-  JSONSchema,
-  SchemaEnhancerArgs,
-} from '@plone/types';
+import type { BlocksFormData, JSONSchema } from '@plone/types';
 
 type ImageBlockFormData = BlocksFormData & {
   url?: string;

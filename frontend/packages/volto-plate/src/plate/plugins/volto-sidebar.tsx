@@ -145,16 +145,12 @@ const getSelectedNativeBlock = (editor: any): SelectedNativeBlock | null => {
 
 export function SidebarAfterEditable() {
   const editor = useEditorRef();
-  const selection = useEditorSelection();
-  const editorChildren = useEditorSelector(
-    (currentEditor) => currentEditor.children,
-    [],
-  );
+  // Keep this component subscribed to editor selection/tree updates even
+  // though the actual lookup reads from the mutable editor instance.
+  useEditorSelection();
+  useEditorSelector((currentEditor) => currentEditor.children, []);
   const intl = useIntl();
-  const selectedNativeBlock = React.useMemo(
-    () => getSelectedNativeBlock(editor),
-    [editor, editorChildren, selection],
-  );
+  const selectedNativeBlock = getSelectedNativeBlock(editor);
   const blocksConfig = config.blocks.blocksConfig;
 
   const schema = React.useMemo(() => {
@@ -172,7 +168,7 @@ export function SidebarAfterEditable() {
           formData: selectedNativeBlock.data,
         })
       : blockSchema;
-  }, [blocksConfig, intl, selectedNativeBlock]);
+  }, [intl, selectedNativeBlock]);
 
   const onFormDataChange = React.useCallback(
     (next: Record<string, unknown>) => {
