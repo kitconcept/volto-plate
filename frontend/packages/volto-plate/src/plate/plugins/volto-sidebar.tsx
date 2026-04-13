@@ -162,6 +162,7 @@ export function SidebarAfterEditable() {
       ...data,
       '@type': selectedNativeBlock.blockType,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedNativeBlock?.key,
     selectedNativeBlock?.node,
@@ -183,6 +184,7 @@ export function SidebarAfterEditable() {
           formData,
         })
       : blockSchema;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData, intl, selectedNativeBlock?.blockType]);
 
   const onFormDataChange = React.useCallback(
@@ -195,6 +197,7 @@ export function SidebarAfterEditable() {
       delete patch.children;
       editor.tf.setNodes(patch as any, { at: path });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [editor, selectedNativeBlock?.key],
   );
 
