@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React from 'react';
 import isEqual from 'lodash/isEqual';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { BlockInnerContainer } from '@plone/plate/components/ui/block-inner-container';
 import type { TElement } from 'platejs';
@@ -81,7 +82,13 @@ export function createVoltoBlockAdapter<
       return explicitId ? String(explicitId) : pathRef.current.join('-');
     }, [element]);
 
-    const blockData = React.useMemo(() => toBlockData(element), [element]);
+    // Plate element data can contain read-only nested objects. Existing Volto
+    // block edit/view components and shared helpers may normalize nested values
+    // in place, so provide them with an isolated mutable copy.
+    const blockData = React.useMemo(
+      () => cloneDeep(toBlockData(element)),
+      [element],
+    );
 
     const handleChangeBlock = React.useCallback(
       (_block: string, data: TBlockData) => {

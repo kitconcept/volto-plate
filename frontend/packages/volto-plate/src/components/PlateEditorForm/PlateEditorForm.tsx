@@ -10,6 +10,7 @@ import {
   TitleMetadataContext,
 } from '../../plate/plugins/volto-title';
 import { SOMERSAULT_KEY } from '../../constants';
+import { ErrorBoundary } from '../Blocks/ErrorBoundary';
 
 const getDefaultSomersaultValue = (title = ''): Value => [
   {
@@ -80,31 +81,33 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
   }
 
   return (
-    <TitleMetadataContext.Provider value={metadataTitle}>
-      <PlateEditor
-        editorConfig={wikiEditorPreset}
-        value={stableInitialValueRef.current}
-        intl={intl}
-        onChange={(options) => {
-          const currentContent = latestContentRef.current;
-          const currentSomersaultBlock =
-            currentContent?.blocks?.[SOMERSAULT_KEY];
+    <ErrorBoundary isEdit type="plate editor">
+      <TitleMetadataContext.Provider value={metadataTitle}>
+        <PlateEditor
+          editorConfig={wikiEditorPreset}
+          value={stableInitialValueRef.current}
+          intl={intl}
+          onChange={(options) => {
+            const currentContent = latestContentRef.current;
+            const currentSomersaultBlock =
+              currentContent?.blocks?.[SOMERSAULT_KEY];
 
-          latestOnChangeFormDataRef.current?.({
-            blocks: {
-              ...(currentContent?.blocks ?? {}),
-              [SOMERSAULT_KEY]: {
-                ...(currentSomersaultBlock ?? {}),
-                '@type': SOMERSAULT_KEY,
-                value: options.value as Value,
+            latestOnChangeFormDataRef.current?.({
+              blocks: {
+                ...(currentContent?.blocks ?? {}),
+                [SOMERSAULT_KEY]: {
+                  ...(currentSomersaultBlock ?? {}),
+                  '@type': SOMERSAULT_KEY,
+                  value: options.value as Value,
+                },
               },
-            },
-          });
-        }}
-      >
-        <InitialEditorFocus />
-      </PlateEditor>
-    </TitleMetadataContext.Provider>
+            });
+          }}
+        >
+          <InitialEditorFocus />
+        </PlateEditor>
+      </TitleMetadataContext.Provider>
+    </ErrorBoundary>
   );
 };
 
