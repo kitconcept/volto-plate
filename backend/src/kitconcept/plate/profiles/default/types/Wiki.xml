@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         meta_type="Dexterity FTI"
-        name="WikiPage"
+        name="Wiki"
         i18n:domain="kitconcept.plate"
 >
   <property name="title"
             i18n:translate=""
-  >Wiki Page</property>
+  >Wiki</property>
   <property name="description"
             i18n:translate=""
-  >A Plate-powered wiki page.</property>
+  >A folderish wiki container.</property>
 
   <property name="allow_discussion">False</property>
-  <property name="factory">WikiPage</property>
-  <property name="icon_expr">string:contenttype/document</property>
+  <property name="factory">Wiki</property>
+  <property name="icon_expr">string:contenttype/folder</property>
   <property name="link_target" />
 
   <property name="allowed_content_types">
@@ -22,11 +22,11 @@
     <element value="Image" />
   </property>
   <property name="filter_content_types">True</property>
-  <property name="global_allow">False</property>
+  <property name="global_allow">True</property>
 
   <property name="add_permission">cmf.AddPortalContent</property>
   <property name="klass">plone.dexterity.content.Container</property>
-  <property name="schema">kitconcept.plate.content.wiki_page.IWikiPage</property>
+  <property name="schema">kitconcept.plate.content.wiki.IWiki</property>
   <property name="model_file" />
   <property name="model_source" />
 
@@ -49,7 +49,7 @@
     <element value="plone.translatable" />
   </property>
 
-  <property name="add_view_expr">string:${folder_url}/++add++WikiPage</property>
+  <property name="add_view_expr">string:${folder_url}/++add++Wiki</property>
   <property name="default_view">view</property>
   <property name="default_view_fallback">False</property>
   <property name="immediate_view">view</property>
