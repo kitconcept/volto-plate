@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rolemap>
   <permissions>
-    <permission name="kitconcept.plate: Discuss content" acquire="True">
+    <permission acquire="True"
+                name="kitconcept.plate: Discuss content"
+    >
       <role name="Manager" />
       <role name="Site Administrator" />
       <role name="Owner" />

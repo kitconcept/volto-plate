@@ -1,13 +1,14 @@
 """Functional tests for comments in Plate editor blocks."""
 
-import json
+from DateTime import DateTime
 from plone import api
 from plone.restapi.interfaces import IDeserializeFromJson
 from plone.restapi.interfaces import ISerializeToJson
-from DateTime import DateTime
 from zExceptions import BadRequest
 from zExceptions import Unauthorized
 from zope.component import getMultiAdapter
+
+import json
 import pytest
 
 

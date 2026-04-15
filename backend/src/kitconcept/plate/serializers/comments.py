@@ -2,10 +2,10 @@ from plone import api
 from plone.restapi.interfaces import IBlockFieldSerializationTransformer
 from plone.restapi.services.users.get import getPortraitUrl
 from plone.restapi.services.users.get import isDefaultPortrait
-from zope.interface import implementer
-from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.component import adapter
+from zope.interface import implementer
 from zope.interface import Interface
+from zope.publisher.interfaces.browser import IBrowserRequest
 
 
 @adapter(Interface, IBrowserRequest)

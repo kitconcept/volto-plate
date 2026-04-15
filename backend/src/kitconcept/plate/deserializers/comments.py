@@ -1,10 +1,11 @@
 from plone import api
 from plone.restapi.interfaces import IBlockFieldDeserializationTransformer
-from zExceptions import BadRequest, Unauthorized
-from zope.interface import implementer
-from zope.publisher.interfaces.browser import IBrowserRequest
+from zExceptions import BadRequest
+from zExceptions import Unauthorized
 from zope.component import adapter
+from zope.interface import implementer
 from zope.interface import Interface
+from zope.publisher.interfaces.browser import IBrowserRequest
 
 
 @adapter(Interface, IBrowserRequest)
