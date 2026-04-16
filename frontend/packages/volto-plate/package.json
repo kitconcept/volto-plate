@@ -35,7 +35,8 @@
     "@platejs/caption": "^49.0.0",
     "@platejs/floating": "^49.0.0",
     "@platejs/link": "^49.0.0",
-    "@plone/plate": "workspace:*"
+    "@plone/plate": "workspace:*",
+    "@plone/components": "workspace:^"
   },
   "peerDependencies": {
     "@plone/registry": "workspace:*",
