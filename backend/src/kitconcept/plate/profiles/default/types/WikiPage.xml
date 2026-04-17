@@ -18,7 +18,7 @@
 
   <property name="allowed_content_types">
     <element value="WikiPage" />
-    <element value="Folder" />
+    <element value="File" />
     <element value="Image" />
   </property>
   <property name="filter_content_types">True</property>
