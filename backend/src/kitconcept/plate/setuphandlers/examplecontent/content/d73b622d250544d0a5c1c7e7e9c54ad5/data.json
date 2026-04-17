@@ -1,5 +1,5 @@
 {
-  "@id": "/wiki-page",
+  "@id": "/wiki/wiki-page",
   "@type": "WikiPage",
   "UID": "d73b622d250544d0a5c1c7e7e9c54ad5",
   "allow_discussion": null,
