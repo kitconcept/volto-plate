@@ -13,7 +13,7 @@ class TestWiki:
         assert fti.schema == "kitconcept.plate.content.wiki.IWiki"
         assert fti.filter_content_types is True
         assert fti.global_allow is True
-        assert fti.allowed_content_types == ("WikiPage", "Folder", "Image")
+        assert fti.allowed_content_types == ("WikiPage", "File", "Image")
         assert "plone.constraintypes" in fti.behaviors
 
     def test_wiki_can_be_created(self, portal):
@@ -41,7 +41,7 @@ class TestWikiPage:
         assert fti.schema == "kitconcept.plate.content.wiki_page.IWikiPage"
         assert fti.filter_content_types is True
         assert fti.global_allow is False
-        assert fti.allowed_content_types == ("WikiPage", "Folder", "Image")
+        assert fti.allowed_content_types == ("WikiPage", "File", "Image")
         assert "volto.blocks" in fti.behaviors
 
     def test_wiki_page_can_be_created(self, portal):
