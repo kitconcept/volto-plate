@@ -92,7 +92,9 @@ export async function createContent(
 
   if (api === 'plone') {
     if (
-      ['Document', 'News Item', 'Folder', 'CMSFolder'].includes(contentType)
+      ['Document', 'News Item', 'Folder', 'CMSFolder', 'WikiPage'].includes(
+        contentType,
+      )
     ) {
       body = bodyModifier({
         ...defaultBody,
