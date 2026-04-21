@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    >
+
+  <genericsetup:upgradeSteps
+      profile="kitconcept.plate:default"
+      source="20260408001"
+      destination="20260414001"
+      >
+    <genericsetup:upgradeDepends
+        title="Adds the Wiki content type and constrains wiki containers."
+        import_steps="typeinfo"
+        />
+  </genericsetup:upgradeSteps>
+
+</configure>

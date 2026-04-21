@@ -1,6 +1,6 @@
 import { expect, test } from './test';
 import { login } from './login';
-import { createContent } from './content';
+import { createWikiPage } from './content';
 import { waitForPlateEditorReady } from './plate';
 import { getEditorHandle, getNodeByPath } from '@platejs/playwright';
 
@@ -67,21 +67,23 @@ async function openImageSidebarPage(
   {
     contentId = PAGE_ID,
     contentTitle = 'Image sidebar page',
+    wikiId = `wiki-${contentId}`,
   }: {
     contentId?: string;
     contentTitle?: string;
+    wikiId?: string;
   } = {},
 ) {
   await login(page);
-  await createContent(page, {
-    contentType: 'WikiPage',
+  const { contentPath } = await createWikiPage(page, {
     contentId,
     contentTitle,
+    wikiId,
     transition: 'publish',
     bodyModifier: withSomersaultImageBody,
   });
 
-  await page.goto(`/${contentId}/edit`, { waitUntil: 'networkidle' });
+  await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
   await waitForPlateEditorReady(page);
 }
 
@@ -148,7 +150,7 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
     'style',
     /--block-width:\s*var\(--narrow-container-width\)/,
   );
-  await expect.poll(async () => getInheritedBlockWidth(imageBlock)).toBe(
-    expectedWidth,
-  );
+  await expect
+    .poll(async () => getInheritedBlockWidth(imageBlock))
+    .toBe(expectedWidth);
 });

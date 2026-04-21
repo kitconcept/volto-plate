@@ -6,6 +6,7 @@
   ],
   "_data_files_": [
     "plone_site_root/data.json",
+    "b1c6fb62b4af4dd697fd0c38ab7f51e8/data.json",
     "a720393b3c0240e5bd27c43fcd2cfd1e/data.json",
     "a58ccead718140c1baa98d43595fc3e6/data.json",
     "d73b622d250544d0a5c1c7e7e9c54ad5/data.json",
@@ -13,6 +14,7 @@
   ],
   "default_page": {},
   "local_permissions": {
+    "b1c6fb62b4af4dd697fd0c38ab7f51e8": {},
     "a58ccead718140c1baa98d43595fc3e6": {},
     "a720393b3c0240e5bd27c43fcd2cfd1e": {},
     "d734eb39a18240dda73ce8614232ab40": {},
@@ -71,6 +73,13 @@
     }
   },
   "local_roles": {
+    "b1c6fb62b4af4dd697fd0c38ab7f51e8": {
+      "local_roles": {
+        "admin": [
+          "Owner"
+        ]
+      }
+    },
     "a58ccead718140c1baa98d43595fc3e6": {
       "local_roles": {
         "admin": [
@@ -108,10 +117,11 @@
     }
   },
   "ordering": {
+    "b1c6fb62b4af4dd697fd0c38ab7f51e8": 42,
     "a58ccead718140c1baa98d43595fc3e6": 0,
     "a720393b3c0240e5bd27c43fcd2cfd1e": 41,
     "d734eb39a18240dda73ce8614232ab40": 0,
-    "d73b622d250544d0a5c1c7e7e9c54ad5": 42
+    "d73b622d250544d0a5c1c7e7e9c54ad5": 0
   },
   "relations": []
 }

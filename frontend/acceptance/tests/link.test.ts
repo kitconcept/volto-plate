@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { getEditorHandle } from '@platejs/playwright';
 
-import { createContent } from './content';
+import { createContent, createWikiPage } from './content';
 import { login } from './login';
 import { waitForPlateEditorReady } from './plate';
 import {
@@ -16,22 +16,24 @@ async function openWikiPageEditor(
   {
     contentId,
     contentTitle,
+    wikiId = `wiki-${contentId}`,
     bodyText = 'Link this text',
   }: {
     contentId: string;
     contentTitle: string;
+    wikiId?: string;
     bodyText?: string;
   },
 ) {
-  await createContent(page, {
-    contentType: 'WikiPage',
+  const { contentPath } = await createWikiPage(page, {
     contentId,
     contentTitle,
+    wikiId,
     transition: 'publish',
     bodyModifier: withSomersaultBody(bodyText),
   });
 
-  await page.goto(`/${contentId}/edit`, { waitUntil: 'networkidle' });
+  await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
   await waitForPlateEditorReady(page);
 }
 
@@ -99,8 +101,7 @@ test.describe('Plate link features', () => {
   test('searches content from plain text and inserts the selected result', async ({
     page,
   }) => {
-    await createContent(page, {
-      contentType: 'WikiPage',
+    const { contentPath } = await createWikiPage(page, {
       contentId: 'link-target-search',
       contentTitle: 'LinkTargetSearch',
       transition: 'publish',
@@ -121,14 +122,13 @@ test.describe('Plate link features', () => {
     await page.getByRole('button', { name: 'LinkTargetSearch' }).click();
 
     await expectEditorLink(page, {
-      href: '/link-target-search',
+      href: contentPath,
       text: 'Link this',
     });
   });
 
   test('pressing enter selects the first search result', async ({ page }) => {
-    await createContent(page, {
-      contentType: 'WikiPage',
+    const { contentPath } = await createWikiPage(page, {
       contentId: 'link-target-search-enter-first',
       contentTitle: 'LinkTargetSearchEnterFirst',
       transition: 'publish',
@@ -155,7 +155,7 @@ test.describe('Plate link features', () => {
     await input.press('Enter');
 
     await expectEditorLink(page, {
-      href: '/link-target-search-enter-first',
+      href: contentPath,
       text: 'Link this',
     });
   });
@@ -163,8 +163,7 @@ test.describe('Plate link features', () => {
   test('allows multi-word search input in the floating link toolbar', async ({
     page,
   }) => {
-    await createContent(page, {
-      contentType: 'WikiPage',
+    const { contentPath } = await createWikiPage(page, {
       contentId: 'link-target-search-multi',
       contentTitle: 'Link Target Search Phrase',
       transition: 'publish',
@@ -189,7 +188,7 @@ test.describe('Plate link features', () => {
       .click();
 
     await expectEditorLink(page, {
-      href: '/link-target-search-multi',
+      href: contentPath,
       text: 'Link this',
     });
   });
@@ -197,8 +196,7 @@ test.describe('Plate link features', () => {
   test('sets the link when selecting a target from the object browser', async ({
     page,
   }) => {
-    await createContent(page, {
-      contentType: 'WikiPage',
+    const { contentPath } = await createWikiPage(page, {
       contentId: 'link-target-browser',
       contentTitle: 'LinkTargetBrowser',
       transition: 'publish',
@@ -229,7 +227,7 @@ test.describe('Plate link features', () => {
     await objectBrowser.getByText('LinkTargetBrowser').click();
 
     await expectEditorLink(page, {
-      href: '/link-target-browser',
+      href: contentPath,
       text: 'Link this',
     });
   });
@@ -244,32 +242,25 @@ test.describe('Plate link features', () => {
       transition: 'publish',
       bodyModifier: withSomersaultBody('Source container body'),
     });
-    await createContent(page, {
-      contentType: 'WikiPage',
+    const { contentPath: targetPath } = await createWikiPage(page, {
       contentId: 'root-target-browser-context',
       contentTitle: 'Target Page Browser Context',
       transition: 'publish',
       bodyModifier: withSomersaultBody('Target body'),
     });
-    await createContent(page, {
-      contentType: 'WikiPage',
+    const { contentPath: sourcePath } = await createWikiPage(page, {
       contentId: 'source-page-browser-context',
       contentTitle: 'Source Page Browser Context',
       path: '/source-document-browser-context',
       transition: 'publish',
       bodyModifier: withSomersaultLinkedBody({
         bodyText: 'Link this text',
-        href: '/root-target-browser-context',
+        href: targetPath,
         linkText: 'Link this',
       }),
     });
 
-    await page.goto(
-      '/source-document-browser-context/source-page-browser-context/edit',
-      {
-        waitUntil: 'networkidle',
-      },
-    );
+    await page.goto(`${sourcePath}/edit`, { waitUntil: 'networkidle' });
     await waitForPlateEditorReady(page);
 
     const insertedLink = page
@@ -297,8 +288,7 @@ test.describe('Plate link features', () => {
   test('an internal absolute URL is flattened to an app path', async ({
     page,
   }) => {
-    await createContent(page, {
-      contentType: 'WikiPage',
+    const { contentPath } = await createWikiPage(page, {
       contentId: 'link-target-existing',
       contentTitle: 'LinkTargetExisting',
       transition: 'publish',
@@ -310,10 +300,7 @@ test.describe('Plate link features', () => {
       contentTitle: 'Link source existing',
     });
 
-    const internalAbsoluteUrl = new URL(
-      '/link-target-existing',
-      page.url(),
-    ).toString();
+    const internalAbsoluteUrl = new URL(contentPath, page.url()).toString();
 
     await selectParagraphText(page, { start: 0, end: 9 });
     await openLinkToolbar(page);
@@ -334,7 +321,7 @@ test.describe('Plate link features', () => {
       editorChildren.map((node) => findFirstLinkNode(node)).find(Boolean) ?? {};
 
     expect(linkNode.type).toBe('a');
-    expect(linkNode.url).toBe('/link-target-existing');
+    expect(linkNode.url).toBe(contentPath);
 
     const insertedLink = page
       .locator('.slate-editor[data-slate-editor]')
@@ -347,6 +334,6 @@ test.describe('Plate link features', () => {
       page.getByPlaceholder('Paste link or search content').filter({
         visible: true,
       }),
-    ).toHaveValue('/link-target-existing');
+    ).toHaveValue(contentPath);
   });
 });

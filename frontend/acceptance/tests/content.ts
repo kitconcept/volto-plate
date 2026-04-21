@@ -20,6 +20,18 @@ export type CreateContentParams = {
   bodyModifier?: (body: Record<string, unknown>) => Record<string, unknown>;
 };
 
+export type CreateWikiPageParams = {
+  contentId: string;
+  contentTitle: string;
+  wikiId?: string;
+  wikiTitle?: string;
+  path?: string;
+  contentDescription?: string;
+  allow_discussion?: boolean;
+  transition?: string;
+  bodyModifier?: (body: Record<string, unknown>) => Record<string, unknown>;
+};
+
 function getRequestContext(requestOrPage: APIRequestContext | Page) {
   if ('request' in requestOrPage) return requestOrPage.request;
   return requestOrPage;
@@ -156,4 +168,57 @@ export async function createContent(
   }
 
   return response;
+}
+
+export async function createWikiPage(
+  requestOrPage: APIRequestContext | Page,
+  {
+    contentId,
+    contentTitle,
+    wikiId = `wiki-${contentId}`,
+    wikiTitle = 'Wiki',
+    path = '',
+    contentDescription = '',
+    allow_discussion = false,
+    transition = '',
+    bodyModifier = (body) => body,
+  }: CreateWikiPageParams,
+  requestOptions: SevenRequestOptions = {},
+) {
+  const normalizedPath = normalizePath(path);
+  const wikiPath = [normalizedPath, wikiId].filter(Boolean).join('/');
+
+  await createContent(
+    requestOrPage,
+    {
+      contentType: 'Wiki',
+      contentId: wikiId,
+      contentTitle: wikiTitle,
+      path,
+      transition: 'publish',
+    },
+    requestOptions,
+  );
+
+  const response = await createContent(
+    requestOrPage,
+    {
+      contentType: 'WikiPage',
+      contentId,
+      contentTitle,
+      contentDescription,
+      path: wikiPath,
+      allow_discussion,
+      transition,
+      bodyModifier,
+    },
+    requestOptions,
+  );
+
+  return {
+    response,
+    wikiId,
+    wikiPath: `/${wikiPath}`,
+    contentPath: `/${wikiPath}/${contentId}`,
+  };
 }
