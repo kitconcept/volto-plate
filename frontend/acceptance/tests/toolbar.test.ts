@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { createContent } from './content';
+import { createWikiPage } from './content';
 import { login } from './login';
 import { waitForPlateEditorReady } from './plate';
 import { selectParagraphText, withSomersaultBody } from './helpers';
@@ -23,21 +23,21 @@ async function openToolbarTestPage(
     bodyText?: string;
   },
 ) {
-  await createContent(page, {
-    contentType: 'WikiPage',
+  const { contentPath } = await createWikiPage(page, {
     contentId,
     contentTitle,
     transition: 'publish',
     bodyModifier: withSomersaultBody(bodyText),
   });
 
-  await page.goto(`/${contentId}/edit`, { waitUntil: 'networkidle' });
+  await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
   await waitForPlateEditorReady(page);
+  return { contentPath };
 }
 
-async function savePage(page: Page, contentId: string, contentTitle: string) {
+async function savePage(page: Page, contentPath: string, contentTitle: string) {
   await page.locator('#toolbar-save').click();
-  await page.waitForURL(`/${contentId}`, {
+  await page.waitForURL(contentPath, {
     waitUntil: 'load',
     timeout: 30_000,
   });
@@ -52,7 +52,7 @@ test.describe('Plate toolbar — text marks', () => {
   test('clicking the Bold button wraps selected text in <strong> and persists after save', async ({
     page,
   }) => {
-    await openToolbarTestPage(page, {
+    const { contentPath: boldPath } = await openToolbarTestPage(page, {
       contentId: 'toolbar-bold-test',
       contentTitle: 'Toolbar bold test',
     });
@@ -71,7 +71,7 @@ test.describe('Plate toolbar — text marks', () => {
     await expect(editorBoldText).toHaveText('Hello');
 
     // Save and verify bold appear on the view page
-    await savePage(page, 'toolbar-bold-test', 'Toolbar bold test');
+    await savePage(page, boldPath, 'Toolbar bold test');
 
     const viewBoldText = page
       .locator('strong')
@@ -83,7 +83,7 @@ test.describe('Plate toolbar — text marks', () => {
   test('clicking the Italic button wraps selected text in <em> and persists after save', async ({
     page,
   }) => {
-    await openToolbarTestPage(page, {
+    const { contentPath: italicPath } = await openToolbarTestPage(page, {
       contentId: 'toolbar-italic-test',
       contentTitle: 'Toolbar italic test',
     });
@@ -102,7 +102,7 @@ test.describe('Plate toolbar — text marks', () => {
     await expect(editorItalicText).toHaveText('Hello');
 
     // Save and verify italic appear on the view page
-    await savePage(page, 'toolbar-italic-test', 'Toolbar italic test');
+    await savePage(page, italicPath, 'Toolbar italic test');
 
     const viewItalicText = page
       .locator('em')
@@ -114,7 +114,7 @@ test.describe('Plate toolbar — text marks', () => {
   test('clicking the Strikethrough button wraps selected text in <s> and persists after save', async ({
     page,
   }) => {
-    await openToolbarTestPage(page, {
+    const { contentPath: strikethroughPath } = await openToolbarTestPage(page, {
       contentId: 'toolbar-strikethrough-test',
       contentTitle: 'Toolbar strikethrough test',
     });
@@ -133,11 +133,7 @@ test.describe('Plate toolbar — text marks', () => {
     await expect(editorStrikethroughText).toHaveText('Hello');
 
     // Save and verify strikethrough appear on the view page
-    await savePage(
-      page,
-      'toolbar-strikethrough-test',
-      'Toolbar strikethrough test',
-    );
+    await savePage(page, strikethroughPath, 'Toolbar strikethrough test');
 
     const viewStrikethroughText = page
       .locator('s')
