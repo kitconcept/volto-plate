@@ -110,7 +110,12 @@ function ContentNavigationBase({
     >
       <nav
         className="content-navigation"
-        style={{ position: 'absolute', marginTop: '40px' }}
+        style={{
+          position: 'absolute',
+          marginTop: '40px',
+          left: 0,
+          width: 'calc((100% - var(--default-container-width)) / 2)',
+        }}
       >
         {navigation.has_custom_name && navigation.url ? (
           <div className="content-navigation-header">
@@ -118,7 +123,7 @@ function ContentNavigationBase({
           </div>
         ) : null}
         <Tree
-          style={{ maxHeight: 'none', border: 'none', width: '400px' }}
+          style={{ maxHeight: 'none', border: 'none', width: '100%' }}
           aria-label={navigation.title || 'Navigation'}
         >
           {items.map((node) => renderNavItem(node))}
