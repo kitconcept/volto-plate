@@ -31,8 +31,8 @@ catalogs:
       specifier: 4.17.23
       version: 4.17.23
     react-aria-components:
-      specifier: ^1.16.0
-      version: 1.16.0
+      specifier: ^1.17.0
+      version: 1.17.0
     release-it:
       specifier: ^19.0.5
       version: 19.0.5
@@ -1739,9 +1739,9 @@ importers:
       jotai:
         specifier: ^2.15.0
         version: 2.15.0(@babel/core@7.28.5)(@babel/template@7.27.2)(@types/react@18.3.26)(react@18.2.0)
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
+      lodash.debounce:
+        specifier: ^4.0.8
+        version: 4.0.8
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -1759,7 +1759,7 @@ importers:
         version: 18.2.0
       react-aria-components:
         specifier: 'catalog:'
-        version: 1.16.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 1.17.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react-dnd:
         specifier: ^16.0.1
         version: 16.0.1(@types/hoist-non-react-statics@3.3.7(@types/react@18.3.26))(@types/node@24.10.1)(@types/react@18.3.26)(react@18.2.0)
@@ -1830,6 +1830,9 @@ importers:
       '@types/jest-axe':
         specifier: ^3.5.9
         version: 3.5.9
+      '@types/lodash.debounce':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.1
@@ -1866,9 +1869,6 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 8.0.8(@types/node@24.10.1)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.2)(terser@5.44.0)(yaml@2.8.1)
-      vite-tsconfig-paths:
-        specifier: ^5.1.4
-        version: 5.1.4(typescript@5.9.3)(vite@8.0.8(@types/node@24.10.1)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.2)(terser@5.44.0)(yaml@2.8.1))
       vitest:
         specifier: 'catalog:'
         version: 4.1.4(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jsdom@28.1.0)(vite@8.0.8(@types/node@24.10.1)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.2)(terser@5.44.0)(yaml@2.8.1))
@@ -3512,14 +3512,23 @@ packages:
   '@internationalized/date@3.12.0':
     resolution: {integrity: sha512-/PyIMzK29jtXaGU23qTvNZxvBXRtKbNnGDFD+PY6CZw/Y8Ex8pFUzkuCJCG9aOqmShjqhS9mPqP6Dk5onQY8rQ==}
 
+  '@internationalized/date@3.12.1':
+    resolution: {integrity: sha512-6IedsVWXyq4P9Tj+TxuU8WGWM70hYLl12nbYU8jkikVpa6WXapFazPUcHUMDMoWftIDE2ILDkFFte6W2nFCkRQ==}
+
   '@internationalized/message@3.1.8':
     resolution: {integrity: sha512-Rwk3j/TlYZhn3HQ6PyXUV0XP9Uv42jqZGNegt0BXlxjE6G3+LwHjbQZAGHhCnCPdaA6Tvd3ma/7QzLlLkJxAWA==}
 
   '@internationalized/number@3.6.5':
     resolution: {integrity: sha512-6hY4Kl4HPBvtfS62asS/R22JzNNy8vi/Ssev7x6EobfCp+9QIB2hKvI2EtbdJ0VSQacxVNtqhE/NmF/NZ0gm6g==}
 
+  '@internationalized/number@3.6.6':
+    resolution: {integrity: sha512-iFgmQaXHE0vytNfpLZWOC2mEJCBRzcUxt53Xf/yCXG93lRvqas237i3r7X4RKMwO3txiyZD4mQjKAByFv6UGSQ==}
+
   '@internationalized/string@3.2.7':
     resolution: {integrity: sha512-D4OHBjrinH+PFZPvfCXvG28n2LSykWcJ7GIioQL+ok0LON15SdfoUssoHzzOUmVZLbRoREsQXVzA6r8JKsbP6A==}
+
+  '@internationalized/string@3.2.8':
+    resolution: {integrity: sha512-NdbMQUSfXLYIQol5VyMtinm9pZDciiMfN7RtmSuSB78io1hqwJ0naYfxyW6vgxWBkzWymQa/3uLDlbfmshtCaA==}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -5869,6 +5878,11 @@ packages:
     peerDependencies:
       react: 18.2.0
 
+  '@react-types/shared@3.34.0':
+    resolution: {integrity: sha512-gp6xo/s2lX54AlTjOiqwDnxA7UW79BNvI9dB9pr3LZTzRKCd1ZA+ZbgKw/ReIiWuvvVw/8QFJpnqeeFyLocMcQ==}
+    peerDependencies:
+      react: 18.2.0
+
   '@react-types/slider@3.8.2':
     resolution: {integrity: sha512-MQYZP76OEOYe7/yA2To+Dl0LNb0cKKnvh5JtvNvDnAvEprn1RuLiay8Oi/rTtXmc2KmBa4VdTcsXsmkbbkeN2Q==}
     peerDependencies:
@@ -7062,6 +7076,9 @@ packages:
 
   '@types/loadable__component@5.13.10':
     resolution: {integrity: sha512-2/LjmgG1JcGPj7T3NViq7BB5cvOA0s63gL3Gv+FPULj2L+3ExWfsNQcsFPUIOoGsVUJeZxgNPf320JZDyxjtCQ==}
+
+  '@types/lodash.debounce@4.0.9':
+    resolution: {integrity: sha512-Ma5JcgTREwpLRwMM+XwBR7DaWe96nC38uCBDFKZWbNKD+osjVzdpnUSwBcqCptrp16sSOLBAUb50Car5I0TCsQ==}
 
   '@types/lodash@4.17.20':
     resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
@@ -12821,6 +12838,12 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0
 
+  react-aria-components@1.17.0:
+    resolution: {integrity: sha512-0EyisMgvsFJ2aML3crDYv2tW5vT2Ryf8PGzY/g63JjDdCbLshlwazhS8JNtPF1vkTkungJJ6sVJbKyX+YKSoFA==}
+    peerDependencies:
+      react: 18.2.0
+      react-dom: 18.2.0
+
   react-aria@3.45.0:
     resolution: {integrity: sha512-QsdWIhhm3+IAiW3SU9tEm7pmeIcveEPAO6riZ1IUF78ZCvH/47nU4zVztcdtYmwYWSL4168QxLncWKtlMva3BA==}
     peerDependencies:
@@ -12829,6 +12852,12 @@ packages:
 
   react-aria@3.47.0:
     resolution: {integrity: sha512-nvahimIqdByl/PXk/xPkG30LPRzcin+/Uk0uFfwbbKRRFC9aa22a6BRULZLqVHwa9GaNyKe6CDUxO1Dde4v0kA==}
+    peerDependencies:
+      react: 18.2.0
+      react-dom: 18.2.0
+
+  react-aria@3.48.0:
+    resolution: {integrity: sha512-jQjd4rBEIMqecBaAKYJbVGK6EqIHLa5znVQ7jwFyK5vCyljoj6KhgtiahmcIPsG5vG5vEDLw+ba+bEWn6A2P4w==}
     peerDependencies:
       react: 18.2.0
       react-dom: 18.2.0
@@ -13186,6 +13215,11 @@ packages:
 
   react-stately@3.45.0:
     resolution: {integrity: sha512-G3bYr0BIiookpt4H05VeZUuVS/FslQAj2TeT8vDfCiL314Y+LtPXIPe/a3eamCA0wljy7z1EDYKV50Qbz7pcJg==}
+    peerDependencies:
+      react: 18.2.0
+
+  react-stately@3.46.0:
+    resolution: {integrity: sha512-OdxhWvHgs2L4OJGIs7hnuTr5WjjMM6enhNEAMRqiekhF8+ITvA2LRwNftOZwcogaoCslGYq5S2VQTQwnm0GbCA==}
     peerDependencies:
       react: 18.2.0
 
@@ -17152,6 +17186,10 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.17
 
+  '@internationalized/date@3.12.1':
+    dependencies:
+      '@swc/helpers': 0.5.17
+
   '@internationalized/message@3.1.8':
     dependencies:
       '@swc/helpers': 0.5.17
@@ -17161,7 +17199,15 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.17
 
+  '@internationalized/number@3.6.6':
+    dependencies:
+      '@swc/helpers': 0.5.17
+
   '@internationalized/string@3.2.7':
+    dependencies:
+      '@swc/helpers': 0.5.17
+
+  '@internationalized/string@3.2.8':
     dependencies:
       '@swc/helpers': 0.5.17
 
@@ -20601,6 +20647,10 @@ snapshots:
     dependencies:
       react: 18.2.0
 
+  '@react-types/shared@3.34.0(react@18.2.0)':
+    dependencies:
+      react: 18.2.0
+
   '@react-types/slider@3.8.2(react@18.2.0)':
     dependencies:
       '@react-types/shared': 3.32.1(react@18.2.0)
@@ -21884,6 +21934,10 @@ snapshots:
   '@types/loadable__component@5.13.10':
     dependencies:
       '@types/react': 18.3.26
+
+  '@types/lodash.debounce@4.0.9':
+    dependencies:
+      '@types/lodash': 4.17.20
 
   '@types/lodash@4.17.20': {}
 
@@ -28706,6 +28760,17 @@ snapshots:
       react-stately: 3.45.0(react@18.2.0)
       use-sync-external-store: 1.6.0(react@18.2.0)
 
+  react-aria-components@1.17.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+    dependencies:
+      '@internationalized/date': 3.12.1
+      '@react-types/shared': 3.34.0(react@18.2.0)
+      '@swc/helpers': 0.5.17
+      client-only: 0.0.1
+      react: 18.2.0
+      react-aria: 3.48.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-dom: 18.2.0(react@18.2.0)
+      react-stately: 3.46.0(react@18.2.0)
+
   react-aria@3.45.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@internationalized/string': 3.2.7
@@ -28799,6 +28864,20 @@ snapshots:
       '@react-types/shared': 3.33.1(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+
+  react-aria@3.48.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+    dependencies:
+      '@internationalized/date': 3.12.1
+      '@internationalized/number': 3.6.6
+      '@internationalized/string': 3.2.8
+      '@react-types/shared': 3.34.0(react@18.2.0)
+      '@swc/helpers': 0.5.17
+      aria-hidden: 1.2.6
+      clsx: 2.1.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-stately: 3.46.0(react@18.2.0)
+      use-sync-external-store: 1.6.0(react@18.2.0)
 
   react-base16-styling@0.9.1:
     dependencies:
@@ -29351,6 +29430,16 @@ snapshots:
       '@react-stately/tree': 3.9.6(react@18.2.0)
       '@react-types/shared': 3.33.1(react@18.2.0)
       react: 18.2.0
+
+  react-stately@3.46.0(react@18.2.0):
+    dependencies:
+      '@internationalized/date': 3.12.1
+      '@internationalized/number': 3.6.6
+      '@internationalized/string': 3.2.8
+      '@react-types/shared': 3.34.0(react@18.2.0)
+      '@swc/helpers': 0.5.17
+      react: 18.2.0
+      use-sync-external-store: 1.6.0(react@18.2.0)
 
   react-style-singleton@2.2.3(@types/react@18.3.26)(react@18.2.0):
     dependencies:
@@ -31339,17 +31428,6 @@ snapshots:
       vite: 8.0.8(@types/node@24.10.1)(esbuild@0.25.10)(jiti@2.6.1)(sass@1.93.2)(terser@5.44.0)(yaml@2.8.1)
     transitivePeerDependencies:
       - rollup
-      - supports-color
-      - typescript
-
-  vite-tsconfig-paths@5.1.4(typescript@5.9.3)(vite@8.0.8(@types/node@24.10.1)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.2)(terser@5.44.0)(yaml@2.8.1)):
-    dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
-      globrex: 0.1.2
-      tsconfck: 3.1.6(typescript@5.9.3)
-    optionalDependencies:
-      vite: 8.0.8(@types/node@24.10.1)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.2)(terser@5.44.0)(yaml@2.8.1)
-    transitivePeerDependencies:
       - supports-color
       - typescript
 

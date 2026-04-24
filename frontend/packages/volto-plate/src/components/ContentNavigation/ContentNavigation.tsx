@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import {
+  Button,
   Tree,
   TreeItem as RACTreeItem,
   TreeItemContent,
@@ -44,18 +45,47 @@ function renderNavItem(node: NavItem): React.ReactNode {
       id={node['@id']}
       textValue={node.title}
       aria-current={node.is_current ? 'page' : undefined}
-      className={[
-        'content-navigation-item',
-        node.is_current ? 'is-current' : '',
-        node.is_in_path ? 'in-path' : '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
     >
       <TreeItemContent>
-        <Link to={flattenToAppURL(node.href)} title={node.description}>
-          {node.title}
-        </Link>
+        {({ hasChildItems, level }) => (
+          <span
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: `${(level - 1) * 16}px`,
+            }}
+          >
+            {hasChildItems ? (
+              <Button
+                slot="chevron"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px 6px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden>
+                  <path d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              </Button>
+            ) : (
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '24px',
+                  flexShrink: 0,
+                }}
+              />
+            )}
+            <Link to={flattenToAppURL(node.href)} title={node.description}>
+              {node.title}
+            </Link>
+          </span>
+        )}
       </TreeItemContent>
       {node.items?.map((child) => renderNavItem(child))}
     </RACTreeItem>
@@ -87,7 +117,10 @@ function ContentNavigationBase({
             <Link to={flattenToAppURL(navigation.url)}>{navigation.title}</Link>
           </div>
         ) : null}
-        <Tree aria-label={navigation.title || 'Navigation'}>
+        <Tree
+          style={{ maxHeight: 'none', border: 'none' }}
+          aria-label={navigation.title || 'Navigation'}
+        >
           {items.map((node) => renderNavItem(node))}
         </Tree>
       </nav>
