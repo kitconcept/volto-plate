@@ -105,20 +105,20 @@ function ContentNavigationBase({
     <div
       style={{
         position: 'relative',
-        maxWidth: '1440px',
-        marginLeft: 'auto',
-        marginRight: 'auto',
         zIndex: 11,
       }}
     >
-      <nav className="content-navigation" style={{ position: 'absolute' }}>
+      <nav
+        className="content-navigation"
+        style={{ position: 'absolute', marginTop: '40px' }}
+      >
         {navigation.has_custom_name && navigation.url ? (
           <div className="content-navigation-header">
             <Link to={flattenToAppURL(navigation.url)}>{navigation.title}</Link>
           </div>
         ) : null}
         <Tree
-          style={{ maxHeight: 'none', border: 'none' }}
+          style={{ maxHeight: 'none', border: 'none', width: '400px' }}
           aria-label={navigation.title || 'Navigation'}
         >
           {items.map((node) => renderNavItem(node))}
