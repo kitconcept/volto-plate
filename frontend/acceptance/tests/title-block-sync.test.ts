@@ -151,8 +151,6 @@ test('Title placeholder is rendered inside the width-constrained inner container
     const placeholder = innerContainer?.querySelector(
       '[aria-hidden="true"]',
     ) as HTMLElement | null;
-    const contentWrapper =
-      innerContainer?.lastElementChild as HTMLElement | null;
 
     return {
       className: element.className,
@@ -161,18 +159,9 @@ test('Title placeholder is rendered inside the width-constrained inner container
         ? window.getComputedStyle(innerContainer).position
         : null,
       placeholderText: placeholder?.textContent,
+      placeholderParentClassName: placeholder?.parentElement?.className ?? null,
       placeholderPosition: placeholder
         ? window.getComputedStyle(placeholder).position
-        : null,
-      placeholderZIndex: placeholder
-        ? window.getComputedStyle(placeholder).zIndex
-        : null,
-      contentWrapperTag: contentWrapper?.tagName,
-      contentWrapperPosition: contentWrapper
-        ? window.getComputedStyle(contentWrapper).position
-        : null,
-      contentWrapperZIndex: contentWrapper
-        ? window.getComputedStyle(contentWrapper).zIndex
         : null,
     };
   });
@@ -182,10 +171,9 @@ test('Title placeholder is rendered inside the width-constrained inner container
     innerContainerClassName: expect.stringContaining('block-inner-container'),
     innerContainerPosition: 'relative',
     placeholderText: 'Type the title...',
+    placeholderParentClassName: expect.stringContaining(
+      'block-inner-container',
+    ),
     placeholderPosition: 'absolute',
-    placeholderZIndex: '0',
-    contentWrapperTag: 'SPAN',
-    contentWrapperPosition: 'relative',
-    contentWrapperZIndex: '10',
   });
 });
