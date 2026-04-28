@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         meta_type="Dexterity FTI"
-        name="Wiki"
+        name="Workspace"
         i18n:domain="kitconcept.plate"
 >
   <property name="title"
             i18n:translate=""
-  >Wiki</property>
+  >Workspace</property>
   <property name="description"
             i18n:translate=""
-  >A folderish wiki container.</property>
+  >A folderish workspace container.</property>
 
   <property name="allow_discussion">False</property>
-  <property name="factory">Wiki</property>
+  <property name="factory">Workspace</property>
   <property name="icon_expr">string:contenttype/folder</property>
   <property name="link_target" />
 
@@ -26,7 +26,7 @@
 
   <property name="add_permission">cmf.AddPortalContent</property>
   <property name="klass">plone.dexterity.content.Container</property>
-  <property name="schema">kitconcept.plate.content.wiki.IWiki</property>
+  <property name="schema">kitconcept.plate.content.workspace.IWorkspace</property>
   <property name="model_file" />
   <property name="model_source" />
 
@@ -49,7 +49,7 @@
     <element value="plone.translatable" />
   </property>
 
-  <property name="add_view_expr">string:${folder_url}/++add++Wiki</property>
+  <property name="add_view_expr">string:${folder_url}/++add++Workspace</property>
   <property name="default_view">view</property>
   <property name="default_view_fallback">False</property>
   <property name="immediate_view">view</property>

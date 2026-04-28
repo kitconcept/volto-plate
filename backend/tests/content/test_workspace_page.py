@@ -1,34 +1,34 @@
-from kitconcept.plate.content.wiki import IWiki
+from kitconcept.plate.content.workspace import IWorkspace
 from kitconcept.plate.content.wiki_page import IWikiPage
 from plone import api
 
 
-class TestWiki:
-    def test_wiki_fti_registered(self, portal):
-        fti = portal.portal_types.get("Wiki")
+class TestWorkspace:
+    def test_workspace_fti_registered(self, portal):
+        fti = portal.portal_types.get("Workspace")
 
         assert fti is not None
-        assert fti.Title() == "Wiki"
-        assert fti.factory == "Wiki"
-        assert fti.schema == "kitconcept.plate.content.wiki.IWiki"
+        assert fti.Title() == "Workspace"
+        assert fti.factory == "Workspace"
+        assert fti.schema == "kitconcept.plate.content.workspace.IWorkspace"
         assert fti.filter_content_types is True
         assert fti.global_allow is True
         assert fti.allowed_content_types == ("WikiPage", "File", "Image")
         assert "plone.constraintypes" in fti.behaviors
 
-    def test_wiki_can_be_created(self, portal):
+    def test_workspace_can_be_created(self, portal):
         with api.env.adopt_roles(["Manager"]):
-            wiki = api.content.create(
+            workspace = api.content.create(
                 container=portal,
-                type="Wiki",
-                title="Engineering Wiki",
+                type="Workspace",
+                title="Engineering Workspace",
             )
 
-        assert wiki.portal_type == "Wiki"
-        assert wiki.Title() == "Engineering Wiki"
-        assert IWiki.providedBy(wiki)
-        assert hasattr(wiki, "blocks")
-        assert hasattr(wiki, "blocks_layout")
+        assert workspace.portal_type == "Workspace"
+        assert workspace.Title() == "Engineering Workspace"
+        assert IWorkspace.providedBy(workspace)
+        assert hasattr(workspace, "blocks")
+        assert hasattr(workspace, "blocks_layout")
 
 
 class TestWikiPage:
@@ -46,13 +46,13 @@ class TestWikiPage:
 
     def test_wiki_page_can_be_created(self, portal):
         with api.env.adopt_roles(["Manager"]):
-            wiki = api.content.create(
+            workspace = api.content.create(
                 container=portal,
-                type="Wiki",
-                title="Engineering Wiki",
+                type="Workspace",
+                title="Engineering Workspace",
             )
             page = api.content.create(
-                container=wiki,
+                container=workspace,
                 type="WikiPage",
                 title="Team Handbook",
             )
