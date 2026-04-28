@@ -19,7 +19,11 @@ export type DiscussionUser = {
 };
 
 export const normalizeDiscussions = (
-  discussions: DiscussionRecord | Record<string, unknown> | TDiscussion[] | undefined,
+  discussions:
+    | DiscussionRecord
+    | Record<string, unknown>
+    | TDiscussion[]
+    | undefined,
 ): TDiscussion[] => {
   if (!discussions) return [];
 
