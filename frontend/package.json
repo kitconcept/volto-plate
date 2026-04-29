@@ -37,8 +37,7 @@
     "@plone/registry": "workspace:*",
     "@plone/volto": "workspace:*",
     "@kitconcept/volto-plate": "workspace:*",
-    "@kitconcept/volto-light-theme": "^8.0.0-alpha.18",
-    "react-aria-components": "^1.14.0"
+    "@kitconcept/volto-light-theme": "^8.0.0-alpha.22"
   },
   "devDependencies": {
     "mrs-developer": "^2.2.0",
