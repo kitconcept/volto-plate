@@ -3,7 +3,7 @@
         name="portal_types"
 >
   <object meta_type="Dexterity FTI"
-          name="Wiki"
+          name="Workspace"
   />
   <object meta_type="Dexterity FTI"
           name="WikiPage"

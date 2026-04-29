@@ -1,6 +1,6 @@
 {
-  "@id": "/wiki",
-  "@type": "Wiki",
+  "@id": "/workspace",
+  "@type": "Workspace",
   "UID": "b1c6fb62b4af4dd697fd0c38ab7f51e8",
   "allow_discussion": false,
   "blocks": {
@@ -29,7 +29,7 @@
   "expires": null,
   "exportimport.constrains": {},
   "exportimport.conversation": [],
-  "id": "wiki",
+  "id": "workspace",
   "is_folderish": true,
   "language": "##DEFAULT##",
   "layout": "view",
@@ -43,8 +43,8 @@
   "review_state": "published",
   "rights": "",
   "subjects": [],
-  "title": "Wiki",
-  "type_title": "Wiki",
+  "title": "Workspace",
+  "type_title": "Workspace",
   "version": "current",
   "versioning_enabled": true,
   "workflow_history": {

@@ -1,0 +1,22 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    >
+
+  <genericsetup:upgradeSteps
+      profile="kitconcept.plate:default"
+      source="20260414001"
+      destination="20260428001"
+      >
+    <genericsetup:upgradeDepends
+        title="Renames the Wiki container content type to Workspace."
+        import_steps="typeinfo"
+        />
+    <genericsetup:upgradeStep
+        title="Renames existing Wiki content to Workspace."
+        description=""
+        handler=".rename_wiki_to_workspace"
+        />
+  </genericsetup:upgradeSteps>
+
+</configure>
