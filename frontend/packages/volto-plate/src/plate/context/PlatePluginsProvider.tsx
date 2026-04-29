@@ -58,16 +58,10 @@ export function PlatePluginsProvider({
   );
   const [discussions, setDiscussionsState] =
     React.useState<TDiscussion[]>(initialDiscussions);
-  const [users, setUsers] =
-    React.useState<Record<string, TDiscussionUser>>(initialUsers);
 
   React.useEffect(() => {
     setDiscussionsState(initialDiscussions);
   }, [initialDiscussions]);
-
-  React.useEffect(() => {
-    setUsers(initialUsers);
-  }, [initialUsers]);
 
   const setDiscussions = React.useCallback<
     React.Dispatch<React.SetStateAction<TDiscussion[]>>
@@ -83,17 +77,17 @@ export function PlatePluginsProvider({
   );
   const resolvedUsers = React.useMemo(() => {
     if (!currentUser) {
-      return users;
+      return initialUsers;
     }
 
     return {
-      ...users,
+      ...initialUsers,
       [currentUser.id]: {
-        ...users[currentUser.id],
+        ...initialUsers[currentUser.id],
         ...currentUser,
       },
     };
-  }, [currentUser, users]);
+  }, [currentUser, initialUsers]);
 
   const value = React.useMemo(
     () => ({
@@ -101,10 +95,9 @@ export function PlatePluginsProvider({
       currentUserId: currentUser?.id ?? null,
       discussions,
       setDiscussions,
-      setUsers,
       users: resolvedUsers,
     }),
-    [currentUser, discussions, resolvedUsers, setDiscussions, setUsers],
+    [currentUser, discussions, resolvedUsers, setDiscussions],
   );
 
   return (
