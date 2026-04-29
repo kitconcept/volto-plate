@@ -1,6 +1,6 @@
 import { expect, test } from './test';
 import { login } from './login';
-import { createContent } from './content';
+import { createWikiPage } from './content';
 import { waitForPlateEditorReady } from './plate';
 import { getEditorHandle, getSelection } from '@platejs/playwright';
 
@@ -23,24 +23,30 @@ function withSomersaultBody(body: Record<string, unknown>) {
 
 async function openTitleSyncPage(
   page: Parameters<typeof test>[0]['page'],
-  { contentId, contentTitle }: { contentId: string; contentTitle: string },
-) {
-  await login(page);
-  await createContent(page, {
-    contentType: 'WikiPage',
+  {
     contentId,
     contentTitle,
+    wikiId = `wiki-${contentId}`,
+  }: {
+    contentId: string;
+    contentTitle: string;
+    wikiId?: string;
+  },
+) {
+  await login(page);
+  const { contentPath } = await createWikiPage(page, {
+    contentId,
+    contentTitle,
+    wikiId,
     transition: 'publish',
     bodyModifier: withSomersaultBody,
   });
 
-  await page.goto(`/${contentId}/edit`);
+  await page.goto(`${contentPath}/edit`);
   await waitForPlateEditorReady(page);
 }
 
-async function openMetadataSidebar(
-  page: Parameters<typeof test>[0]['page'],
-) {
+async function openMetadataSidebar(page: Parameters<typeof test>[0]['page']) {
   await page.getByRole('button', { name: 'Wiki Page' }).click();
   await expect(
     page.getByRole('textbox', {

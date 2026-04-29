@@ -1,0 +1,70 @@
+{
+  "@id": "/workspace",
+  "@type": "Workspace",
+  "UID": "b1c6fb62b4af4dd697fd0c38ab7f51e8",
+  "allow_discussion": false,
+  "blocks": {
+    "246a737b-b7b4-4891-904f-c60d984ae0cb": {
+      "@type": "slate"
+    },
+    "a1811724-9462-4120-a487-62ed322d44fb": {
+      "@type": "title"
+    }
+  },
+  "blocks_layout": {
+    "items": [
+      "a1811724-9462-4120-a487-62ed322d44fb",
+      "246a737b-b7b4-4891-904f-c60d984ae0cb"
+    ]
+  },
+  "changeNote": "",
+  "contributors": [],
+  "created": "2026-04-14T10:00:00+00:00",
+  "creators": [
+    "admin"
+  ],
+  "description": "",
+  "effective": null,
+  "exclude_from_nav": false,
+  "expires": null,
+  "exportimport.constrains": {},
+  "exportimport.conversation": [],
+  "id": "workspace",
+  "is_folderish": true,
+  "language": "##DEFAULT##",
+  "layout": "view",
+  "lock": {
+    "locked": false,
+    "stealable": true
+  },
+  "modified": "2026-04-14T10:00:00+00:00",
+  "nav_title": null,
+  "preview_caption_link": null,
+  "review_state": "published",
+  "rights": "",
+  "subjects": [],
+  "title": "Workspace",
+  "type_title": "Workspace",
+  "version": "current",
+  "versioning_enabled": true,
+  "workflow_history": {
+    "simple_publication_workflow": [
+      {
+        "action": null,
+        "actor": "admin",
+        "comments": "",
+        "review_state": "private",
+        "time": "2026-04-14T10:00:00+00:00"
+      },
+      {
+        "action": "publish",
+        "actor": "admin",
+        "comments": "",
+        "review_state": "published",
+        "time": "2026-04-14T10:00:00+00:00"
+      }
+    ]
+  },
+  "working_copy": null,
+  "working_copy_of": null
+}
