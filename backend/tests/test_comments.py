@@ -21,16 +21,16 @@ class TestCommentsDeserializer:
         self.request = portal.REQUEST
 
         with api.env.adopt_roles(["Manager"]):
-            # WikiPage is only addable inside a Wiki on current main.
-            self.wiki = api.content.create(
+            # WikiPage is only addable inside a Workspace.
+            self.workspace = api.content.create(
                 container=self.portal,
-                type="Wiki",
-                title="Test wiki",
+                type="Workspace",
+                title="Test workspace",
             )
 
             # Create a wiki page
             self.page = api.content.create(
-                container=self.wiki,
+                container=self.workspace,
                 type="WikiPage",
                 title="Test page",
             )
@@ -295,16 +295,16 @@ class TestCommentsSerializer:
         self.request = portal.REQUEST
 
         with api.env.adopt_roles(["Manager"]):
-            # WikiPage is only addable inside a Wiki on current main.
-            self.wiki = api.content.create(
+            # WikiPage is only addable inside a Workspace.
+            self.workspace = api.content.create(
                 container=self.portal,
-                type="Wiki",
-                title="Test wiki",
+                type="Workspace",
+                title="Test workspace",
             )
 
             # Create a wiki page with discussions
             self.page = api.content.create(
-                container=self.wiki,
+                container=self.workspace,
                 type="WikiPage",
                 title="Test page with comments",
             )
