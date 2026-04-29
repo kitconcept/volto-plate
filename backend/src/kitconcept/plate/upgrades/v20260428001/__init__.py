@@ -11,7 +11,7 @@ def rename_wiki_to_workspace(context):
         obj = brain.getObject()
         obj.portal_type = "Workspace"
         if base_hasattr(obj, "reindexObject"):
-            obj.reindexObject(idxs=["portal_type"])
+            obj.reindexObject(idxs=["portal_type", "object_provides"])
 
     if base_hasattr(portal_types, "Wiki"):
         portal_types.manage_delObjects(["Wiki"])
