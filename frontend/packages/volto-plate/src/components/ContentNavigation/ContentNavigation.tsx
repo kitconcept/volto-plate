@@ -1,35 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import {
-  Button,
-  Tree,
-  TreeItem as RACTreeItem,
-  TreeItemContent,
-} from 'react-aria-components';
-
-// import {
-//   Tree,
-//   TreeItem as RACTreeItem,
-//   TreeItemContent,
-// } from '@plone/components/src/components/Tree/Tree';
-import { flattenToAppURL } from '@plone/volto/helpers';
+import { Tree, TreeItem } from '@plone/components';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
 
 interface NavItem {
   '@id': string;
+  description: string;
   href: string;
+  icon: string;
+  is_current: boolean;
+  is_folderish: boolean;
+  is_in_path: boolean;
+  items: NavItem[];
+  normalized_id: string;
+  review_state: string;
+  thumb: string;
   title: string;
-  description?: string;
-  type?: string;
-  is_current?: boolean;
-  is_in_path?: boolean;
-  items?: NavItem[];
+  type: string;
 }
 
 interface Navigation {
-  items?: NavItem[];
+  '@id'?: string;
+  available?: boolean;
   has_custom_name?: boolean;
+  items?: NavItem[];
   title?: string;
   url?: string;
 }
@@ -38,57 +33,29 @@ interface ContentNavigationBaseProps {
   navigation?: Navigation;
 }
 
-function renderNavItem(node: NavItem): React.ReactNode {
+function collectInPathIds(items: NavItem[]): string[] {
+  return items.flatMap((item) => [
+    ...(item.is_in_path ? [item['@id']] : []),
+    ...collectInPathIds(item.items ?? []),
+  ]);
+}
+
+function renderNavItem(item: NavItem): React.ReactNode {
   return (
-    <RACTreeItem
-      key={node['@id']}
-      id={node['@id']}
-      textValue={node.title}
-      aria-current={node.is_current ? 'page' : undefined}
+    <TreeItem
+      key={item['@id']}
+      id={item['@id']}
+      title={item.title}
+      href={flattenToAppURL(item.href)}
+      className={
+        item.is_current
+          ? ({ defaultClassName }) =>
+              `${defaultClassName ?? ''} is-current`.trim()
+          : undefined
+      }
     >
-      <TreeItemContent>
-        {({ hasChildItems, level }) => (
-          <span
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              paddingLeft: `${(level - 1) * 16}px`,
-            }}
-          >
-            {hasChildItems ? (
-              <Button
-                slot="chevron"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '4px 6px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden>
-                  <path d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                </svg>
-              </Button>
-            ) : (
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: '24px',
-                  flexShrink: 0,
-                }}
-              />
-            )}
-            <Link to={flattenToAppURL(node.href)} title={node.description}>
-              {node.title}
-            </Link>
-          </span>
-        )}
-      </TreeItemContent>
-      {node.items?.map((child) => renderNavItem(child))}
-    </RACTreeItem>
+      {item.items?.map((child) => renderNavItem(child))}
+    </TreeItem>
   );
 }
 
@@ -96,37 +63,36 @@ function ContentNavigationBase({
   navigation = {},
 }: ContentNavigationBaseProps) {
   const { items = [] } = navigation;
+  const navigationId = navigation['@id'];
 
-  if (!items.length) {
+  const lastItemsRef = useRef<NavItem[]>(items);
+  if (items.length > 0) lastItemsRef.current = items;
+  const displayItems = items.length > 0 ? items : lastItemsRef.current;
+
+  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(
+    () => new Set(collectInPathIds(items)),
+  );
+
+  useEffect(() => {
+    setExpandedKeys(new Set(collectInPathIds(items)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigationId]);
+
+  if (!displayItems.length) {
     return null;
   }
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        zIndex: 11,
-      }}
-    >
-      <nav
-        className="content-navigation"
-        style={{
-          position: 'absolute',
-          marginTop: '40px',
-          left: 0,
-          width: 'calc((100% - var(--default-container-width)) / 2)',
-        }}
-      >
-        {navigation.has_custom_name && navigation.url ? (
-          <div className="content-navigation-header">
-            <Link to={flattenToAppURL(navigation.url)}>{navigation.title}</Link>
-          </div>
-        ) : null}
+    <div className="content-navigation-wrapper">
+      <nav className="content-navigation">
         <Tree
-          style={{ maxHeight: 'none', border: 'none', width: '100%' }}
           aria-label={navigation.title || 'Navigation'}
+          expandedKeys={expandedKeys}
+          onExpandedChange={(keys) =>
+            setExpandedKeys(new Set(keys as Set<string>))
+          }
         >
-          {items.map((node) => renderNavItem(node))}
+          {displayItems.map((item) => renderNavItem(item))}
         </Tree>
       </nav>
     </div>
