@@ -1,0 +1,32 @@
+.content-navigation-wrapper {
+  position: relative;
+  z-index: 11;
+  container-type: inline-size;
+}
+
+.content-navigation {
+  position: absolute;
+  left: 0;
+  display: none;
+  width: calc((100% - var(--default-container-width)) / 2);
+  margin-top: 40px;
+
+  @container (min-width: #{$layout-container-width}) {
+    display: block;
+  }
+
+  .react-aria-Tree {
+    width: 100%;
+    max-height: none;
+    padding-right: 20px;
+    border: none;
+  }
+
+  .react-aria-TreeItem {
+    color: var(--breadcrumbs-foreground);
+
+    &.is-current {
+      font-weight: bold;
+    }
+  }
+}
