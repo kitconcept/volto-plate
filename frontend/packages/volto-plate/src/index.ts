@@ -1,7 +1,9 @@
 import type { ConfigType } from '@plone/registry';
 import installSettings from './config/settings';
 import installBlocks from './config/blocks';
+import installSlots from './config/slots';
 import './theme/tailwind.css';
+import '@plone/components/dist/basic.css';
 
 export {
   VoltoImageBlockElement,
@@ -12,6 +14,7 @@ export { createVoltoBlockAdapter } from './plate/plugins/volto-block-adapter';
 function applyConfig(config: ConfigType) {
   installSettings(config);
   installBlocks(config);
+  installSlots(config);
 
   return config;
 }
