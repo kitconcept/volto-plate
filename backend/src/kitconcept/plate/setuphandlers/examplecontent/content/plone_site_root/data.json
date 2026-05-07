@@ -9,15 +9,15 @@
     },
     "c40703dc-83d1-4ebd-bf76-834801735506": {
       "@type": "teaser",
-      "description": "Welcome to my wiki page",
+      "description": "Welcome to my workspace page",
       "head_title": null,
       "href": [
         {
           "@id": "resolveuid/d73b622d250544d0a5c1c7e7e9c54ad5",
           "@type": "WikiPage",
-          "Description": "Welcome to my wiki page",
+          "Description": "Welcome to my workspace page",
           "Title": "Wiki Page",
-          "description": "Welcome to my wiki page",
+          "description": "Welcome to my workspace page",
           "effective": "1969-12-31T03:00:00+00:00",
           "end": null,
           "getRemoteUrl": null,

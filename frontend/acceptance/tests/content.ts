@@ -191,7 +191,7 @@ export async function createWikiPage(
   await createContent(
     requestOrPage,
     {
-      contentType: 'Wiki',
+      contentType: 'Workspace',
       contentId: wikiId,
       contentTitle: wikiTitle,
       path,
