@@ -1,2 +1,5 @@
 @import '@plone/plate/input.css';
+/* Keep the colors in sync with @plone/theming */
+/* For now, I won't make it a dependency */
+@import './colors.css';
 @source '../**/*.{ts,tsx,js,jsx}';
