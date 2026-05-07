@@ -25,6 +25,7 @@
     "i18n": "rm -rf build/messages && NODE_ENV=production i18n --addon",
     "dry-release": "release-it --dry-run",
     "release": "release-it",
+    "artifact-release": "mkdir -p ../../artifacts && release-it --no-npm --no-git.push && pnpm pack --pack-destination ../../artifacts",
     "release-major-alpha": "release-it major --preRelease=alpha",
     "release-alpha": "release-it --preRelease=alpha"
   },
