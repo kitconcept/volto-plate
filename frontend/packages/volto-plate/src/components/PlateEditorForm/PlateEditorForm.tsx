@@ -6,6 +6,12 @@ import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
 import { useEditorRef } from 'platejs/react';
 import wikiEditorPreset from '../../plate/presets/wiki-editor';
 import {
+  normalizeDiscussions,
+  normalizeUsers,
+  serializeDiscussions,
+} from '../../plate/discussion-data';
+import { PlatePluginsProvider } from '../../plate/context/PlatePluginsProvider';
+import {
   TITLE_BLOCK_TYPE,
   TitleMetadataContext,
 } from '../../plate/plugins/volto-title';
@@ -60,6 +66,12 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
   const somersaultBlock = content?.blocks?.[SOMERSAULT_KEY];
   const metadataTitle = content?.title ?? '';
   const stableInitialValueRef = React.useRef<Value | null>(null);
+  const latestValueRef = React.useRef<Value>([]);
+  const latestDiscussionsRef = React.useRef(
+    normalizeDiscussions(
+      somersaultBlock?.discussions as Record<string, unknown> | undefined,
+    ),
+  );
   const latestContentRef = React.useRef(content);
   const latestOnChangeFormDataRef = React.useRef(onChangeFormData);
 
@@ -80,32 +92,85 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
       : getDefaultSomersaultValue(metadataTitle);
   }
 
+  if (latestValueRef.current.length === 0) {
+    latestValueRef.current = stableInitialValueRef.current;
+  }
+
+  const initialDiscussions = React.useMemo(
+    () =>
+      normalizeDiscussions(
+        somersaultBlock?.discussions as Record<string, unknown> | undefined,
+      ),
+    [somersaultBlock?.discussions],
+  );
+  const initialUsers = React.useMemo(
+    () =>
+      normalizeUsers(
+        somersaultBlock?.users as
+          | Record<string, { id: string; fullname?: string; portrait?: string }>
+          | undefined,
+      ),
+    [somersaultBlock?.users],
+  );
+
+  const persistSomersaultBlock = React.useCallback(
+    ({
+      discussions = latestDiscussionsRef.current,
+      value = latestValueRef.current,
+    }: {
+      discussions?: ReturnType<typeof normalizeDiscussions>;
+      value?: Value;
+    }) => {
+      const currentContent = latestContentRef.current;
+      const currentSomersaultBlock = currentContent?.blocks?.[SOMERSAULT_KEY];
+
+      latestOnChangeFormDataRef.current?.({
+        blocks: {
+          ...(currentContent?.blocks ?? {}),
+          [SOMERSAULT_KEY]: {
+            ...(currentSomersaultBlock ?? {}),
+            '@type': SOMERSAULT_KEY,
+            discussions: serializeDiscussions(discussions),
+            value,
+          },
+        },
+      });
+    },
+    [],
+  );
+
+  React.useEffect(() => {
+    latestDiscussionsRef.current = initialDiscussions;
+  }, [initialDiscussions]);
+
   return (
     <ErrorBoundary isEdit type="plate editor">
       <TitleMetadataContext.Provider value={metadataTitle}>
-        <PlateEditor
-          editorConfig={wikiEditorPreset}
-          value={stableInitialValueRef.current}
-          intl={intl}
-          onChange={(options) => {
-            const currentContent = latestContentRef.current;
-            const currentSomersaultBlock =
-              currentContent?.blocks?.[SOMERSAULT_KEY];
-
-            latestOnChangeFormDataRef.current?.({
-              blocks: {
-                ...(currentContent?.blocks ?? {}),
-                [SOMERSAULT_KEY]: {
-                  ...(currentSomersaultBlock ?? {}),
-                  '@type': SOMERSAULT_KEY,
-                  value: options.value as Value,
-                },
-              },
-            });
+        {/* Hydrate Plate from persisted block discussions/users, then persist
+            discussion changes back into the somersault block on edit. */}
+        <PlatePluginsProvider
+          initialDiscussions={initialDiscussions}
+          initialUsers={initialUsers}
+          onDiscussionsChange={(discussions) => {
+            latestDiscussionsRef.current = discussions;
+            persistSomersaultBlock({ discussions });
           }}
         >
-          <InitialEditorFocus />
-        </PlateEditor>
+          <PlateEditor
+            editorConfig={wikiEditorPreset}
+            value={stableInitialValueRef.current}
+            intl={intl}
+            onChange={(options) => {
+              latestValueRef.current = options.value as Value;
+              persistSomersaultBlock({
+                discussions: latestDiscussionsRef.current,
+                value: options.value as Value,
+              });
+            }}
+          >
+            <InitialEditorFocus />
+          </PlateEditor>
+        </PlatePluginsProvider>
       </TitleMetadataContext.Provider>
     </ErrorBoundary>
   );

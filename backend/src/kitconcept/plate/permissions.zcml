@@ -1,5 +1,11 @@
 <configure xmlns="http://namespaces.zope.org/zope">
 
+  <permission
+      id="kitconcept.plate.DiscussContent"
+      title="kitconcept.plate: Discuss content"
+      description="Allow users to add and edit their own comments in Plate editor discussions"
+      />
+
   <!-- -*- extra stuff goes here -*- -->
 
 </configure>

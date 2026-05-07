@@ -292,12 +292,14 @@ class Form extends Component {
     let errors = {};
     let activeIndex = 0;
 
+    // CUSTOMIZATION START: Remove withSaveAsDraft for now
     // if (!prevProps.schema && this.props.schema) {
     //   this.props.checkSavedDraft(
     //     this.state.formData,
     //     this.updateFormDataWithSaved,
     //   );
     // }
+    // CUSTOMIZATION END
     if (!this.props.isFormSelected && prevProps.isFormSelected) {
       this.props.setUIState({
         selected: null,
@@ -323,10 +325,12 @@ class Form extends Component {
         this.props.onChangeFormData(this.state.formData);
       }
     }
+    // CUSTOMIZATION START: Remove withSaveAsDraft for now
     // on each formData update it will save the form to the localStorage
     // if (!isEqual(prevState?.formData, this.state.formData)) {
     //   this.props.onSaveDraft(this.state.formData);
     // }
+
     if (
       this.props.global &&
       !isEqual(this.props.globalData, prevProps.globalData)
@@ -419,6 +423,7 @@ class Form extends Component {
    */
   componentDidMount() {
     this.setState({ isClient: true });
+    // CUSTOMIZATION START: Remove withSaveAsDraft for now
     // if (this.props.schema) {
     //   this.props.checkSavedDraft(
     //     this.state.formData,
@@ -426,6 +431,7 @@ class Form extends Component {
     //   );
     //   return;
     // }
+    // CUSTOMIZATION END
   }
 
   /**
@@ -684,7 +690,9 @@ class Form extends Component {
           this.props.setFormData(this.props.formData);
         }
       }
+      // CUSTOMIZATION START: Remove withSaveAsDraft for now
       // this.props.onCancelDraft();
+      // CUSTOMIZATION END
     }
   }
 
@@ -1194,5 +1202,7 @@ export default compose(
     null,
     { forwardRef: true },
   ),
+  // CUSTOMIZATION START: Remove withSaveAsDraft for now
   // withSaveAsDraft({ forwardRef: true }),
+  // CUSTOMIZATION END
 )(FormIntl);

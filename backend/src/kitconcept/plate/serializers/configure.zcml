@@ -7,4 +7,11 @@
       name="kitconcept.plate.summary_serializer_metadata"
       />
 
+  <!-- Block serializers -->
+
+  <subscriber
+      factory=".comments.CommentsSerializer"
+      provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
+      />
+
 </configure>
