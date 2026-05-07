@@ -57,7 +57,6 @@
       "@tailwindcss/oxide",
       "core-js",
       "core-js-pure",
-      "cypress",
       "es5-ext",
       "esbuild",
       "full-icu",
