@@ -1,2 +1,0 @@
-Implement a custom pipeline to be run by repoplone, supporting the creation of the frontend package artifact (This requires repoplone >= 1.0.0b11). @ericof
- - Run `uvx repoplone settings release-steps` to check the existence of a new step named `frontend_artifact`

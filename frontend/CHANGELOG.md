@@ -8,6 +8,16 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.5 (2026-05-08)
+
+### Feature
+
+- Add Navigation Portlet beside toolbar. @iFlameing 
+
+### Internal
+
+- During release, generate a tarball containing the package and its dependencies.@ericof 
+
 ## 1.0.0-alpha.4 (2026-05-07)
 
 ## 1.0.0-alpha.3 (2026-05-07)
