@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:cache="http://namespaces.zope.org/cache"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    >
+
+  <!-- Override /@types service to conditionally hide some behaviors -->
+
+  <adapter
+      factory=".workspace.WorkspaceExpander"
+      name="workspace"
+      />
+
+  <plone:service
+      method="GET"
+      factory=".workspace.WorkspaceGet"
+      for="zope.interface.Interface"
+      permission="zope2.View"
+      name="@workspace"
+      />
+
+</configure>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Tree, TreeItem, Link } from '@plone/components';
+import { Tree, TreeItem } from '@plone/components';
 import { ArrowleftIcon } from '@plone/components/Icons';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
@@ -23,11 +23,8 @@ interface NavItem {
 
 interface Navigation {
   '@id'?: string;
-  available?: boolean;
-  has_custom_name?: boolean;
   items?: NavItem[];
   title?: string;
-  url?: string;
 }
 
 interface ContentNavigationBaseProps {
@@ -35,28 +32,36 @@ interface ContentNavigationBaseProps {
   onClose?: () => void;
 }
 
-function collectInPathIds(items: NavItem[]): string[] {
-  return items.flatMap((item) => [
-    ...(item.is_in_path ? [item['@id']] : []),
-    ...collectInPathIds(item.items ?? []),
-  ]);
+function collectInPathIds(items: NavItem[], currentPath: string): string[] {
+  return items.flatMap((item) => {
+    const itemPath = flattenToAppURL(item.href);
+    const isInPath =
+      currentPath === itemPath || currentPath.startsWith(itemPath + '/');
+    return [
+      ...(isInPath ? [item['@id']] : []),
+      ...collectInPathIds(item.items ?? [], currentPath),
+    ];
+  });
 }
 
-function renderNavItem(item: NavItem): React.ReactNode {
+function renderNavItem(item: NavItem, currentPath: string): React.ReactNode {
+  const itemPath = flattenToAppURL(item.href);
+  const isCurrent = currentPath === itemPath;
+
   return (
     <TreeItem
       key={item['@id']}
       id={item['@id']}
       title={item.title}
-      href={flattenToAppURL(item.href)}
+      href={itemPath}
       className={
-        item.is_current
+        isCurrent
           ? ({ defaultClassName }) =>
               `${defaultClassName ?? ''} is-current`.trim()
           : undefined
       }
     >
-      {item.items?.map((child) => renderNavItem(child))}
+      {item.items?.map((child) => renderNavItem(child, currentPath))}
     </TreeItem>
   );
 }
@@ -65,25 +70,27 @@ function ContentNavigationBase({
   navigation = {},
   onClose,
 }: ContentNavigationBaseProps) {
+  const location = useLocation();
+  const currentPath = flattenToAppURL(location.pathname);
+
   const { items = [] } = navigation;
-  const rootItem = items[0];
-  const childItems = rootItem?.items ?? [];
-  const title = rootItem?.title ?? '';
+  const title = navigation.title ?? '';
   const navigationId = navigation['@id'];
 
-  const lastItemsRef = useRef<NavItem[]>(childItems);
-  if (childItems.length > 0) lastItemsRef.current = childItems;
-  const displayItems =
-    childItems.length > 0 ? childItems : lastItemsRef.current;
+  const lastItemsRef = useRef<NavItem[]>(items);
+  if (items.length > 0) lastItemsRef.current = items;
+  const displayItems = items.length > 0 ? items : lastItemsRef.current;
 
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(
-    () => new Set(collectInPathIds(childItems)),
+    () => new Set(collectInPathIds(items, currentPath)),
   );
 
   useEffect(() => {
-    setExpandedKeys(new Set(collectInPathIds(childItems)));
+    setExpandedKeys(
+      (prev) => new Set([...prev, ...collectInPathIds(items, currentPath)]),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigationId]);
+  }, [navigationId, currentPath]);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -125,14 +132,7 @@ function ContentNavigationBase({
         >
           <ArrowleftIcon />
         </button>
-        <h1 className="content-navigation-title">
-          <Link
-            className="content-navigation-title-link"
-            href={flattenToAppURL(rootItem?.href ?? '')}
-          >
-            {title}
-          </Link>
-        </h1>
+        <h1 className="content-navigation-title">{title}</h1>
       </div>
 
       {displayItems.length > 0 && (
@@ -144,7 +144,7 @@ function ContentNavigationBase({
               setExpandedKeys(new Set(keys as Set<string>))
             }
           >
-            {displayItems.map((item) => renderNavItem(item))}
+            {displayItems.map((item) => renderNavItem(item, currentPath))}
           </Tree>
         </nav>
       )}
@@ -161,9 +161,23 @@ function ContentNavigationBase({
 
 const ContentNavigationWithNav = withContentNavigation(ContentNavigationBase);
 
-export function ContentNavigation(props: Record<string, unknown>) {
+interface ContentNavigationProps {
+  onClose?: () => void;
+  workspacePath: string;
+}
+
+export function ContentNavigation({
+  workspacePath,
+  ...rest
+}: ContentNavigationProps) {
   const location = useLocation();
-  return <ContentNavigationWithNav {...props} location={location} />;
+  return (
+    <ContentNavigationWithNav
+      {...rest}
+      pathname={workspacePath}
+      location={location}
+    />
+  );
 }
 
 export default ContentNavigation;
