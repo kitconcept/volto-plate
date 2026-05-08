@@ -18,6 +18,15 @@ def versions_from_state(state) -> tuple[str, str]:
     )
 
 
+def add_artifact_to_git(settings, filepath: Path) -> bool:
+    """Add the artifact to git."""
+    from repoplone.utils._git import repo_for_project  # type: ignore
+
+    repo = repo_for_project(settings.root_path)
+    repo.index.add([str(filepath)])
+    return True
+
+
 def create_artifact(step_id, title, settings, state, **kwargs) -> bool:
     """Create the artifact for the newly created version."""
     artifacts_dir = cwd / "artifacts"
@@ -52,4 +61,6 @@ def create_artifact(step_id, title, settings, state, **kwargs) -> bool:
         final_file.unlink()
     # Rename artifact
     artifact_file.rename(final_file)
+    # Add to git
+    add_artifact_to_git(settings, final_file)
     return True
