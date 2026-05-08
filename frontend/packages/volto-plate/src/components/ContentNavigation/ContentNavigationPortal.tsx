@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import cx from 'classnames';
@@ -8,6 +8,7 @@ import { ContentNavigation } from './ContentNavigation';
 export function ContentNavigationPortal() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const [open, setOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
   const content = useSelector((state: any) => state.content.data);
   const isWikiPage = content?.['@type'] === 'WikiPage';
 
@@ -28,9 +29,17 @@ export function ContentNavigationPortal() {
     };
   }, []);
 
+  function handleClose() {
+    if (panelRef.current) panelRef.current.style.width = '';
+    setOpen(false);
+  }
+
   if (!container || !isWikiPage) return null;
   return createPortal(
-    <div className={cx('content-navigation-panel', { 'is-open': open })}>
+    <div
+      ref={panelRef}
+      className={cx('content-navigation-panel', { 'is-open': open })}
+    >
       <button
         className="content-navigation-toggle"
         onClick={() => setOpen((v) => !v)}
@@ -39,7 +48,7 @@ export function ContentNavigationPortal() {
       >
         <NavigationIcon />
       </button>
-      {open && <ContentNavigation onClose={() => setOpen(false)} />}
+      {open && <ContentNavigation onClose={handleClose} />}
     </div>,
     container,
   );
