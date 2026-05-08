@@ -10,21 +10,21 @@ def versions_from_state(state) -> tuple[str, str]:
     # this will be available in runtime
     from repoplone.utils.versions import convert_python_node_version  # type: ignore
 
-    current_version = state["version"]
-    previous_version = state["previous_version"]
+    original_version = state.original_version
+    next_version = state.next_version
     return (
-        convert_python_node_version(current_version),
-        convert_python_node_version(previous_version),
+        convert_python_node_version(original_version),
+        convert_python_node_version(next_version),
     )
 
 
 def create_artifact(step_id, title, settings, state, **kwargs) -> bool:
     """Create the artifact for the newly created version."""
     artifacts_dir = cwd / "artifacts"
-    current_version, previous_version = versions_from_state(state)
+    original_version, next_version = versions_from_state(state)
     if not artifacts_dir.exists():
         artifacts_dir.mkdir(parents=True)
-    artifact_file = artifacts_dir / f"kitconcept-{PACKAGE_NAME}-{current_version}.tgz"
+    artifact_file = artifacts_dir / f"kitconcept-{PACKAGE_NAME}-{next_version}.tgz"
     cmd = ["pnpm", "run", "artifact-release"]
     result = subprocess.run(  # noQA: S602
         " ".join(cmd),
@@ -41,7 +41,7 @@ def create_artifact(step_id, title, settings, state, **kwargs) -> bool:
         )
     # Cleanup (Remove old artifact if exists)
     previous_artifact_file = (
-        artifacts_dir / f"kitconcept-{PACKAGE_NAME}-{previous_version}.tgz"
+        artifacts_dir / f"kitconcept-{PACKAGE_NAME}-{original_version}.tgz"
     )
     final_file = artifacts_dir / f"kitconcept-{PACKAGE_NAME}.tgz"
     # Remove artifact for previous version if exists
