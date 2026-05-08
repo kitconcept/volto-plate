@@ -6,6 +6,26 @@ version_format = "semver"
 container_images_prefix = "ghcr.io/kitconcept/volto-plate"
 compose = ["docker-compose.yml"]
 
+# The steps to execute when running `uvx repoplone release`.
+[repository.release]
+steps = [
+    "changelog",
+    "version",
+    "repository",
+    "release_frontend",
+    "frontend_artifact",
+    "release_backend",
+    "git",
+    "gh_release",
+    "bye",
+]
+
+# Register a new step to create the frontend artifact
+[repository.release.registry.frontend_artifact]
+title = "Create Frontend Artifact"
+function = "local_step"
+args = { entrypoint = "frontend._package:create_artifact" }
+
 [repository.towncrier]
 section = "Project"
 settings = "towncrier.toml"
@@ -17,7 +37,7 @@ code_path = "src/kitconcept/plate"
 changelog = "backend/CHANGELOG.md"
 towncrier_settings = "backend/pyproject.toml"
 base_package = "Products.CMFPlone"
-publish = true
+publish = false
 
 [frontend.package]
 name = "@kitconcept/volto-plate"
@@ -26,7 +46,7 @@ code_path = "src"
 changelog = "frontend/packages/volto-plate/CHANGELOG.md"
 towncrier_settings = "frontend/packages/volto-plate/towncrier.toml"
 base_package = "@plone/volto"
-publish = true
+publish = false
 
 [cookieplone]
 template = "monorepo_addon"
