@@ -4,7 +4,7 @@ import { waitForPlateEditorReady } from './plate';
 import { expect, test } from './test';
 import { createWikiPage } from './content';
 import { login } from './login';
-import { makeSomersaultBody, type SlateNode } from './editor-helpers';
+import { makeSomersaultBody, type SlateNode } from './helpers';
 
 const withTocBody = makeSomersaultBody([
   { type: 'p', children: [{ text: '' }] },

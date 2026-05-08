@@ -4,7 +4,7 @@ import { waitForPlateEditorReady } from './plate';
 import { expect, test } from './test';
 import { createWikiPage } from './content';
 import { login } from './login';
-import { getEditor, selectTextInEditor, makeSomersaultBody } from './editor-helpers';
+import { makeSomersaultBody, selectParagraphText } from './helpers';
 
 const withBlockquoteBody = makeSomersaultBody([
   { type: 'p', children: [{ text: 'Quote this text' }] },
@@ -32,13 +32,13 @@ test.describe('Blockquote — wiki editor', () => {
   test('Turn Into: Quote converts paragraph to blockquote', async ({ page }) => {
     await openBlockquoteEditor(page, 'blockquote-turn-into', 'Blockquote Turn Into');
 
-    await selectTextInEditor(page, [1, 0], 0, [1, 0], 5);
+    await selectParagraphText(page, { start: 0, end: 5 });
     const turnIntoBtn = page.locator('[data-testid="turn-into-toolbar-button"]');
     await expect(turnIntoBtn).toBeVisible();
     await turnIntoBtn.click();
     await page.getByRole('menuitemradio', { name: /^quote$/i }).first().click();
 
-    const editorHandle = await getEditorHandle(page, getEditor(page));
+    const editorHandle = await getEditorHandle(page, page.locator('.slate-editor[data-slate-editor]'));
     const node = await getNodeByPath(page, editorHandle, [1]);
     expect((await node.jsonValue()).type).toBe('blockquote');
   });
@@ -46,22 +46,22 @@ test.describe('Blockquote — wiki editor', () => {
   test('bold + italic + strikethrough inside blockquote', async ({ page }) => {
     await openBlockquoteEditor(page, 'blockquote-combo-marks', 'Blockquote Combo Marks');
 
-    await selectTextInEditor(page, [1, 0], 0, [1, 0], 5);
+    await selectParagraphText(page, { start: 0, end: 5 });
     const turnIntoBtn = page.locator('[data-testid="turn-into-toolbar-button"]');
     await expect(turnIntoBtn).toBeVisible();
     await turnIntoBtn.click();
     await page.getByRole('menuitemradio', { name: /^quote$/i }).first().click();
 
-    await selectTextInEditor(page, [1, 0], 0, [1, 0], 5);
+    await selectParagraphText(page, { start: 0, end: 5 });
     await page.locator('button:has(svg.lucide-bold)').click();
 
-    await selectTextInEditor(page, [1, 0], 0, [1, 0], 5);
+    await selectParagraphText(page, { start: 0, end: 5 });
     await page.locator('button:has(svg.lucide-italic)').click();
 
-    await selectTextInEditor(page, [1, 0], 0, [1, 0], 5);
+    await selectParagraphText(page, { start: 0, end: 5 });
     await page.locator('button:has(svg.lucide-strikethrough)').click();
 
-    const editorHandle = await getEditorHandle(page, getEditor(page));
+    const editorHandle = await getEditorHandle(page, page.locator('.slate-editor[data-slate-editor]'));
 
     const block = await getNodeByPath(page, editorHandle, [1]);
     expect((await block.jsonValue()).type).toBe('blockquote');
