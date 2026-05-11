@@ -8,6 +8,12 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.6 (2026-05-11)
+
+### Bugfix
+
+- Removed CSS container hack. @sneridagh 
+
 ## 1.0.0-alpha.5 (2026-05-08)
 
 ### Feature
