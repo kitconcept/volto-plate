@@ -1,6 +1,6 @@
 {
   "name": "@kitconcept/volto-plate",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.5",
   "description": "An add-on that adds a Plate.js block for Volto",
   "main": "src/index.ts",
   "license": "MIT",
@@ -25,6 +25,7 @@
     "i18n": "rm -rf build/messages && NODE_ENV=production i18n --addon",
     "dry-release": "release-it --dry-run",
     "release": "release-it",
+    "artifact-release": "mkdir -p ../../artifacts && pnpm pack --pack-destination ../../artifacts",
     "release-major-alpha": "release-it major --preRelease=alpha",
     "release-alpha": "release-it --preRelease=alpha"
   },
@@ -36,19 +37,20 @@
     "@platejs/floating": "^49.0.0",
     "@platejs/link": "^49.0.0",
     "@plone/plate": "workspace:*",
-    "@plone/components": "workspace:^"
+    "@plone/components": "workspace:^",
+    "@tailwindcss/postcss": "^4.2.1"
   },
   "peerDependencies": {
+    "@platejs/ai": "^50.3.7",
     "@plone/registry": "workspace:*",
     "@plone/types": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.544.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "semantic-ui-react": "^2.1.5",
-    "@platejs/ai": "^50.3.7",
-    "lucide-react": "^0.544.0"
+    "semantic-ui-react": "^2.1.5"
   },
   "devDependencies": {
     "@platejs/dnd": "^50.3.1",
@@ -59,7 +61,6 @@
     "@plone/types": "workspace:*",
     "@plone/volto-slate": "workspace:*",
     "@storybook/react": "^8.6.12",
-    "@tailwindcss/postcss": "^4.2.1",
     "@types/lodash": "^4.17.20",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
