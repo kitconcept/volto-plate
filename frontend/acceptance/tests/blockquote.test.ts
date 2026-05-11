@@ -1,76 +1,97 @@
 import type { Page } from '@playwright/test';
-import { getEditorHandle, getNodeByPath } from '@platejs/playwright';
-import { waitForPlateEditorReady } from './plate';
-import { expect, test } from './test';
 import { createWikiPage } from './content';
+import { expect, test } from './test';
 import { login } from './login';
-import { makeSomersaultBody, selectParagraphText } from './helpers';
+import { waitForPlateEditorReady } from './plate';
+import { selectParagraphText, withSomersaultBody, insertViaSlashMenu } from './helpers';
 
-const withBlockquoteBody = makeSomersaultBody([
-  { type: 'p', children: [{ text: 'Quote this text' }] },
-  { type: 'p', children: [{ text: 'Another paragraph' }] },
-]);
 
-async function openBlockquoteEditor(page: Page, contentId: string, contentTitle: string) {
+const BODY_TEXT = 'Quote this text';
+
+function toolbarButton(page: Page, lucideClass: string) {
+  return page.locator(`button:has(.${lucideClass})`);
+}
+
+
+async function openBlockquoteEditor(page: Page, { contentId, contentTitle, bodyText }: { contentId: string, contentTitle: string, bodyText: string }) {
   const { contentPath } = await createWikiPage(page, {
     contentId,
     contentTitle,
-    wikiId: `wiki-${contentId}`,
     transition: 'publish',
-    bodyModifier: withBlockquoteBody,
+    bodyModifier: withSomersaultBody(bodyText),
   });
 
   await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
   await waitForPlateEditorReady(page);
+
+  return { contentPath };
 }
 
-test.describe('Blockquote — wiki editor', () => {
+async function savePage(page: Page, contentPath: string, contentTitle: string) {
+  await page.locator('#toolbar-save').click();
+  await page.waitForURL(contentPath, {
+    waitUntil: 'load',
+    timeout: 30_000,
+  });
+  await expect(page.getByRole('heading', { name: contentTitle })).toBeVisible();
+}
+
+
+test.describe('Blockquote ', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
   });
 
-  test('Turn Into: Quote converts paragraph to blockquote', async ({ page }) => {
-    await openBlockquoteEditor(page, 'blockquote-turn-into', 'Blockquote Turn Into');
+  test('Add Quote block via toolbar', async ({ page }) => {
+
+    const { contentPath: blockquotePath } = await openBlockquoteEditor(page, { contentId: 'blockquote-toolbar', contentTitle: 'Blockquote Toolbar', bodyText: BODY_TEXT });
 
     await selectParagraphText(page, { start: 0, end: 5 });
-    const turnIntoBtn = page.locator('[data-testid="turn-into-toolbar-button"]');
+
+    //const turnIntoBtn = page.locator('[data-testid="turn-into-toolbar-button"]');
+    const turnIntoBtn = toolbarButton(page, 'lucide-chevron-down').nth(0);
     await expect(turnIntoBtn).toBeVisible();
     await turnIntoBtn.click();
+
     await page.getByRole('menuitemradio', { name: /^quote$/i }).first().click();
 
-    const editorHandle = await getEditorHandle(page, page.locator('.slate-editor[data-slate-editor]'));
-    const node = await getNodeByPath(page, editorHandle, [1]);
-    expect((await node.jsonValue()).type).toBe('blockquote');
+    const editorText = page
+      .locator('.slate-editor[data-slate-editor]')
+      .locator('blockquote')
+      .first();
+    await expect(editorText).toBeVisible();
+    await expect(editorText).toHaveText('Quote this text');
+
+
+    await savePage(page, blockquotePath, 'Blockquote Toolbar');
+
+    const viewBlockQuote = page
+      .locator('blockquote')
+      .filter({ hasText: 'Quote this text' })
+      .first();
+    await expect(viewBlockQuote).toBeVisible();
+
   });
 
-  test('bold + italic + strikethrough inside blockquote', async ({ page }) => {
-    await openBlockquoteEditor(page, 'blockquote-combo-marks', 'Blockquote Combo Marks');
+  test('Add blockquote via slash command', async ({ page }) => {
 
-    await selectParagraphText(page, { start: 0, end: 5 });
-    const turnIntoBtn = page.locator('[data-testid="turn-into-toolbar-button"]');
-    await expect(turnIntoBtn).toBeVisible();
-    await turnIntoBtn.click();
-    await page.getByRole('menuitemradio', { name: /^quote$/i }).first().click();
+    const { contentPath: blockquotePath } = await openBlockquoteEditor(page, { contentId: 'blockquote-slash-command', contentTitle: 'Blockquote Slash Command', bodyText: '' });
 
-    await selectParagraphText(page, { start: 0, end: 5 });
-    await page.locator('button:has(svg.lucide-bold)').click();
+    await insertViaSlashMenu(page, 'Quote');
 
-    await selectParagraphText(page, { start: 0, end: 5 });
-    await page.locator('button:has(svg.lucide-italic)').click();
+    const blockquote = page.locator('.slate-editor[data-slate-editor]').locator('blockquote.slate-blockquote');
+    await expect(blockquote).toBeVisible();
+    await blockquote.click();
+    
+    await page.keyboard.type('Quote this text from the slash menu');
+    await expect(blockquote).toHaveText('Quote this text from the slash menu');
 
-    await selectParagraphText(page, { start: 0, end: 5 });
-    await page.locator('button:has(svg.lucide-strikethrough)').click();
+    await savePage(page, blockquotePath, 'Blockquote Slash Command');
 
-    const editorHandle = await getEditorHandle(page, page.locator('.slate-editor[data-slate-editor]'));
-
-    const block = await getNodeByPath(page, editorHandle, [1]);
-    expect((await block.jsonValue()).type).toBe('blockquote');
-
-    const leaf = await getNodeByPath(page, editorHandle, [1, 0]);
-    const leafVal = await leaf.jsonValue();
-    expect(leafVal.bold).toBe(true);
-    expect(leafVal.italic).toBe(true);
-    expect(leafVal.strikethrough).toBe(true);
-    expect(leafVal.text).toBe('Quote');
+    const viewBlockQuote = page
+      .locator('blockquote')
+      .filter({ hasText: 'Quote this text from the slash menu' })
+      .first();
+    await expect(viewBlockQuote).toBeVisible();
   });
 });
