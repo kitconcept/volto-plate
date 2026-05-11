@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Tree, TreeItem } from '@plone/components';
-import { ArrowleftIcon } from '@plone/components/Icons';
+import { ChevrondownIcon } from '@plone/components/Icons';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
 
@@ -30,6 +30,7 @@ interface Navigation {
 interface ContentNavigationBaseProps {
   navigation?: Navigation;
   onClose?: () => void;
+  workspaceTitle?: string;
 }
 
 function collectInPathIds(items: NavItem[], currentPath: string): string[] {
@@ -69,12 +70,12 @@ function renderNavItem(item: NavItem, currentPath: string): React.ReactNode {
 function ContentNavigationBase({
   navigation = {},
   onClose,
+  workspaceTitle,
 }: ContentNavigationBaseProps) {
   const location = useLocation();
   const currentPath = flattenToAppURL(location.pathname);
 
   const { items = [] } = navigation;
-  const title = navigation.title ?? '';
   const navigationId = navigation['@id'];
 
   const lastItemsRef = useRef<NavItem[]>(items);
@@ -130,15 +131,15 @@ function ContentNavigationBase({
           aria-label="Close navigation"
           type="button"
         >
-          <ArrowleftIcon />
+          <ChevrondownIcon />
         </button>
-        <h1 className="content-navigation-title">{title}</h1>
+        <h1 className="content-navigation-title">{workspaceTitle}</h1>
       </div>
 
       {displayItems.length > 0 && (
         <nav className="content-navigation">
           <Tree
-            aria-label={title}
+            aria-label={workspaceTitle}
             expandedKeys={expandedKeys}
             onExpandedChange={(keys) =>
               setExpandedKeys(new Set(keys as Set<string>))
@@ -164,10 +165,12 @@ const ContentNavigationWithNav = withContentNavigation(ContentNavigationBase);
 interface ContentNavigationProps {
   onClose?: () => void;
   workspacePath: string;
+  workspaceTitle?: string;
 }
 
 export function ContentNavigation({
   workspacePath,
+  workspaceTitle,
   ...rest
 }: ContentNavigationProps) {
   const location = useLocation();
@@ -176,6 +179,7 @@ export function ContentNavigation({
       {...rest}
       pathname={workspacePath}
       location={location}
+      workspaceTitle={workspaceTitle}
     />
   );
 }

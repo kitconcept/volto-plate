@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    >
+
+  <genericsetup:upgradeSteps
+      profile="kitconcept.plate:default"
+      source="20260428001"
+      destination="20260511001"
+      >
+    <genericsetup:upgradeDepends
+        title="Adds workspace marker behavior to Workspace content type."
+        import_steps="typeinfo"
+        />
+  </genericsetup:upgradeSteps>
+
+</configure>

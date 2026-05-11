@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import cx from 'classnames';
-import { NavigationIcon } from '@plone/components/Icons';
+import { ChevronrightIcon } from '@plone/components/Icons';
 import { ContentNavigation } from './ContentNavigation';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 
@@ -24,11 +24,13 @@ export function ContentNavigationPortal() {
   const [open, setOpen] = useState(loadOpenState);
   const panelRef = useRef<HTMLDivElement>(null);
   const content = useSelector((state: any) => state.content.data);
-  const isWikiPage =
-    content?.['@type'] === 'WikiPage' || content?.['@type'] === 'Workspace';
   const workspacePath = flattenToAppURL(
-    content?.['@components']?.workspace?.url,
+    content?.['@components']?.['inherit']?.['kitconcept.plate.workspace']
+      ?.from?.['@id'],
   );
+  const workSpaceTitle =
+    content?.['@components']?.['inherit']?.['kitconcept.plate.workspace']?.from
+      ?.title;
 
   useEffect(() => {
     const toolbar = document.getElementById('toolbar');
@@ -60,7 +62,7 @@ export function ContentNavigationPortal() {
     setOpen(false);
   }
 
-  if (!container || !isWikiPage) return null;
+  if (!container) return null;
   return createPortal(
     <div
       ref={panelRef}
@@ -72,12 +74,13 @@ export function ContentNavigationPortal() {
         aria-label={open ? 'Close navigation' : 'Open navigation'}
         type="button"
       >
-        <NavigationIcon />
+        <ChevronrightIcon />
       </button>
       {open && (
         <ContentNavigation
           onClose={handleClose}
           workspacePath={workspacePath}
+          workspaceTitle={workSpaceTitle}
         />
       )}
     </div>,
