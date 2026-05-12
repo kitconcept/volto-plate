@@ -15,5 +15,14 @@ export default function install(config: ConfigType) {
     },
   ];
 
+  config.settings.cssLayers = [
+    'properties',
+    'theme',
+    'base',
+    'components',
+    'utilities',
+    'plone-components',
+  ];
+
   return config;
 }
