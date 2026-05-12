@@ -3,10 +3,10 @@ import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import cx from 'classnames';
 import { ChevronrightIcon } from '@plone/components/Icons';
-import { ContentNavigation } from './ContentNavigation';
+import { NavigationSidebar } from './NavigationSidebar';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 
-const STORAGE_KEY = 'content-navigation-open';
+const STORAGE_KEY = 'navigation-sidebar-open';
 
 function loadOpenState(): boolean {
   if (typeof window === 'undefined') return true;
@@ -19,7 +19,7 @@ function saveOpenState(value: boolean): void {
   localStorage.setItem(STORAGE_KEY, String(value));
 }
 
-export function ContentNavigationPortal() {
+export function NavigationSidebarPortal() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const [open, setOpen] = useState(loadOpenState);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -38,7 +38,7 @@ export function ContentNavigationPortal() {
     if (!toolbar) return;
 
     const element = document.createElement('div');
-    element.id = 'content-navigation';
+    element.id = 'navigation-sidebar';
 
     toolbar.after(element);
 
@@ -66,10 +66,10 @@ export function ContentNavigationPortal() {
   return createPortal(
     <div
       ref={panelRef}
-      className={cx('content-navigation-panel', { 'is-open': open })}
+      className={cx('navigation-sidebar-panel', { 'is-open': open })}
     >
       <button
-        className="content-navigation-toggle"
+        className="navigation-sidebar-toggle"
         onClick={handleToggle}
         aria-label={open ? 'Close navigation' : 'Open navigation'}
         type="button"
@@ -77,7 +77,7 @@ export function ContentNavigationPortal() {
         <ChevronrightIcon />
       </button>
       {open && (
-        <ContentNavigation
+        <NavigationSidebar
           onClose={handleClose}
           workspacePath={workspacePath}
           workspaceTitle={workSpaceTitle}
@@ -88,4 +88,4 @@ export function ContentNavigationPortal() {
   );
 }
 
-export default ContentNavigationPortal;
+export default NavigationSidebarPortal;

@@ -4,6 +4,7 @@ import { Tree, TreeItem } from '@plone/components';
 import { ChevrondownIcon } from '@plone/components/Icons';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 
 interface NavItem {
   '@id': string;
@@ -27,9 +28,10 @@ interface Navigation {
   title?: string;
 }
 
-interface ContentNavigationBaseProps {
+interface NavigationSidebarBaseProps {
   navigation?: Navigation;
   onClose?: () => void;
+  workspacePath: string;
   workspaceTitle?: string;
 }
 
@@ -67,11 +69,12 @@ function renderNavItem(item: NavItem, currentPath: string): React.ReactNode {
   );
 }
 
-function ContentNavigationBase({
+function NavigationSidebarBase({
   navigation = {},
   onClose,
+  workspacePath,
   workspaceTitle,
-}: ContentNavigationBaseProps) {
+}: NavigationSidebarBaseProps) {
   const location = useLocation();
   const currentPath = flattenToAppURL(location.pathname);
 
@@ -123,21 +126,26 @@ function ContentNavigationBase({
   };
 
   return (
-    <div className="content-navigation-wrapper" ref={wrapperRef}>
-      <div className="content-navigation-header">
+    <div className="navigation-sidebar-wrapper" ref={wrapperRef}>
+      <div className="navigation-sidebar-header">
         <button
-          className="content-navigation-close"
+          className="navigation-sidebar-close"
           onClick={onClose}
           aria-label="Close navigation"
           type="button"
         >
           <ChevrondownIcon />
         </button>
-        <h1 className="content-navigation-title">{workspaceTitle}</h1>
+        <UniversalLink
+          className="navigation-sidebar-title"
+          href={workspacePath}
+        >
+          {workspaceTitle}
+        </UniversalLink>
       </div>
 
       {displayItems.length > 0 && (
-        <nav className="content-navigation">
+        <nav className="navigation-sidebar">
           <Tree
             aria-label={workspaceTitle}
             expandedKeys={expandedKeys}
@@ -151,7 +159,7 @@ function ContentNavigationBase({
       )}
 
       <button
-        className="content-navigation-resize-handle"
+        className="navigation-sidebar-resize-handle"
         onMouseDown={onMouseDown}
         aria-label="Resize navigation panel"
         type="button"
@@ -160,22 +168,22 @@ function ContentNavigationBase({
   );
 }
 
-const ContentNavigationWithNav = withContentNavigation(ContentNavigationBase);
+const NavigationSidebarWithNav = withContentNavigation(NavigationSidebarBase);
 
-interface ContentNavigationProps {
+interface NavigationSidebarProps {
   onClose?: () => void;
   workspacePath: string;
   workspaceTitle?: string;
 }
 
-export function ContentNavigation({
+export function NavigationSidebar({
   workspacePath,
   workspaceTitle,
   ...rest
-}: ContentNavigationProps) {
+}: NavigationSidebarProps) {
   const location = useLocation();
   return (
-    <ContentNavigationWithNav
+    <NavigationSidebarWithNav
       {...rest}
       pathname={workspacePath}
       location={location}
@@ -184,4 +192,4 @@ export function ContentNavigation({
   );
 }
 
-export default ContentNavigation;
+export default NavigationSidebar;

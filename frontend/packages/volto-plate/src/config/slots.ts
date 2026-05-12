@@ -1,12 +1,12 @@
 import type { ConfigType } from '@plone/registry';
 import { ContentTypeCondition } from '@plone/volto/helpers/Slots';
-import { ContentNavigationPortal } from '../components/ContentNavigation/ContentNavigationPortal';
+import { NavigationSidebarPortal } from '../components/NavigationSidebar/NavigationSidebarPortal';
 
 export default function installSlots(config: ConfigType) {
   config.registerSlotComponent({
     slot: 'aboveContent',
-    name: 'ContentNavigation',
-    component: ContentNavigationPortal,
+    name: 'NavigationSidebar',
+    component: NavigationSidebarPortal,
     predicates: [
       ContentTypeCondition(['WikiPage', 'Workspace']),
       ({ location }) =>
