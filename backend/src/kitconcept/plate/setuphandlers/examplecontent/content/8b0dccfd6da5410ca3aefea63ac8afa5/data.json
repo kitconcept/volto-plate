@@ -1,7 +1,7 @@
 {
-  "@id": "/workspace/wiki-page",
+  "@id": "/workspace/wiki-page/finance-and-accounting/legal-and-compliance",
   "@type": "WikiPage",
-  "UID": "d73b622d250544d0a5c1c7e7e9c54ad5",
+  "UID": "8b0dccfd6da5410ca3aefea63ac8afa5",
   "allow_discussion": null,
   "blocks": {
     "__somersault__": {
@@ -11,7 +11,7 @@
           "blockWidth": "default",
           "children": [
             {
-              "text": "Wiki Page"
+              "text": "Legal and Compliance"
             }
           ],
           "id": "R7I1TseJfZ",
@@ -716,17 +716,17 @@
   },
   "changeNote": "",
   "contributors": [],
-  "created": "2026-04-07T17:04:07+00:00",
+  "created": "2026-05-12T12:07:27+00:00",
   "creators": [
     "admin"
   ],
-  "description": "Welcome to my wiki page",
-  "effective": "2026-04-08T00:31:00+00:00",
+  "description": "",
+  "effective": "2026-05-12T12:07:00+00:00",
   "exclude_from_nav": false,
   "expires": null,
   "exportimport.constrains": {},
   "exportimport.conversation": [],
-  "id": "wiki-page",
+  "id": "legal-and-compliance",
   "is_folderish": true,
   "language": "##DEFAULT##",
   "layout": "view",
@@ -734,13 +734,13 @@
     "locked": false,
     "stealable": true
   },
-  "modified": "2026-05-12T10:36:16+00:00",
+  "modified": "2026-05-12T12:07:30+00:00",
   "nav_title": null,
   "preview_caption_link": null,
   "review_state": "published",
   "rights": "",
   "subjects": [],
-  "title": "Wiki Page",
+  "title": "Legal and Compliance",
   "type_title": "Wiki Page",
   "version": "current",
   "versioning_enabled": true,
@@ -751,14 +751,14 @@
         "actor": "admin",
         "comments": "",
         "review_state": "private",
-        "time": "2026-04-07T17:04:07+00:00"
+        "time": "2026-05-12T12:07:27+00:00"
       },
       {
         "action": "publish",
         "actor": "admin",
         "comments": "",
         "review_state": "published",
-        "time": "2026-04-08T00:31:15+00:00"
+        "time": "2026-05-12T12:07:30+00:00"
       }
     ]
   },
