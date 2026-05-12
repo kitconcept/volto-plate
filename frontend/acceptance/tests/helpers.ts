@@ -7,7 +7,7 @@ export async function insertViaSlashMenu(page: Page, typeBlock: string, optionLa
 
   await editor.click();
   await page.keyboard.press('End');
-  await page.keyboard.press('Enter');
+  await page.keyboard.press('ControlOrMeta+Enter');
 
   await page.keyboard.type('/');
 
