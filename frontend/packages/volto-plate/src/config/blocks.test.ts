@@ -34,7 +34,8 @@ describe('config/blocks', () => {
     });
 
     const utility = registerUtility.mock.calls.find(
-      ([value]) => value.type === 'styleFieldDefinition' && value.name === 'blockWidth',
+      ([value]) =>
+        value.type === 'styleFieldDefinition' && value.name === 'blockWidth',
     )?.[0];
 
     expect(utility.method()).toBe(widths);
