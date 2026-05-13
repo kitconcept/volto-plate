@@ -1,1 +1,0 @@
-Add workspace marker behavior to the Workspace content type to discover the nearest Workspace ancestor. @iFlameing

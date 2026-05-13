@@ -9,6 +9,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a7 (2026-05-13)
+
+
+### New features:
+
+- Add workspace marker behavior to the Workspace content type to discover the nearest Workspace ancestor. @iFlameing 
+
 ## 1.0.0a6 (2026-05-11)
 
 No significant changes.

@@ -7,6 +7,39 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a7 (2026-05-13)
+
+### Backend
+
+
+#### New features:
+
+- Add workspace marker behavior to the Workspace content type to discover the nearest Workspace ancestor. @iFlameing 
+
+
+
+### Frontend
+
+#### Bugfix
+
+- - Fixed an issue where the first-level navigation was not shown for the active page.
+  - Added persistence for navigation open/close preferences using localStorage.
+  - Use the nearest Workspace ancestor as the navigation root to display the complete navigation tree. @iFlameing 
+- Fix CSS for containers. @sneridagh 
+
+#### Internal
+
+- Playwright test for bold, italics and striketrough toolbar options. @iFlameing 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a6 (2026-05-11)
 
 ### Backend
