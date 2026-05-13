@@ -185,6 +185,7 @@ export function NavigationSidebar({
   return (
     <NavigationSidebarWithNav
       {...rest}
+      pathname={workspacePath}
       workspacePath={workspacePath}
       location={location}
       workspaceTitle={workspaceTitle}
