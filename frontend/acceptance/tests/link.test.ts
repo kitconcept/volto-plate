@@ -1,67 +1,15 @@
 import type { Page } from '@playwright/test';
-import { getEditorHandle, setSelection } from '@platejs/playwright';
+import { getEditorHandle } from '@platejs/playwright';
 
 import { createContent, createWikiPage } from './content';
 import { login } from './login';
 import { waitForPlateEditorReady } from './plate';
+import {
+  selectParagraphText,
+  withSomersaultBody,
+  withSomersaultLinkedBody,
+} from './helpers';
 import { expect, test } from './test';
-
-function withSomersaultBody(bodyText: string) {
-  return (body: Record<string, unknown>) => {
-    const title = typeof body.title === 'string' ? body.title : '';
-
-    return {
-      ...body,
-      blocks: {
-        __somersault__: {
-          '@type': '__somersault__',
-          value: [
-            { type: 'title', children: [{ text: title }] },
-            { type: 'p', children: [{ text: bodyText }] },
-          ],
-        },
-      },
-    };
-  };
-}
-
-function withSomersaultLinkedBody({
-  bodyText,
-  href,
-  linkText,
-}: {
-  bodyText: string;
-  href: string;
-  linkText: string;
-}) {
-  return (body: Record<string, unknown>) => {
-    const title = typeof body.title === 'string' ? body.title : '';
-    const suffix = bodyText.slice(linkText.length);
-
-    return {
-      ...body,
-      blocks: {
-        __somersault__: {
-          '@type': '__somersault__',
-          value: [
-            { type: 'title', children: [{ text: title }] },
-            {
-              type: 'p',
-              children: [
-                {
-                  type: 'a',
-                  url: href,
-                  children: [{ text: linkText }],
-                },
-                { text: suffix },
-              ],
-            },
-          ],
-        },
-      },
-    };
-  };
-}
 
 async function openWikiPageEditor(
   page: Page,
@@ -87,21 +35,6 @@ async function openWikiPageEditor(
 
   await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
   await waitForPlateEditorReady(page);
-}
-
-async function selectParagraphText(
-  page: Page,
-  textRange: { start: number; end: number },
-) {
-  const editorHandle = await getEditorHandle(
-    page,
-    page.locator('.slate-editor[data-slate-editor]'),
-  );
-
-  await setSelection(page, editorHandle, {
-    anchor: { path: [1, 0], offset: textRange.start },
-    focus: { path: [1, 0], offset: textRange.end },
-  });
 }
 
 async function openLinkToolbar(page: Page) {
