@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    >
+
+  <plone:behavior
+      name="kitconcept.plate.workspace"
+      title="Workspace"
+      description="Marks a content item as a Workspace container."
+      provides=".workspace.IWorkspaceMarker"
+      />
+
+</configure>
