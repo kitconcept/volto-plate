@@ -1,4 +1,41 @@
-@import 'content-navigation';
+@import 'navigation-sidebar';
+
+// Neutralize TW container CSS for .q.container
+@layer plone-components {
+  .q.container {
+    max-width: none;
+  }
+
+  @media (width >= 40rem) {
+    .q.container {
+      max-width: none;
+    }
+  }
+
+  @media (width >= 48rem) {
+    .q.container {
+      max-width: none;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .q.container {
+      max-width: none;
+    }
+  }
+
+  @media (width >= 80rem) {
+    .q.container {
+      max-width: none;
+    }
+  }
+
+  @media (width >= 96rem) {
+    .q.container {
+      max-width: none;
+    }
+  }
+}
 
 // Remove if going full BMv3
 .category-inline {

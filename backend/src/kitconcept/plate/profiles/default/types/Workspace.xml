@@ -47,6 +47,7 @@
     <element value="plone.versioning" />
     <element value="plone.locking" />
     <element value="plone.translatable" />
+    <element value="kitconcept.plate.workspace" />
   </property>
 
   <property name="add_view_expr">string:${folder_url}/++add++Workspace</property>

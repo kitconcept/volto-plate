@@ -1,1 +1,0 @@
-Add Navigation Portlet beside toolbar. @iFlameing

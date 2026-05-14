@@ -8,6 +8,37 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.8 (2026-05-14)
+
+## 1.0.0-alpha.7 (2026-05-13)
+
+### Bugfix
+
+- - Fixed an issue where the first-level navigation was not shown for the active page.
+  - Added persistence for navigation open/close preferences using localStorage.
+  - Use the nearest Workspace ancestor as the navigation root to display the complete navigation tree. @iFlameing 
+- Fix CSS for containers. @sneridagh 
+
+### Internal
+
+- Playwright test for bold, italics and striketrough toolbar options. @iFlameing 
+
+## 1.0.0-alpha.6 (2026-05-11)
+
+### Bugfix
+
+- Removed CSS container hack. @sneridagh 
+
+## 1.0.0-alpha.5 (2026-05-08)
+
+### Feature
+
+- Add Navigation Portlet beside toolbar. @iFlameing 
+
+### Internal
+
+- During release, generate a tarball containing the package and its dependencies.@ericof 
+
 ## 1.0.0-alpha.4 (2026-05-07)
 
 ## 1.0.0-alpha.3 (2026-05-07)
