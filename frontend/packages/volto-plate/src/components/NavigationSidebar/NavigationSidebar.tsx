@@ -186,6 +186,7 @@ export function NavigationSidebar({
     <NavigationSidebarWithNav
       {...rest}
       pathname={workspacePath}
+      params={{ root_path: workspacePath, topLevel: 0 }}
       workspacePath={workspacePath}
       location={location}
       workspaceTitle={workspaceTitle}
