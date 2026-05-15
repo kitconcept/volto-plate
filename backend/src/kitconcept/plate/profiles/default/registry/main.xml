@@ -5,4 +5,16 @@
 
   <!-- -*- extra stuff goes here -*- -->
 
+  <records interface="plone.base.interfaces.controlpanel.INavigationSchema"
+           prefix="plone">
+    <value key="displayed_types">
+      <element>Event</element>
+      <element>Folder</element>
+      <element>Link</element>
+      <element>Document</element>
+      <element>WikiPage</element>
+      <element>Workspace</element>
+    </value>
+  </records>
+
 </registry>
