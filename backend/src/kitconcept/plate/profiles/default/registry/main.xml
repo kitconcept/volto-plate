@@ -6,7 +6,8 @@
   <!-- -*- extra stuff goes here -*- -->
 
   <records interface="plone.base.interfaces.controlpanel.INavigationSchema"
-           prefix="plone">
+           prefix="plone"
+  >
     <value key="displayed_types">
       <element>Event</element>
       <element>Folder</element>
