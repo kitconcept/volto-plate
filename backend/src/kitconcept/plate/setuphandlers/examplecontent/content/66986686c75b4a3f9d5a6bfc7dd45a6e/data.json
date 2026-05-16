@@ -1,0 +1,39 @@
+{
+  "@id": "/workspace/wiki-page/wizarto-pro-lftiuidw9aq-unsplash.jpg",
+  "@type": "Image",
+  "UID": "66986686c75b4a3f9d5a6bfc7dd45a6e",
+  "allow_discussion": null,
+  "contributors": [],
+  "created": "2026-05-16T20:04:20+00:00",
+  "creators": [
+    "admin"
+  ],
+  "description": "",
+  "effective": null,
+  "expires": null,
+  "exportimport.constrains": {},
+  "exportimport.conversation": [],
+  "id": "wizarto-pro-lftiuidw9aq-unsplash.jpg",
+  "image": {
+    "blob_path": "66986686c75b4a3f9d5a6bfc7dd45a6e/image/wizarto-pro-lftiUidW9AQ-unsplash.jpg",
+    "content-type": "image/jpeg",
+    "filename": "wizarto-pro-lftiUidW9AQ-unsplash.jpg",
+    "height": 2880,
+    "size": 1025726,
+    "width": 5120
+  },
+  "is_folderish": false,
+  "language": "##DEFAULT##",
+  "layout": "image_view",
+  "lock": {},
+  "modified": "2026-05-16T20:04:20+00:00",
+  "review_state": null,
+  "rights": "",
+  "subjects": [],
+  "title": "Image-Light",
+  "type_title": "Image",
+  "version": "current",
+  "workflow_history": {},
+  "working_copy": null,
+  "working_copy_of": null
+}

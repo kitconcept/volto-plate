@@ -1,0 +1,39 @@
+{
+  "@id": "/workspace/wiki-page/pexels-alex-sanchez-2150797975-35873260.jpg",
+  "@type": "Image",
+  "UID": "ef9acfecdad34752818daa1e164baa24",
+  "allow_discussion": null,
+  "contributors": [],
+  "created": "2026-05-16T20:02:46+00:00",
+  "creators": [
+    "admin"
+  ],
+  "description": "",
+  "effective": null,
+  "expires": null,
+  "exportimport.constrains": {},
+  "exportimport.conversation": [],
+  "id": "pexels-alex-sanchez-2150797975-35873260.jpg",
+  "image": {
+    "blob_path": "ef9acfecdad34752818daa1e164baa24/image/pexels-alex-sanchez-2150797975-35873260.jpg",
+    "content-type": "image/jpeg",
+    "filename": "pexels-alex-sanchez-2150797975-35873260.jpg",
+    "height": 4000,
+    "size": 3521856,
+    "width": 6000
+  },
+  "is_folderish": false,
+  "language": "##DEFAULT##",
+  "layout": "image_view",
+  "lock": {},
+  "modified": "2026-05-16T20:02:46+00:00",
+  "review_state": null,
+  "rights": "",
+  "subjects": [],
+  "title": "Image-Nature",
+  "type_title": "Image",
+  "version": "current",
+  "workflow_history": {},
+  "working_copy": null,
+  "working_copy_of": null
+}

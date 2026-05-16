@@ -6,6 +6,89 @@
   "blocks": {
     "__somersault__": {
       "@type": "__somersault__",
+      "discussions": {
+        "6iUI1oeNnjCq0X0Myghvx": {
+          "comments": [
+            {
+              "contentRich": [
+                {
+                  "children": [
+                    {
+                      "text": "Another comment"
+                    }
+                  ],
+                  "id": "4gxrhDiZfG",
+                  "type": "p"
+                }
+              ],
+              "createdAt": "2026-05-07T08:52:26.109Z",
+              "discussionId": "6iUI1oeNnjCq0X0Myghvx",
+              "id": "w1k4rteM-pJsFjDqQjY-y",
+              "isEdited": false,
+              "userId": "admin"
+            }
+          ],
+          "createdAt": "2026-05-07T08:52:26.109Z",
+          "documentContent": "molestie",
+          "id": "6iUI1oeNnjCq0X0Myghvx",
+          "isResolved": false,
+          "userId": "admin"
+        },
+        "P10CxzBFi-OqaL8UypVw4": {
+          "comments": [
+            {
+              "contentRich": [
+                {
+                  "children": [
+                    {
+                      "text": "This is a comment"
+                    }
+                  ],
+                  "id": "TZjyDdE4wK",
+                  "type": "p"
+                }
+              ],
+              "createdAt": "2026-05-07T08:48:49.231Z",
+              "discussionId": "P10CxzBFi-OqaL8UypVw4",
+              "id": "21z3FauQSHCgRHFosXrmv",
+              "isEdited": false,
+              "userId": "admin"
+            }
+          ],
+          "createdAt": "2026-05-07T08:48:49.231Z",
+          "documentContent": "hendrerit",
+          "id": "P10CxzBFi-OqaL8UypVw4",
+          "isResolved": false,
+          "userId": "admin"
+        },
+        "sy7qdYA-6yjAV4uZWJ2QD": {
+          "comments": [
+            {
+              "contentRich": [
+                {
+                  "children": [
+                    {
+                      "text": "and another"
+                    }
+                  ],
+                  "id": "FXYylmRXcc",
+                  "type": "p"
+                }
+              ],
+              "createdAt": "2026-05-07T08:52:34.516Z",
+              "discussionId": "sy7qdYA-6yjAV4uZWJ2QD",
+              "id": "ZloRytt-ZvB7KNvUDCjYd",
+              "isEdited": false,
+              "userId": "admin"
+            }
+          ],
+          "createdAt": "2026-05-07T08:52:34.516Z",
+          "documentContent": "molestie",
+          "id": "sy7qdYA-6yjAV4uZWJ2QD",
+          "isResolved": false,
+          "userId": "admin"
+        }
+      },
       "value": [
         {
           "blockWidth": "default",
@@ -21,17 +104,233 @@
           "blockWidth": "default",
           "children": [
             {
-              "text": "Lorem ipsum dolor sit amet odio tortor in sollicitudin phasellus interdum justo. Arcu hendrerit pretium nisi praesent tempus netus non neque blandit vel. Augue molestie cras fames vestibulum convallis facilisi hac imperdiet fermentum. Blandit phasellus nullam auctor elit enim eu mollis aliquet adipiscing feugiat dui lacus luctus. Mauris hendrerit facilisis est nunc turpis pharetra eleifend duis porta platea nulla tortor aliquam est."
+              "text": "Table of contents"
             }
           ],
-          "id": "3Kp3XjHEfX",
+          "id": "Ixkw1BK8mD",
+          "type": "h2"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": ""
+            }
+          ],
+          "id": "8mxTgibI62",
+          "type": "toc"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Paragraphs"
+            }
+          ],
+          "id": "svlpN1gj04",
+          "type": "h2"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+            }
+          ],
+          "id": "MvwBU6HToL",
           "type": "p"
         },
         {
           "blockWidth": "default",
           "children": [
             {
-              "text": "Quam luctus pulvinar urna egestas cras nisi eget sollicitudin aliquet sodales do. Iaculis lobortis viverra lacus sagittis mauris leo porttitor. Platea fames maecenas posuere sapien interdum a do. Senectus adipiscing senectus aliqua porta nec quam non tempor adipiscing. Suspendisse tristique gravida congue molestie mollis bibendum est ac proin lacinia."
+              "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+            }
+          ],
+          "id": "_TAGvckH-i",
+          "type": "p"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Inline Formatting"
+            }
+          ],
+          "id": "HtBkBDX-SH",
+          "type": "h2"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Inline formatting supports the following inline formatting options: "
+            },
+            {
+              "bold": true,
+              "text": "bold text"
+            },
+            {
+              "text": ", "
+            },
+            {
+              "italic": true,
+              "text": "italic text"
+            },
+            {
+              "text": ", "
+            },
+            {
+              "strikethrough": true,
+              "text": "striked through text"
+            },
+            {
+              "text": ", "
+            },
+            {
+              "blockWidth": "default",
+              "children": [
+                {
+                  "text": "internal links"
+                }
+              ],
+              "id": "T1v4uLnk6W",
+              "type": "a",
+              "url": "https://plate.kitconcept.dev/images/plone-foundation.png"
+            },
+            {
+              "text": ", "
+            },
+            {
+              "blockWidth": "default",
+              "children": [
+                {
+                  "text": "external links"
+                }
+              ],
+              "id": "FKE6m6sB73",
+              "type": "a",
+              "url": "https://kitconcept.com"
+            },
+            {
+              "text": ", "
+            },
+            {
+              "code": true,
+              "text": "Inline Code Text"
+            },
+            {
+              "text": ","
+            },
+            {
+              "superscript": true,
+              "text": "Superscript"
+            },
+            {
+              "text": ", "
+            },
+            {
+              "subscript": true,
+              "text": "Subscript. "
+            }
+          ],
+          "id": "F_BQuHX1n8",
+          "type": "p"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Inline Suggestions"
+            }
+          ],
+          "id": "7ZFIe6OU2e",
+          "type": "h2"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Lorem ipsum dolor sit amet odio tortor in sollicitudin phasellus interdum justo. Arcu "
+            },
+            {
+              "comment": true,
+              "comment_P10CxzBFi-OqaL8UypVw4": true,
+              "text": "hendrerit"
+            },
+            {
+              "text": " pretium nisi praesent tempus netus non neque blandit vel. Augue molestie cras fames vestibulum convallis facilisi hac imperdiet fermentum. Blandit phasellus nullam auctor elit enim eu mollis aliquet adipiscing feugiat dui lacus luctus. Mauris hendrerit facilisis est nunc turpis pharetra eleifend duis porta platea nulla "
+            },
+            {
+              "suggestion": true,
+              "suggestion_70TOU1mxLkCItH6aQY7CG": {
+                "createdAt": 1778143741468,
+                "id": "70TOU1mxLkCItH6aQY7CG",
+                "type": "remove",
+                "userId": "admin"
+              },
+              "text": "tortor aliquam es"
+            },
+            {
+              "suggestion": true,
+              "suggestion_-CQeJLZnNcX8-FA2Knogs": {
+                "createdAt": 1778143751906,
+                "id": "-CQeJLZnNcX8-FA2Knogs",
+                "type": "insert",
+                "userId": "admin"
+              },
+              "text": "t "
+            },
+            {
+              "suggestion": true,
+              "suggestion_70TOU1mxLkCItH6aQY7CG": {
+                "createdAt": 1778143741467,
+                "id": "70TOU1mxLkCItH6aQY7CG",
+                "type": "insert",
+                "userId": "admin"
+              },
+              "text": "this is an edit suggestion"
+            },
+            {
+              "suggestion": true,
+              "suggestion_Jbjj5GahJf2RbgKdIsvt5": {
+                "createdAt": 1778143748876,
+                "id": "Jbjj5GahJf2RbgKdIsvt5",
+                "type": "remove",
+                "userId": "admin"
+              },
+              "text": "t"
+            },
+            {
+              "text": "."
+            }
+          ],
+          "id": "SaOigZdN6e",
+          "type": "p"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Inline Commenting"
+            }
+          ],
+          "id": "7hy2A3d6Ng",
+          "type": "h2"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Quam luctus pulvinar urna egestas cras nisi eget sollicitudin aliquet sodales do. Iaculis lobortis viverra lacus sagittis mauris leo porttitor. Platea fames maecenas posuere sapien interdum a do. Senectus adipiscing senectus aliqua porta nec quam non tempor adipiscing. Suspendisse tristique gravida congue "
+            },
+            {
+              "comment": true,
+              "comment_sy7qdYA-6yjAV4uZWJ2QD": true,
+              "text": "molestie"
+            },
+            {
+              "text": " mollis bibendum est ac proin lacinia."
             }
           ],
           "id": "HURTN0Xplu",
@@ -41,13 +340,124 @@
           "blockWidth": "default",
           "children": [
             {
-              "text": "Images\n"
+              "text": "Image (Narrow Size)"
+            }
+          ],
+          "id": "jtmkrHTWJb",
+          "type": "h3"
+        },
+        {
+          "@type": "plateimage",
+          "align": "center",
+          "alt": "Image-Light",
+          "blockWidth": "narrow",
+          "children": [
+            {
+              "text": ""
+            }
+          ],
+          "id": "MrBar9DchN",
+          "image_field": "image",
+          "size": "l",
+          "type": "img",
+          "url": "../../resolveuid/66986686c75b4a3f9d5a6bfc7dd45a6e"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "backgroundColor": "rgb(255, 255, 255)",
+              "color": "rgb(0, 0, 0)",
+              "fontFamily": "Inter, sans-serif",
+              "fontSize": "18px",
+              "text": "Lorem ipsum dolor sit amet odio tortor in sollicitudin phasellus interdum justo. Arcu hendrerit pretium nisi praesent tempus netus non neque blandit vel. Augue molestie cras fames vestibulum convallis facilisi hac imperdiet fermentum. Blandit phasellus nullam auctor elit enim eu mollis aliquet adipiscing feugiat dui lacus luctus. Mauris hendrerit facilisis est nunc turpis pharetra eleifend duis porta platea nulla tortor aliquam"
+            }
+          ],
+          "id": "OuBVzUP9uW",
+          "type": "p"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "backgroundColor": "rgb(255, 255, 255)",
+              "color": "rgb(0, 0, 0)",
+              "fontFamily": "Inter, sans-serif",
+              "fontSize": "18px",
+              "text": "Lorem ipsum dolor sit amet odio tortor in sollicitudin phasellus interdum justo. Arcu hendrerit pretium nisi praesent tempus netus non neque blandit vel. Augue molestie cras fames vestibulum convallis facilisi hac imperdiet fermentum. Blandit phasellus nullam auctor elit enim eu mollis aliquet adipiscing feugiat dui lacus luctus. Mauris hendrerit facilisis est nunc turpis pharetra eleifend duis porta platea nulla tortor aliquam"
+            }
+          ],
+          "id": "2d_fsm9MQh",
+          "type": "p"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Images (Default Size)"
             }
           ],
           "id": "n7g-i7nUCD",
           "type": "h2"
         },
         {
+          "@type": "plateimage",
+          "align": "center",
+          "alt": "Image-Nature",
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": ""
+            }
+          ],
+          "id": "75iSYudk6w",
+          "image_field": "image",
+          "size": "l",
+          "type": "img",
+          "url": "../../resolveuid/ef9acfecdad34752818daa1e164baa24"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "backgroundColor": "rgb(255, 255, 255)",
+              "color": "rgb(0, 0, 0)",
+              "fontFamily": "Inter, sans-serif",
+              "fontSize": "18px",
+              "text": "Lorem ipsum dolor sit amet odio tortor in sollicitudin phasellus interdum justo. Arcu hendrerit pretium nisi praesent tempus netus non neque blandit vel. Augue molestie cras fames vestibulum convallis facilisi hac imperdiet fermentum. Blandit phasellus nullam auctor elit enim eu mollis aliquet adipiscing feugiat dui lacus luctus. Mauris hendrerit facilisis est nunc turpis pharetra eleifend duis porta platea nulla tortor aliquam "
+            }
+          ],
+          "id": "HFA9coha8w",
+          "type": "p"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Image (Standard Size)"
+            }
+          ],
+          "id": "6_ksg4uyrB",
+          "type": "h3"
+        },
+        {
+          "@type": "plateimage",
+          "align": "center",
+          "alt": "Image-Light",
+          "blockWidth": "layout",
+          "children": [
+            {
+              "text": ""
+            }
+          ],
+          "id": "O57OW2PTgx",
+          "image_field": "image",
+          "size": "l",
+          "type": "img",
+          "url": "../../resolveuid/66986686c75b4a3f9d5a6bfc7dd45a6e"
+        },
+        {
+          "@type": "plateimage",
           "align": "center",
           "blockWidth": "default",
           "children": [
@@ -69,30 +479,6 @@
           "title": "black-starry-night.jpg",
           "type": "img",
           "url": "../resolveuid/d734eb39a18240dda73ce8614232ab40"
-        },
-        {
-          "align": "left",
-          "blockWidth": "default",
-          "children": [
-            {
-              "text": ""
-            }
-          ],
-          "credit": {},
-          "description": "",
-          "id": "pwOJYQ3VHm",
-          "image_field": "image",
-          "size": "s",
-          "styles": {
-            "blockWidth:noprefix": {
-              "--block-width": "var(--narrow-container-width)"
-            },
-            "size:noprefix": "small"
-          },
-          "theme": "grey",
-          "title": "Plone Foundation Logo",
-          "type": "img",
-          "url": "../resolveuid/a58ccead718140c1baa98d43595fc3e6"
         },
         {
           "blockWidth": "default",
@@ -133,7 +519,15 @@
               "text": "Suspendisse"
             },
             {
-              "text": " tristique gravida congue molestie mollis bibendum est ac proin lacinia."
+              "text": " tristique gravida congue "
+            },
+            {
+              "comment": true,
+              "comment_6iUI1oeNnjCq0X0Myghvx": true,
+              "text": "molestie"
+            },
+            {
+              "text": " mollis bibendum est ac proin lacinia."
             }
           ],
           "id": "i7lDvzFKId",
@@ -204,7 +598,7 @@
               ],
               "id": "LR0yRMwNPU",
               "type": "a",
-              "url": "../resolveuid/a720393b3c0240e5bd27c43fcd2cfd1e"
+              "url": "https://plate.kitconcept.dev/images"
             },
             {
               "text": ""
@@ -673,26 +1067,6 @@
           "blockWidth": "default",
           "children": [
             {
-              "text": "Table of contents"
-            }
-          ],
-          "id": "Ixkw1BK8mD",
-          "type": "h2"
-        },
-        {
-          "blockWidth": "default",
-          "children": [
-            {
-              "text": ""
-            }
-          ],
-          "id": "8mxTgibI62",
-          "type": "toc"
-        },
-        {
-          "blockWidth": "default",
-          "children": [
-            {
               "text": ""
             }
           ],
@@ -734,7 +1108,7 @@
     "locked": false,
     "stealable": true
   },
-  "modified": "2026-05-12T10:36:16+00:00",
+  "modified": "2026-05-16T20:22:14+00:00",
   "nav_title": null,
   "preview_caption_link": null,
   "review_state": "published",
