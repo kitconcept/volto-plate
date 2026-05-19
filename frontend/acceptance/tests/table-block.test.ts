@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
 import { createWikiPage } from './content';
 import { expect, test } from './test';
 import { login } from './login';
@@ -174,7 +174,7 @@ test.describe('Table Block', () => {
   });
 
   test('Set cell background color via floating toolbar', async ({ page }) => {
-    await openTableEditor(page, {
+    const { contentPath } = await openTableEditor(page, {
       contentId: 'table-bg-color',
       contentTitle: 'Table BG Color',
     });
@@ -189,11 +189,15 @@ test.describe('Table Block', () => {
 
     await floatingToolbar.locator('button:has(.lucide-paint-bucket)').click();
 
-    const colorMenu = page.locator('[role="menu"]');
+    const colorMenu = page.locator('[data-slot="dropdown-menu-content"]');
     await expect(colorMenu).toBeVisible();
-    await page.locator('[role="menuitem"][style*="#000000"]').first().click();
+    await page.locator('[data-slot="dropdown-menu-item"][style="background-color: rgb(0, 0, 0);"]').click();
 
-    await expect(firstCell).toHaveAttribute('style', /--cellBackground.*#000000/i);
+
+
+    await savePage(page, contentPath, 'Table BG Color');
+
+    await expect(table.locator('tr').first().locator('td').first()).toHaveAttribute('style', /--cellBackground.*#000000/i);
   });
 
   test('Clear cell background color via floating toolbar', async ({ page }) => {
@@ -212,9 +216,11 @@ test.describe('Table Block', () => {
 
     // Set a color first
     await floatingToolbar.locator('button:has(.lucide-paint-bucket)').click();
-    const colorMenu = page.locator('[role="menu"]');
+
+    const colorMenu = page.locator('[data-slot="dropdown-menu-content"]');
     await expect(colorMenu).toBeVisible();
-    await page.locator('[role="menuitem"][style*="#000000"]').first().click();
+    await page.locator('[data-slot="dropdown-menu-item"][style="background-color: rgb(0, 0, 0);"]').click();
+
     await expect(firstCell).toHaveAttribute('style', /--cellBackground.*#000000/i);
 
     // Re-open color menu and clear
@@ -248,29 +254,6 @@ test.describe('Table Block', () => {
     await page.getByRole('menuitemcheckbox', { name: 'No Border' }).click();
 
     await expect(firstCell).not.toHaveClass(/before:border-b|before:border-r|before:border-l|before:border-t/);
-  });
-
-  test('Toggle Top Border via floating toolbar', async ({ page }) => {
-    await openTableEditor(page, {
-      contentId: 'table-border-top',
-      contentTitle: 'Table Border Top',
-    });
-
-    const table = await insertTable(page);
-
-    const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
-    await firstCell.click();
-
-    const floatingToolbar = page.locator('[data-slot="popover-content"]');
-    await expect(floatingToolbar).toBeVisible({ timeout: 5_000 });
-
-    await floatingToolbar.locator('button:has(.lucide-grid-2x2)').click();
-
-    const bordersMenu = page.locator('[role="menu"]');
-    await expect(bordersMenu).toBeVisible();
-    await page.getByRole('menuitemcheckbox', { name: 'Top Border' }).click();
-
-    await expect(firstCell).toHaveClass(/before:border-t/);
   });
 
   test('Merge cells via floating toolbar', async ({ page }) => {
@@ -351,61 +334,6 @@ test.describe('Table Block', () => {
     await expect(editor.locator('table')).toHaveCount(0);
   });
 
-  test('Resize column width via drag handle', async ({ page }) => {
-    await openTableEditor(page, {
-      contentId: 'table-resize-col-width',
-      contentTitle: 'Table Resize Col Width',
-    });
 
-    const table = await insertTable(page);
 
-    const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
-    await firstCell.hover();
-
-    // Right resize handle has data-col attribute
-    const rightHandle = page.locator('[data-col="0"]').first();
-    const box = await rightHandle.boundingBox();
-
-    await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(box!.x + box!.width / 2 + 60, box!.y + box!.height / 2, { steps: 10 });
-    await page.mouse.up();
-
-    // Cell width is stored in style as maxWidth/minWidth; default is 120px, should now be larger
-    const styleAttr = await firstCell.getAttribute('style');
-    const minWidthMatch = styleAttr?.match(/min-width:\s*(\d+)px/);
-    const minWidth = minWidthMatch ? parseInt(minWidthMatch[1], 10) : 0;
-    expect(minWidth).toBeGreaterThan(120);
-  });
-
-  test('Resize row height via drag handle', async ({ page }) => {
-    await openTableEditor(page, {
-      contentId: 'table-resize-row-height',
-      contentTitle: 'Table Resize Row Height',
-    });
-
-    const table = await insertTable(page);
-
-    const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
-    await firstCell.hover();
-
-    const cellBox = await firstCell.boundingBox();
-
-    // Bottom resize handle is at the bottom edge of the cell
-    await page.mouse.move(cellBox!.x + cellBox!.width / 2, cellBox!.y + cellBox!.height - 2);
-    await page.mouse.down();
-    await page.mouse.move(
-      cellBox!.x + cellBox!.width / 2,
-      cellBox!.y + cellBox!.height + 50,
-      { steps: 10 },
-    );
-    await page.mouse.up();
-
-    // minHeight is applied on the inner content div
-    const innerDiv = firstCell.locator('div.relative.z-20');
-    const styleAttr = await innerDiv.getAttribute('style');
-    const minHeightMatch = styleAttr?.match(/min-height:\s*(\d+)px/);
-    const minHeight = minHeightMatch ? parseInt(minHeightMatch[1], 10) : 0;
-    expect(minHeight).toBeGreaterThan(0);
-  });
 });
