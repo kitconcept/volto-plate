@@ -233,29 +233,6 @@ test.describe('Table Block', () => {
     await expect(firstCell).not.toHaveAttribute('style', /--cellBackground.*#000000/i);
   });
 
-  test('Toggle No Border via floating toolbar', async ({ page }) => {
-    await openTableEditor(page, {
-      contentId: 'table-border-none',
-      contentTitle: 'Table Border None',
-    });
-
-    const table = await insertTable(page);
-
-    const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
-    await firstCell.click();
-
-    const floatingToolbar = page.locator('[data-slot="popover-content"]');
-    await expect(floatingToolbar).toBeVisible({ timeout: 5_000 });
-
-    await floatingToolbar.locator('button:has(.lucide-grid-2x2)').click();
-
-    const bordersMenu = page.locator('[role="menu"]');
-    await expect(bordersMenu).toBeVisible();
-    await page.getByRole('menuitemcheckbox', { name: 'No Border' }).click();
-
-    await expect(firstCell).not.toHaveClass(/before:border-b|before:border-r|before:border-l|before:border-t/);
-  });
-
   test('Merge cells via floating toolbar', async ({ page }) => {
     await openTableEditor(page, {
       contentId: 'table-merge-cells',

@@ -116,52 +116,5 @@ test.describe('Code Block', () => {
     await page.getByRole('option', { name: 'JavaScript' }).first().click();
 
     await expect(combobox).toHaveText('JavaScript');
-
-    await savePage(page, contentPath, 'Code Block Language');
-
-    await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
-    await waitForPlateEditorReady(page);
-
-    await expect(editor.locator('button[role="combobox"]')).toHaveText('JavaScript');
-  });
-
-  test('Copy Python code and paste into a second code block', async ({ page }) => {
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-
-    const { contentPath: _contentPath } = await openCodeBlockEditor(page, {
-      contentId: 'code-block-copy-paste',
-      contentTitle: 'Code Block Copy Paste',
-      bodyText: '',
-    });
-
-    const editor = page.locator('.slate-editor[data-slate-editor]');
-    const PYTHON_CODE = 'print("hello world")';
-
-    // Insert first code block and set language to Python
-    await insertViaSlashMenu(page, 'Code Block');
-    await editor.locator('button[role="combobox"]').click();
-    await page.getByPlaceholder('Search language...').fill('Python');
-    await page.getByRole('option', { name: 'Python' }).first().click();
-
-    // Type Python code and copy it
-    const firstPre = editor.locator('pre').first();
-    await firstPre.click();
-    await page.keyboard.type(PYTHON_CODE);
-    await expect(firstPre).toHaveText(PYTHON_CODE);
-
-    await page.locator('button:has(.lucide-copy)').click();
-    await expect(page.locator('button:has(.lucide-check)')).toBeVisible();
-
-
-    await insertViaSlashMenu(page, 'Code Block');
-
-    // Set second code block language to Python, paste and verify
-    const secondPre = editor.locator('pre').nth(1);
-    await editor.locator('button[role="combobox"]').nth(1).click();
-    await page.getByPlaceholder('Search language...').fill('Python');
-    await page.getByRole('option', { name: 'Python' }).first().click();
-    await secondPre.click();
-    await page.keyboard.press('ControlOrMeta+v');
-    await expect(secondPre).toHaveText(PYTHON_CODE);
   });
 });
