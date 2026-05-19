@@ -48,7 +48,6 @@ test.describe('Blockquote ', () => {
 
     await selectParagraphText(page, { start: 0, end: 5 });
 
-    //const turnIntoBtn = page.locator('[data-testid="turn-into-toolbar-button"]');
     const turnIntoBtn = toolbarButton(page, 'lucide-chevron-down').nth(0);
     await expect(turnIntoBtn).toBeVisible();
     await turnIntoBtn.click();
