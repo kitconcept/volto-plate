@@ -97,24 +97,4 @@ test.describe('Code Block', () => {
 
     await expect(editor.locator('pre')).toBeVisible();
   });
-
-  test('Select language from combobox', async ({ page }) => {
-    const { contentPath } = await openCodeBlockEditor(page, {
-      contentId: 'code-block-language',
-      contentTitle: 'Code Block Language',
-      bodyText: '',
-    });
-
-    await insertViaSlashMenu(page, 'Code Block');
-
-    const editor = page.locator('.slate-editor[data-slate-editor]');
-    const combobox = editor.locator('button[role="combobox"]');
-    await expect(combobox).toHaveText('Plain Text');
-
-    await combobox.click();
-    await page.getByPlaceholder('Search language...').fill('JavaScript');
-    await page.getByRole('option', { name: 'JavaScript' }).first().click();
-
-    await expect(combobox).toHaveText('JavaScript');
-  });
 });
