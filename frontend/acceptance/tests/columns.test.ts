@@ -5,6 +5,18 @@ import { login } from './login';
 import { waitForPlateEditorReady } from './plate';
 import { insertViaSlashMenu } from './helpers';
 
+const COLUMN_TEXTS = ['Column one', 'Column two', 'Column three'] as const;
+
+async function typeIntoColumns(page: Page, texts: readonly string[]) {
+  const columns = page
+    .locator('.slate-editor[data-slate-editor]')
+    .locator('.slate-column');
+  for (let i = 0; i < texts.length; i++) {
+    await columns.nth(i).click();
+    await page.keyboard.type(texts[i]);
+  }
+}
+
 async function openColumnsEditor(
   page: Page,
   { contentId, contentTitle }: { contentId: string; contentTitle: string },
@@ -29,6 +41,7 @@ async function savePage(page: Page, contentPath: string, contentTitle: string) {
 
 test.describe('Columns Block', () => {
   test.beforeEach(async ({ page }) => {
+    test.setTimeout(30_000);
     await login(page);
   });
 
@@ -44,8 +57,9 @@ test.describe('Columns Block', () => {
     const columns = editor.locator('.slate-column');
     await expect(columns).toHaveCount(3);
 
-    await savePage(page, contentPath, 'Columns Insert');
+    await typeIntoColumns(page, COLUMN_TEXTS);
 
+    await savePage(page, contentPath, 'Columns Insert');
 
     const columnGroup = page.locator('.slate-column_group');
     await expect(columnGroup).toBeVisible();
@@ -64,6 +78,8 @@ test.describe('Columns Block', () => {
       page.locator('[data-radix-popper-content-wrapper]'),
     ).toBeVisible();
 
+    await typeIntoColumns(page, COLUMN_TEXTS);
+
     // btn[0] = 50% / 50%
     await page.locator('[data-radix-popper-content-wrapper] button').nth(0).click();
 
@@ -74,9 +90,7 @@ test.describe('Columns Block', () => {
     await expect(columns.nth(0).locator('..')).toHaveAttribute('style', /width.*50%/);
     await expect(columns.nth(1).locator('..')).toHaveAttribute('style', /width.*50%/);
 
-
     await savePage(page, contentPath, 'Columns Layout 2 Equal');
-
 
     const columnGroup = page.locator('.slate-column_group');
     await expect(columnGroup).toBeVisible();
@@ -96,6 +110,8 @@ test.describe('Columns Block', () => {
     await expect(
       page.locator('[data-radix-popper-content-wrapper]'),
     ).toBeVisible();
+
+    await typeIntoColumns(page, COLUMN_TEXTS);
 
     // Switch to 2 cols first, then back to 3
     await page.locator('[data-radix-popper-content-wrapper] button').nth(0).click();
@@ -118,7 +134,6 @@ test.describe('Columns Block', () => {
 
     await savePage(page, contentPath, 'Columns Layout 3 Equal');
 
-
     const columnGroup = page.locator('.slate-column_group');
     await expect(columnGroup).toBeVisible();
     const viewColumns = columnGroup.locator('.slate-column');
@@ -138,6 +153,8 @@ test.describe('Columns Block', () => {
       page.locator('[data-radix-popper-content-wrapper]'),
     ).toBeVisible();
 
+    await typeIntoColumns(page, COLUMN_TEXTS);
+
     // btn[2] = 70% / 30%
     await page.locator('[data-radix-popper-content-wrapper] button').nth(2).click();
 
@@ -146,7 +163,6 @@ test.describe('Columns Block', () => {
     await expect(columns).toHaveCount(2);
     await expect(columns.nth(0).locator('..')).toHaveAttribute('style', /width.*70%/);
     await expect(columns.nth(1).locator('..')).toHaveAttribute('style', /width.*30%/);
-
   });
 
   test('Change to asymmetric layout (30%-70%) via toolbar', async ({
@@ -161,6 +177,8 @@ test.describe('Columns Block', () => {
     await expect(
       page.locator('[data-radix-popper-content-wrapper]'),
     ).toBeVisible();
+
+    await typeIntoColumns(page, COLUMN_TEXTS);
 
     // btn[3] = 30% / 70%
     await page.locator('[data-radix-popper-content-wrapper] button').nth(3).click();
@@ -185,6 +203,8 @@ test.describe('Columns Block', () => {
       page.locator('[data-radix-popper-content-wrapper]'),
     ).toBeVisible();
 
+    await typeIntoColumns(page, COLUMN_TEXTS);
+
     // btn[4] = 25% / 50% / 25%
     await page.locator('[data-radix-popper-content-wrapper] button').nth(4).click();
 
@@ -207,13 +227,22 @@ test.describe('Columns Block', () => {
       page.locator('[data-radix-popper-content-wrapper]'),
     ).toBeVisible();
 
+    await typeIntoColumns(page, COLUMN_TEXTS);
+
+    const editor = page.locator('.slate-editor[data-slate-editor]');
+    const columns = editor.locator('.slate-column');
+
+    // Re-focus column to reopen toolbar then delete the entire group
+    await columns.nth(0).click();
+    await expect(
+      page.locator('[data-radix-popper-content-wrapper]'),
+    ).toBeVisible();
+
     // btn[5] = Trash (delete)
     await page.locator('[data-radix-popper-content-wrapper] button').nth(5).click();
 
-    const editor = page.locator('.slate-editor[data-slate-editor]');
     await expect(editor.locator('.slate-column_group')).toHaveCount(0);
   });
-
 
   test('Delete individual columns via backspace leaving 1 column', async ({ page }) => {
     await openColumnsEditor(page, {
@@ -225,13 +254,16 @@ test.describe('Columns Block', () => {
 
     const columns = page.locator('.slate-editor[data-slate-editor] .slate-column');
 
+    // Fill only the first two columns — leave column 3 empty so backspace removes it
+    await typeIntoColumns(page, [COLUMN_TEXTS[0], COLUMN_TEXTS[1]]);
 
+    // Click the empty third column and backspace to delete it
     await columns.nth(2).click();
     await page.keyboard.press('Backspace');
+
     const columnGroup = page.locator('.slate-column_group');
     await expect(columnGroup).toBeVisible();
     const viewColumns = columnGroup.locator('.slate-column');
     await expect(viewColumns).toHaveCount(2);
-
   });
 });

@@ -6,6 +6,8 @@ import { waitForPlateEditorReady } from './plate';
 import { insertViaSlashMenu, selectParagraphText, withSomersaultBody } from './helpers';
 
 const CODE_TEXT = 'console.log("hello")';
+const TOOLBAR_CODE_TEXT = 'some code here';
+const AUTOFORMAT_CODE_TEXT = 'const x = 42;';
 
 async function openCodeBlockEditor(
   page: Page,
@@ -75,17 +77,18 @@ test.describe('Code Block', () => {
     const editor = page.locator('.slate-editor[data-slate-editor]');
     const pre = editor.locator('pre');
     await expect(pre).toBeVisible();
-    await expect(pre).toHaveText('some code here');
+    await expect(pre).toHaveText(TOOLBAR_CODE_TEXT);
 
     await savePage(page, contentPath, 'Code Block Toolbar');
 
-    await expect(page.locator('pre').filter({ hasText: 'some code here' }).first()).toBeVisible();
+    await expect(page.locator('pre').filter({ hasText: TOOLBAR_CODE_TEXT }).first()).toBeVisible();
   });
 
   test('Autoformat code block with triple backticks', async ({ page }) => {
-    const { contentPath: _contentPath } = await openCodeBlockEditor(page, {
+    const contentTitle = 'Code Block Autoformat';
+    const { contentPath } = await openCodeBlockEditor(page, {
       contentId: 'code-block-autoformat',
-      contentTitle: 'Code Block Autoformat',
+      contentTitle,
       bodyText: '',
     });
 
@@ -93,8 +96,22 @@ test.describe('Code Block', () => {
     await editor.click();
     await page.keyboard.press('End');
     await page.keyboard.press('Enter');
+
+    // Trigger autoformat: typing ``` should convert paragraph to code block
     await page.keyboard.type('```');
 
-    await expect(editor.locator('pre')).toBeVisible();
+    const pre = editor.locator('pre');
+    await expect(pre).toBeVisible();
+
+    // Cursor should now be inside the code block — type code
+    await page.keyboard.type(AUTOFORMAT_CODE_TEXT);
+    await expect(pre).toHaveText(AUTOFORMAT_CODE_TEXT);
+
+    // Save and verify on view page
+    await savePage(page, contentPath, contentTitle);
+
+    await expect(
+      page.locator('pre').filter({ hasText: AUTOFORMAT_CODE_TEXT }).first(),
+    ).toBeVisible();
   });
 });
