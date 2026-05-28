@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    >
+
+  <genericsetup:upgradeSteps
+      profile="kitconcept.plate:default"
+      source="20260511001"
+      destination="20260515001"
+      >
+    <genericsetup:upgradeDepends
+        title="Adds Workspace to navigation displayed types."
+        import_steps="plone.app.registry"
+        />
+  </genericsetup:upgradeSteps>
+
+</configure>
