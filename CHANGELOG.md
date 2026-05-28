@@ -7,6 +7,32 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a9 (2026-05-28)
+
+### Backend
+
+
+#### Bug fixes:
+
+- Adds Workspace to navigation displayed types. @iFlameing 
+
+
+
+### Frontend
+
+#### Bugfix
+
+- Fix the unwanted navigation path in nested workspace. @iFlameing 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a8 (2026-05-14)
 
 ### Backend

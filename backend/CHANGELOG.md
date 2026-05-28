@@ -9,6 +9,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a9 (2026-05-28)
+
+
+### Bug fixes:
+
+- Adds Workspace to navigation displayed types. @iFlameing 
+
 ## 1.0.0a8 (2026-05-14)
 
 No significant changes.
