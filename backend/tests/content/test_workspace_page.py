@@ -1,5 +1,5 @@
-from kitconcept.plate.content.workspace import IWorkspace
 from kitconcept.plate.content.wiki_page import IWikiPage
+from kitconcept.plate.content.workspace import IWorkspace
 from plone import api
 
 

@@ -1,5 +1,15 @@
 @import 'navigation-sidebar';
 
+// `height: 100%` constrains body to viewport height.
+// Use `min-height: 100vh` so body fills the viewport initially
+// but can grow when content exceeds viewport height.
+
+body {
+  height: auto;
+  min-height: 100vh;
+  align-items: stretch;
+}
+
 // Neutralize TW container CSS for .q.container
 @layer plone-components {
   .q.container {
