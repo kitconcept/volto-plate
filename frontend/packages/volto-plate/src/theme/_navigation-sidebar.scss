@@ -1,9 +1,3 @@
-@media print {
-  #navigation-sidebar {
-    display: none !important;
-  }
-}
-
 #navigation-sidebar {
   position: relative;
   z-index: 99;
@@ -130,5 +124,11 @@
         }
       }
     }
+  }
+}
+
+@media print {
+  #navigation-sidebar {
+    display: none;
   }
 }
