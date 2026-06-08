@@ -126,3 +126,9 @@
     }
   }
 }
+
+@media print {
+  #navigation-sidebar {
+    display: none;
+  }
+}
