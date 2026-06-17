@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "from_attribute": "isReferencing",
+    "from_uuid": "d73b622d250544d0a5c1c7e7e9c54ad5",
+    "to_uuid": "66986686c75b4a3f9d5a6bfc7dd45a6e"
+  },
+  {
+    "from_attribute": "isReferencing",
+    "from_uuid": "d73b622d250544d0a5c1c7e7e9c54ad5",
+    "to_uuid": "ef9acfecdad34752818daa1e164baa24"
+  }
+]

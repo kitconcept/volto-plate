@@ -1,0 +1,96 @@
+{
+  "@id": "/workspace/wiki-page/company-news-and-announcements/internal-events-and-team-building-activities-calendar/marketing-brand-assets-and-communication-guidelines",
+  "@type": "WikiPage",
+  "UID": "e013b2a2394d47828d5402c7d2412f1b",
+  "allow_discussion": null,
+  "blocks": {
+    "__somersault__": {
+      "@type": "__somersault__",
+      "discussions": {},
+      "value": [
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": "Marketing Brand Assets and Communication Guidelines"
+            }
+          ],
+          "id": "R7I1TseJfZ",
+          "type": "title"
+        },
+        {
+          "blockWidth": "default",
+          "children": [
+            {
+              "text": ""
+            }
+          ],
+          "id": "1WXuAaHdQ3",
+          "type": "p"
+        }
+      ]
+    },
+    "db755c10-7801-4b62-918c-8ce645c7fe71": {
+      "@type": "slate"
+    },
+    "f87c3d6a-e018-4799-b150-53b7b75cac56": {
+      "@type": "title"
+    }
+  },
+  "blocks_layout": {
+    "items": [
+      "f87c3d6a-e018-4799-b150-53b7b75cac56",
+      "db755c10-7801-4b62-918c-8ce645c7fe71"
+    ]
+  },
+  "changeNote": "",
+  "contributors": [],
+  "created": "2026-05-12T10:28:35+00:00",
+  "creators": [
+    "admin"
+  ],
+  "description": "Lorem ipsum dolor sit amet odio tortor in sollicitudin phasellus interdum justo. Arcu hendrerit pretium nisi praesent tempus netus non neque blandit vel. Augue molestie cras fames vestibulum convallis facilisi hac imperdiet fermentum. Blandit phasellus nullam auctor elit enim eu mollis aliquet adipiscing feugiat dui lacus luctus. Mauris hendrerit facilisis est nunc turpis pharetra eleifend duis porta platea nulla tortor aliquam est.",
+  "effective": "2026-05-12T10:52:00+00:00",
+  "exclude_from_nav": false,
+  "expires": null,
+  "exportimport.constrains": {},
+  "exportimport.conversation": [],
+  "id": "marketing-brand-assets-and-communication-guidelines",
+  "is_folderish": true,
+  "language": "##DEFAULT##",
+  "layout": "view",
+  "lock": {
+    "locked": false,
+    "stealable": true
+  },
+  "modified": "2026-05-12T14:11:34+00:00",
+  "nav_title": null,
+  "preview_caption_link": null,
+  "review_state": "published",
+  "rights": "",
+  "subjects": [],
+  "title": "Marketing Brand Assets and Communication Guidelines",
+  "type_title": "Wiki Page",
+  "version": "current",
+  "versioning_enabled": true,
+  "workflow_history": {
+    "simple_publication_workflow": [
+      {
+        "action": null,
+        "actor": "admin",
+        "comments": "",
+        "review_state": "private",
+        "time": "2026-05-12T10:48:38+00:00"
+      },
+      {
+        "action": "publish",
+        "actor": "admin",
+        "comments": "",
+        "review_state": "published",
+        "time": "2026-05-12T10:54:45+00:00"
+      }
+    ]
+  },
+  "working_copy": null,
+  "working_copy_of": null
+}
