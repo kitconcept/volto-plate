@@ -4,15 +4,14 @@
     "package": "@plone/volto",
     "url": "git@github.com:plone/volto.git",
     "https": "https://github.com/plone/volto.git",
-    "tag": "19.0.0-alpha.36",
+    "tag": "19.1.4",
     "filterBlobs": true
   },
-  "seven": {
+  "aurora": {
     "output": "./",
-    "package": "@plone/volto",
-    "url": "git@github.com:plone/volto.git",
-    "https": "https://github.com/plone/volto.git",
-    "branch": "Seven-1.0.0-alpha.4",
+    "package": "@plone/aurora",
+    "url": "git@github.com:plone/aurora.git",
+    "https": "https://github.com/plone/aurora.git",
     "filterBlobs": true
   }
 }

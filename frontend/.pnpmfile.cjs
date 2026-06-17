@@ -15,10 +15,10 @@ function loadCatalog(relativePath) {
 }
 
 const coreCatalog = loadCatalog('./core/catalog.json');
-const sevenCatalog = loadCatalog('./seven/catalog.json');
+const auroraCatalog = loadCatalog('./aurora/catalog.json');
 const mergedCatalog = {
   ...coreCatalog,
-  ...sevenCatalog,
+  ...auroraCatalog,
 };
 
 module.exports = {
