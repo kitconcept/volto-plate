@@ -30,6 +30,12 @@ export default function install(config: ConfigType) {
     config.blocks.plateBlocksConfig = {};
   }
 
+  config.registerUtility({
+    type: 'styleFieldDefinition',
+    name: 'blockWidth',
+    method: () => config.blocks.widths ?? [],
+  });
+
   config.blocks.blocksConfig.plateimage = {
     ...config.blocks.blocksConfig.image,
     ...config.blocks.blocksConfig.plateimage,

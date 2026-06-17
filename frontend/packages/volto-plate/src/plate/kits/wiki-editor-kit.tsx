@@ -25,6 +25,7 @@ import { MarkdownKit } from '@plone/plate/components/editor/plugins/markdown-kit
 import { MediaKit } from '@plone/plate/components/editor/plugins/media-kit';
 import { MentionKit } from '@plone/plate/components/editor/plugins/mention-kit';
 import { BlockWidthKit } from '@plone/plate/components/editor/plugins/block-width-kit';
+import { StyleFieldsKit } from '@plone/plate/components/editor/plugins/style-fields-kit';
 import { createSlashKit } from '@plone/plate/components/editor/plugins/slash-kit';
 import { SuggestionKit } from '@plone/plate/components/editor/plugins/suggestion-kit';
 import { TableKit } from '@plone/plate/components/editor/plugins/table-kit';
@@ -64,6 +65,7 @@ export const WikiEditorKit = [
   ...ListKit,
   ...AlignKit,
   ...LineHeightKit,
+  ...StyleFieldsKit,
   ...BlockWidthKit,
 
   // Collaboration

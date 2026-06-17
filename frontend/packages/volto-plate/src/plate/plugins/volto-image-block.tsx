@@ -1,6 +1,7 @@
 import type { TImageElement } from 'platejs';
+import { createSlatePlugin } from 'platejs';
+import { toPlatePlugin } from 'platejs/react';
 
-import { ImagePlugin } from '@platejs/media/react';
 import ImageEdit from '../../components/Blocks/Image/Edit';
 import ImageView from '@plone/volto/components/manage/Blocks/Image/View';
 import config from '@plone/volto/registry';
@@ -41,6 +42,7 @@ const fromBlockData = (
   const { '@type': blockType = 'plateimage', ...rest } = data;
   return {
     ...rest,
+    type: 'unknown',
     '@type': blockType,
   };
 };
@@ -61,7 +63,14 @@ export const VoltoImageBlockElement = createVoltoBlockAdapter<
   }),
 });
 
-export const VoltoImageBlockPlugin = ImagePlugin.configure({
-  options: { disableUploadInsert: true },
-  render: { node: VoltoImageBlockElement },
+export const BaseVoltoImageBlockPlugin = createSlatePlugin({
+  key: 'plateimage',
+  node: {
+    component: VoltoImageBlockElement,
+    isVoid: true,
+    isElement: true,
+    type: 'unknown',
+  },
 });
+
+export const VoltoImageBlockPlugin = toPlatePlugin(BaseVoltoImageBlockPlugin);
