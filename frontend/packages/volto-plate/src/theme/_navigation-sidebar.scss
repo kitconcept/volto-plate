@@ -1,6 +1,7 @@
 #navigation-sidebar {
   position: relative;
   z-index: 99;
+  background: #f7f6f1;
 
   .navigation-sidebar-panel {
     overflow: visible;
@@ -105,6 +106,7 @@
         max-height: none;
         padding-right: 20px;
         border: none;
+        background: #f7f6f1;
       }
 
       .react-aria-TreeItem {
@@ -113,10 +115,20 @@
         text-overflow: ellipsis;
         white-space: nowrap;
 
+        .react-aria-Button[slot='chevron'] {
+          flex-shrink: 0;
+        }
+
         &.is-current {
           font-weight: bold;
         }
       }
     }
+  }
+}
+
+@media print {
+  #navigation-sidebar {
+    display: none;
   }
 }
