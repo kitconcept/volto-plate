@@ -1,3 +1,8 @@
+// This is a Plate plugin that adapts the Volto Image block to be used in a native Plate
+// block. It keeps the built-in Plate image baseline, and the KEYS.img type, but adds
+// the Volto block type, edit, and schema (via the SidebarPlugin) to the element,
+// so that it can be used seamlessly.
+
 import type { TImageElement } from 'platejs';
 import { ImagePlugin } from '@platejs/media/react';
 

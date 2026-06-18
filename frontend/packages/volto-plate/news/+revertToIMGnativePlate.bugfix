@@ -1,0 +1,3 @@
+Reverted the decision to have the images as a non-native Plate plugin.
+The Image block in this add-on is a full fledged Plate plugin piggy-backing in the original Plate Image plugin, but that exposes the Volto Image block.
+This keeps the things simple since the Wiki-editor does not use any other Volto block. @sneridagh
