@@ -49,7 +49,7 @@ function withSomersaultImageBody(body: Record<string, unknown>) {
           { type: 'title', children: [{ text: title }] },
           { type: 'p', children: [{ text: 'Text before image' }] },
           {
-            type: 'unknown',
+            type: 'img',
             url: DATA_URI,
             alt: 'Inline test image',
             '@type': 'plateimage',
@@ -101,7 +101,7 @@ async function openSelectedImageBlockSidebar(
     unknown
   >;
 
-  expect(imageNode.type).toBe('unknown');
+  expect(imageNode.type).toBe('img');
   expect(imageNode['@type']).toBe('plateimage');
 
   const editorImage = page.locator(
@@ -146,11 +146,14 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
     .getByRole('radio', { name: 'Narrow' })
     .check({ force: true });
 
-  const expectedWidth = await getRootVariable(page, '--narrow-container-width');
+  const expectedWidth = await getRootVariable(
+    page,
+    '--default-container-width',
+  );
 
   await expect(imageBlock).toHaveAttribute(
     'style',
-    /--block-width:\s*var\(--narrow-container-width\)/,
+    /--block-width:\s*var\(--default-container-width\)/,
   );
   await expect
     .poll(async () => getInheritedBlockWidth(imageBlock))
