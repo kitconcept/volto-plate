@@ -3,19 +3,8 @@ import type {
   SlashMenuGroup,
 } from '@plone/plate/components/editor/plugins/slash-menu';
 import { insertBlock } from '@plone/plate/components/editor/transforms';
-import type { PlateEditor } from 'platejs/react';
+import { ImageIcon } from 'lucide-react';
 import { KEYS } from 'platejs';
-
-const insertPlateImage = (editor: PlateEditor) => {
-  insertBlock(editor, KEYS.img);
-
-  const block = editor.api.block();
-  if (!block || block[0].type !== KEYS.img) return;
-
-  editor.tf.setNodes({ '@type': 'plateimage' } as any, {
-    at: block[1],
-  });
-};
 
 export const slashMenu: SlashMenuConfig = {
   extendGroups: (groups) =>
@@ -32,19 +21,23 @@ export const slashMenu: SlashMenuConfig = {
           return null;
         }
 
-        if (group.group === 'Media') {
+        if (group.group === 'Text blocks') {
           return {
             ...group,
-            items: group.items.map((item) =>
-              item.value === KEYS.img
-                ? {
-                    ...item,
+            items: group.items.some((item) => item.value === KEYS.img)
+              ? group.items
+              : [
+                  ...group.items,
+                  {
+                    icon: <ImageIcon />,
+                    keywords: ['image', 'media', 'photo', 'picture'],
+                    label: 'Image',
+                    value: KEYS.img,
                     onSelect: (editor) => {
-                      insertPlateImage(editor);
+                      insertBlock(editor, KEYS.img);
                     },
-                  }
-                : item,
-            ),
+                  },
+                ],
           };
         }
 

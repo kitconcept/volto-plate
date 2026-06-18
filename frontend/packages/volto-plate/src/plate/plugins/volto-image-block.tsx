@@ -1,6 +1,9 @@
+// This is a Plate plugin that adapts the Volto Image block to be used in a native Plate
+// block. It keeps the built-in Plate image baseline, and the KEYS.img type, but adds
+// the Volto block type, edit, and schema (via the SidebarPlugin) to the element,
+// so that it can be used seamlessly.
+
 import type { TImageElement } from 'platejs';
-import { KEYS } from 'platejs';
-import { BaseImagePlugin } from '@platejs/media';
 import { ImagePlugin } from '@platejs/media/react';
 
 import ImageEdit from '../../components/Blocks/Image/Edit';
@@ -43,7 +46,6 @@ const fromBlockData = (
   const { '@type': blockType = 'plateimage', ...rest } = data;
   return {
     ...rest,
-    type: KEYS.img,
     '@type': blockType,
   };
 };
@@ -63,10 +65,6 @@ export const VoltoImageBlockElement = createVoltoBlockAdapter<
     contentType: (element as any)?.['@type'],
   }),
 });
-
-export const BaseVoltoImageBlockPlugin = BaseImagePlugin.withComponent(
-  VoltoImageBlockElement,
-);
 
 export const VoltoImageBlockPlugin = ImagePlugin.configure({
   options: { disableUploadInsert: true },
