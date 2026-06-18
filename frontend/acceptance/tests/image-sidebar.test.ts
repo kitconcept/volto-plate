@@ -49,7 +49,7 @@ function withSomersaultImageBody(body: Record<string, unknown>) {
           { type: 'title', children: [{ text: title }] },
           { type: 'p', children: [{ text: 'Text before image' }] },
           {
-            type: 'unknown',
+            type: 'img',
             url: DATA_URI,
             alt: 'Inline test image',
             '@type': 'plateimage',
@@ -101,7 +101,7 @@ async function openSelectedImageBlockSidebar(
     unknown
   >;
 
-  expect(imageNode.type).toBe('unknown');
+  expect(imageNode.type).toBe('img');
   expect(imageNode['@type']).toBe('plateimage');
 
   const editorImage = page.locator(

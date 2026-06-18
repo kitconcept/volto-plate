@@ -60,5 +60,13 @@ export default function install(config: ConfigType) {
     },
   };
 
+  config.blocks.plateBlocksConfig.img = {
+    ...config.blocks.plateBlocksConfig.img,
+    blockWidth: {
+      defaultWidth: 'default',
+      ...config.blocks.plateBlocksConfig.img?.blockWidth,
+    },
+  };
+
   return config;
 }

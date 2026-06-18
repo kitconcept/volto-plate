@@ -13,12 +13,12 @@ import { AudioElementStatic } from '@plone/plate/components/ui/media-audio-node-
 import { FileElementStatic } from '@plone/plate/components/ui/media-file-node-static';
 import { VideoElementStatic } from '@plone/plate/components/ui/media-video-node-static';
 
-import { VoltoImageBlockPlugin } from '../../../../../../plate/plugins/volto-image-block';
+import { BaseVoltoImageBlockPlugin } from '../../../../../../plate/plugins/volto-image-block';
 
 // Override the base media kit to reuse the Volto image block (via the adapter)
 // for both edit and view, instead of the static Plate image element.
 export const BaseMediaKit = [
-  VoltoImageBlockPlugin,
+  BaseVoltoImageBlockPlugin,
   BaseVideoPlugin.withComponent(VideoElementStatic),
   BaseAudioPlugin.withComponent(AudioElementStatic),
   BaseFilePlugin.withComponent(FileElementStatic),

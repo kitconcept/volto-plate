@@ -40,4 +40,25 @@ describe('config/blocks', () => {
 
     expect(utility.method()).toBe(widths);
   });
+
+  it('registers native image nodes with a default block width', () => {
+    const config = {
+      blocks: {
+        widths: [],
+        blocksConfig: {
+          image: {},
+        },
+        plateBlocksConfig: {},
+      },
+      registerUtility: vi.fn(),
+    } as any;
+
+    install(config);
+
+    expect(config.blocks.plateBlocksConfig.img).toEqual({
+      blockWidth: {
+        defaultWidth: 'default',
+      },
+    });
+  });
 });
