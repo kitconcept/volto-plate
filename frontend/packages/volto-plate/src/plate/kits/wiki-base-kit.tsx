@@ -14,6 +14,7 @@ import { BaseListKit } from '@plone/plate/components/editor/plugins/list-base-ki
 import { BaseMediaKit } from '@plone/plate/components/editor/plugins/media-base-kit';
 import { BaseMentionKit } from '@plone/plate/components/editor/plugins/mention-base-kit';
 import { BaseBlockWidthKit } from '@plone/plate/components/editor/plugins/block-width-base-kit';
+import { BaseStyleFieldsKit } from '@plone/plate/components/editor/plugins/style-fields-base-kit';
 import { BaseSuggestionKit } from '@plone/plate/components/editor/plugins/suggestion-base-kit';
 import { BaseTableKit } from '@plone/plate/components/editor/plugins/table-base-kit';
 import { BaseTocKit } from '@plone/plate/components/editor/plugins/toc-base-kit';
@@ -44,6 +45,7 @@ export const wikiBaseEditorKit = [
   ...BaseListKit,
   ...BaseAlignKit,
   ...BaseLineHeightKit,
+  ...BaseStyleFieldsKit,
   ...BaseBlockWidthKit,
   ...BaseCommentKit,
   ...BaseSuggestionKit,

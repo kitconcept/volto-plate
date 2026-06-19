@@ -112,8 +112,11 @@ async function openSelectedImageBlockSidebar(
   await page.getByRole('button', { name: 'Block' }).click();
 
   return {
+    editorHandle,
     editorImage,
-    imageBlock: page.locator('.slate-img').first(),
+    imageBlock: editorImage.locator(
+      'xpath=ancestor::*[@data-slate-node="element"][1]',
+    ),
   };
 }
 
@@ -134,7 +137,7 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
     contentTitle: 'Image sidebar block width page',
   });
 
-  const { imageBlock } = await openSelectedImageBlockSidebar(page);
+  const { editorHandle, imageBlock } = await openSelectedImageBlockSidebar(page);
 
   await expect(imageBlock).toBeVisible();
   const blockWidthField = page.getByRole('radiogroup', { name: 'Block width' });
@@ -150,6 +153,19 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
     'style',
     /--block-width:\s*var\(--narrow-container-width\)/,
   );
+
+  await expect
+    .poll(async () => {
+      const imageNodeHandle = await getNodeByPath(page, editorHandle, [2]);
+      const imageNode = (await imageNodeHandle.jsonValue()) as Record<
+        string,
+        unknown
+      >;
+
+      return imageNode.blockWidth;
+    })
+    .toBe('narrow');
+
   await expect
     .poll(async () => getInheritedBlockWidth(imageBlock))
     .toBe(expectedWidth);

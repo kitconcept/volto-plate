@@ -13,5 +13,5 @@ yarn.lock
 /public
 /playwright-report
 
-/seven
+/aurora
 !/seven/packages/plate

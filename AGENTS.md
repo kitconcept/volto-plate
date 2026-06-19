@@ -11,6 +11,8 @@ These instructions apply to the whole `volto-plate` monorepo unless a deeper `AG
 - `frontend/`: Volto add-on workspace, managed with `pnpm`
 - Prefer the repo `Makefile` targets over ad-hoc commands. The Makefiles already encode the supported bootstrap, test, lint, and acceptance flows.
 
+- `frontend/aurora` is a local checkout of the Plone Aurora repository where the codebase for `@plone/plate` and `@plone/helpers` are developed. It is not a dependency of the main repo, but it is used for local development and testing of the frontend add-on. Ideally we should not change anything from this checkout, but if we do, we should make sure to keep it in sync with the upstream repository and ask for permission first.
+
 ## Required Tooling
 
 - Python is managed through `uv`
@@ -71,7 +73,7 @@ The repo acceptance flow is Playwright-based from `frontend/`.
 - Start backend acceptance server:
   - `make ci-acceptance-backend-start`
 - Start frontend for acceptance:
-  - `make acceptance-frontend-prod-start`
+  - `make acceptance-frontend-dev-start`
 - Run acceptance tests:
   - `cd frontend && pnpm exec playwright test --reporter=list,html`
 

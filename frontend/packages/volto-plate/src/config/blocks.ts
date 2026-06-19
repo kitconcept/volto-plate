@@ -30,6 +30,14 @@ export default function install(config: ConfigType) {
     config.blocks.plateBlocksConfig = {};
   }
 
+  config.registerUtility({
+    type: 'styleFieldDefinition',
+    name: 'blockWidth',
+    method: () => config.blocks.widths ?? [],
+  });
+
+  // Keep a Volto block registry entry for the adapted Plate image so the
+  // sidebar plugin can resolve its blockSchema from `@type: "plateimage"`.
   config.blocks.blocksConfig.plateimage = {
     ...config.blocks.blocksConfig.image,
     ...config.blocks.blocksConfig.plateimage,
@@ -51,6 +59,14 @@ export default function install(config: ConfigType) {
     blockWidth: {
       defaultWidth: 'default',
       widths: ['default'],
+    },
+  };
+
+  config.blocks.plateBlocksConfig.img = {
+    ...config.blocks.plateBlocksConfig.img,
+    blockWidth: {
+      defaultWidth: 'default',
+      ...config.blocks.plateBlocksConfig.img?.blockWidth,
     },
   };
 

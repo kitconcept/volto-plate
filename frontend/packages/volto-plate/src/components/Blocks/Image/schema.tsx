@@ -57,6 +57,7 @@ export function ImageSchema({ formData = {} }: ImageSchemaArgs): JSONSchema {
         widget: 'blockWidth',
         default: 'default',
         actions: ['narrow', 'default', 'layout', 'full'],
+        styleField: true,
       },
       align: {
         title: 'Alignment',
