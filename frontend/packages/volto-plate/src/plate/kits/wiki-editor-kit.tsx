@@ -17,7 +17,6 @@ import { DiscussionKit } from '@plone/plate/components/editor/plugins/discussion
 // import { DndKit } from '@plone/plate/components/editor/plugins/dnd-kit';
 import { DocxKit } from '@plone/plate/components/editor/plugins/docx-kit';
 import { ExitBreakKit } from '@plone/plate/components/editor/plugins/exit-break-kit';
-import { FloatingToolbarKit } from '@plone/plate/components/editor/plugins/floating-toolbar-kit';
 import { FontKit } from '@plone/plate/components/editor/plugins/font-kit';
 import { LineHeightKit } from '@plone/plate/components/editor/plugins/line-height-kit';
 import { ListKit } from '@plone/plate/components/editor/plugins/list-kit';
@@ -33,6 +32,7 @@ import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
 import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-hotkey';
 
+import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { SidebarPlugin } from '../plugins/volto-sidebar';
 import { slashMenu } from '../wiki/slash-menu';
@@ -89,7 +89,7 @@ export const WikiEditorKit = [
 
   // UI
   ...BlockPlaceholderKit,
-  ...FloatingToolbarKit,
+  ...VoltoFloatingToolbarKit,
 ];
 
 export type MyEditor = TPlateEditor<Value, (typeof WikiEditorKit)[number]>;
