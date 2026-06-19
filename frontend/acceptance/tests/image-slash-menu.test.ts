@@ -63,6 +63,7 @@ test('Slash command inserts an image block that can resolve an existing image', 
 
         return imageNode
           ? {
+              blockWidth: imageNode.blockWidth,
               type: imageNode.type,
               blockType: imageNode['@type'],
             }
@@ -70,6 +71,7 @@ test('Slash command inserts an image block that can resolve an existing image', 
       });
     })
     .toEqual({
+      blockWidth: 'default',
       type: 'img',
       blockType: 'plateimage',
     });

@@ -2,6 +2,6 @@ packages:
   - core/packages/*
   - packages/*
   - packages/*/packages/*
-  - seven/packages/plate
-  - seven/packages/helpers
-  - seven/packages/tsconfig
+  - aurora/packages/plate
+  - aurora/packages/helpers
+  - aurora/packages/tsconfig
