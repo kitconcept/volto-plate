@@ -1,13 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: '.',
-  testMatch: ['acceptance/tests/**/*.{spec,test}.{ts,tsx}'],
+  testDir: 'acceptance/tests',
+  testMatch: ['**/*.{spec,test}.{ts,tsx}'],
   outputDir: 'playwright/results',
   testIgnore: [
     '**/node_modules/**',
     '**/core/**',
     '**/seven/**',
+    '**/aurora/**',
     '**/packages/**',
     '**/playwright/**',
   ],

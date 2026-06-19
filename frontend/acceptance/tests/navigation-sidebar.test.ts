@@ -19,7 +19,17 @@ type NavPages = {
 async function createNavSidebarContent(
   page: Page,
 ): Promise<{ workspacePath: string; pages: NavPages }> {
-  const workspaceId = 'nav-workspace';
+  const idSuffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const workspaceId = `nav-workspace-${idSuffix}`;
+  const hrId = `hr-${idSuffix}`;
+  const itDeptId = `it-dept-${idSuffix}`;
+  const financeId = `finance-${idSuffix}`;
+  const benefitsId = `benefits-${idSuffix}`;
+  const hardwareId = `hardware-${idSuffix}`;
+  const expenseId = `expense-${idSuffix}`;
+  const reviewId = `review-${idSuffix}`;
+  const vpnId = `vpn-${idSuffix}`;
+  const budgetId = `budget-${idSuffix}`;
   const workspacePath = `/${workspaceId}`;
 
   // Workspace root
@@ -34,21 +44,21 @@ async function createNavSidebarContent(
   // Level 1
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'hr',
+    contentId: hrId,
     contentTitle: 'Human Resources',
     path: workspaceId,
     transition: 'publish',
   });
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'it-dept',
+    contentId: itDeptId,
     contentTitle: 'Information Technology',
     path: workspaceId,
     transition: 'publish',
   });
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'finance',
+    contentId: financeId,
     contentTitle: 'Finance and Accounting',
     path: workspaceId,
     transition: 'publish',
@@ -57,46 +67,46 @@ async function createNavSidebarContent(
   // Level 2
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'benefits',
+    contentId: benefitsId,
     contentTitle: 'Employee Benefits and Leave Policies',
-    path: `${workspaceId}/hr`,
+    path: `${workspaceId}/${hrId}`,
     transition: 'publish',
   });
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'hardware',
+    contentId: hardwareId,
     contentTitle: 'Request New Hardware or Software Access',
-    path: `${workspaceId}/it-dept`,
+    path: `${workspaceId}/${itDeptId}`,
     transition: 'publish',
   });
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'expense',
+    contentId: expenseId,
     contentTitle: 'Expense Reimbursement Process',
-    path: `${workspaceId}/finance`,
+    path: `${workspaceId}/${financeId}`,
     transition: 'publish',
   });
 
   // Level 3
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'review',
+    contentId: reviewId,
     contentTitle: 'Annual Performance Review Guidelines',
-    path: `${workspaceId}/hr/benefits`,
+    path: `${workspaceId}/${hrId}/${benefitsId}`,
     transition: 'publish',
   });
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'vpn',
+    contentId: vpnId,
     contentTitle: 'Troubleshooting VPN and Remote Work',
-    path: `${workspaceId}/it-dept/hardware`,
+    path: `${workspaceId}/${itDeptId}/${hardwareId}`,
     transition: 'publish',
   });
   await createContent(page, {
     contentType: 'WikiPage',
-    contentId: 'budget',
+    contentId: budgetId,
     contentTitle: 'Quarterly Budget Planning',
-    path: `${workspaceId}/finance/expense`,
+    path: `${workspaceId}/${financeId}/${expenseId}`,
     transition: 'publish',
   });
 
@@ -104,15 +114,15 @@ async function createNavSidebarContent(
     workspacePath,
     pages: {
       workspace: workspacePath,
-      hr: `${workspacePath}/hr`,
-      benefits: `${workspacePath}/hr/benefits`,
-      review: `${workspacePath}/hr/benefits/review`,
-      itDept: `${workspacePath}/it-dept`,
-      hardware: `${workspacePath}/it-dept/hardware`,
-      vpn: `${workspacePath}/it-dept/hardware/vpn`,
-      finance: `${workspacePath}/finance`,
-      expense: `${workspacePath}/finance/expense`,
-      budget: `${workspacePath}/finance/expense/budget`,
+      hr: `${workspacePath}/${hrId}`,
+      benefits: `${workspacePath}/${hrId}/${benefitsId}`,
+      review: `${workspacePath}/${hrId}/${benefitsId}/${reviewId}`,
+      itDept: `${workspacePath}/${itDeptId}`,
+      hardware: `${workspacePath}/${itDeptId}/${hardwareId}`,
+      vpn: `${workspacePath}/${itDeptId}/${hardwareId}/${vpnId}`,
+      finance: `${workspacePath}/${financeId}`,
+      expense: `${workspacePath}/${financeId}/${expenseId}`,
+      budget: `${workspacePath}/${financeId}/${expenseId}/${budgetId}`,
     },
   };
 }
@@ -128,7 +138,7 @@ test.describe('NavigationSidebar', () => {
       await expect(
         page.locator('.navigation-sidebar-panel.is-open'),
       ).toBeVisible();
-      await expect(page.locator('nav.navigation-sidebar')).toBeVisible();
+      await expect(page.locator('.navigation-sidebar-title')).toBeVisible();
     });
 
     test('navigating to another page keeps sidebar open and expands its ancestors', async ({
