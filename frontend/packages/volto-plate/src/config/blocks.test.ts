@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import install from './blocks';
+
 vi.mock('../components/Blocks/Image/Edit', () => ({
   default: vi.fn(),
 }));
-
-import install from './blocks';
 
 describe('config/blocks', () => {
   it('registers the blockWidth style field utility', () => {

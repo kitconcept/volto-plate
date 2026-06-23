@@ -72,7 +72,7 @@ test('Slash command inserts an image block that can resolve an existing image', 
     })
     .toEqual({
       blockWidth: 'default',
-      type: 'img',
+      type: 'ploneBlock',
       blockType: 'plateimage',
     });
 });
