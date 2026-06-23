@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    >
+
+  <genericsetup:upgradeSteps
+      profile="kitconcept.plate:default"
+      source="20260515001"
+      destination="20260623001"
+      >
+    <genericsetup:upgradeStep
+        title="Migrate legacy Somersault image nodes to ploneBlock nodes."
+        handler=".migrate_wiki_page_image_blocks"
+        />
+  </genericsetup:upgradeSteps>
+
+</configure>
