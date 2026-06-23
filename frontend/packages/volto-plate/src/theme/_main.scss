@@ -70,6 +70,7 @@ body {
   width: 100%;
   max-width: var(--block-width) !important;
   margin-inline: auto;
+  place-content: initial !important; // !important needed for Volto current CSS set :(
 }
 
 .slate-a,

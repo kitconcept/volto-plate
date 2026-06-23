@@ -38,9 +38,9 @@ export default function install(config: ConfigType) {
   });
 
   const align = [
-    { name: 'center', label: 'Default', style: { '--block-align': 'none' } },
-    { name: 'left', label: 'Left', style: { '--block-align': 'left' } },
-    { name: 'right', label: 'Right', style: { '--block-align': 'right' } },
+    { name: 'center', label: 'Center', style: { '--block-alignment': 'none' } },
+    { name: 'left', label: 'Left', style: { '--block-alignment': 'left' } },
+    { name: 'right', label: 'Right', style: { '--block-alignment': 'right' } },
   ];
 
   config.registerUtility({
