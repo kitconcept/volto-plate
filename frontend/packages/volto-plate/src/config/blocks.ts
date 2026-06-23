@@ -36,6 +36,54 @@ export default function install(config: ConfigType) {
     method: () => config.blocks.widths ?? [],
   });
 
+  const align = [
+    {
+      name: 'left',
+      label: 'Left',
+      style: { '--block-alignment': 'var(--align-left)' },
+    },
+    {
+      name: 'center',
+      label: 'Center',
+      style: { '--block-alignment': 'var(--align-center)' },
+    },
+    {
+      name: 'right',
+      label: 'Right',
+      style: { '--block-alignment': 'var(--align-right)' },
+    },
+  ];
+
+  config.registerUtility({
+    type: 'styleFieldDefinition',
+    name: 'align',
+    method: () => align,
+  });
+
+  const size = [
+    {
+      name: 'l',
+      label: 'Large',
+      style: { '--block-size': '460px' },
+    },
+    {
+      name: 'm',
+      label: 'Medium',
+      style: { '--block-size': '300px' },
+    },
+    {
+      name: 's',
+      label: 'Small',
+      style: { '--block-size': '220px' },
+    },
+  ];
+
+  config.registerUtility({
+    type: 'styleFieldDefinition',
+    name: 'size',
+    method: () => size,
+  });
+
   // Keep a Volto block registry entry for the adapted Plate image so the
   // sidebar plugin can resolve its blockSchema from `@type: "plateimage"`.
   config.blocks.blocksConfig.plateimage = {

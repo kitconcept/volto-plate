@@ -3,7 +3,14 @@ import React from 'react';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
 
+import {
+  getStyleFieldDefinitionsFromRegistry,
+  getStyleFieldsFromBlockSchema,
+  resolveStyleFields,
+} from '@plone/helpers';
+import config from '@plone/registry';
 import { BlockInnerContainer } from '@plone/plate/components/ui/block-inner-container';
+import type { BlockConfigBase } from '@plone/types';
 import type { TElement } from 'platejs';
 import type { PlateElementProps } from 'platejs/react';
 
@@ -34,6 +41,29 @@ type AdapterOptions<TPlateElement extends TElement, TBlockData> = {
   getViewProps?: (
     context: AdapterContext<TPlateElement, TBlockData>,
   ) => Record<string, unknown>;
+};
+
+export const resolveAdapterStyleFieldStyles = (
+  element: TElement & { '@type'?: string },
+  blockData: Record<string, unknown>,
+) => {
+  const blockType = element['@type'];
+
+  if (!blockType) return {};
+
+  const blockConfig = config.blocks?.blocksConfig?.[blockType] as
+    | BlockConfigBase
+    | undefined;
+  const fieldConfigs = getStyleFieldsFromBlockSchema(blockConfig, blockData);
+
+  if (!Object.keys(fieldConfigs).length) return {};
+
+  return resolveStyleFields({
+    data: blockData,
+    fieldConfigs,
+    container: undefined,
+    resolveDefinitions: getStyleFieldDefinitionsFromRegistry,
+  }).style;
 };
 
 /**
@@ -89,6 +119,14 @@ export function createVoltoBlockAdapter<
       () => cloneDeep(toBlockData(element)),
       [element],
     );
+    const resolvedStyleFieldStyles = React.useMemo(
+      () =>
+        resolveAdapterStyleFieldStyles(
+          element as TElement & { '@type'?: string },
+          blockData as Record<string, unknown>,
+        ),
+      [blockData, element],
+    );
 
     const handleChangeBlock = React.useCallback(
       (_block: string, data: TBlockData) => {
@@ -128,7 +166,14 @@ export function createVoltoBlockAdapter<
     );
 
     return (
-      <PlateElement {...props} contentEditable={false}>
+      <PlateElement
+        {...props}
+        contentEditable={false}
+        style={{
+          ...(props.style ?? {}),
+          ...resolvedStyleFieldStyles,
+        }}
+      >
         <BlockInnerContainer>
           {readOnly ? (
             <View data={blockData} {...extraViewProps} />
