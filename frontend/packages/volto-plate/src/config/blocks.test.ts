@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
+vi.mock('../components/Blocks/Image/Edit', () => ({
+  default: vi.fn(),
+}));
+
 import install from './blocks';
 
 describe('config/blocks', () => {
@@ -67,19 +71,31 @@ describe('config/blocks', () => {
 
     expect(alignUtility?.method()).toEqual([
       {
-        name: 'left',
-        label: 'Left',
-        style: { '--block-alignment': 'var(--align-left)' },
+        name: 'center',
+        label: 'Default',
+        style: {
+          '--block-align': 'none',
+          '--block-image-margin-left': 'auto',
+          '--block-image-margin-right': 'auto',
+        },
       },
       {
-        name: 'center',
-        label: 'Center',
-        style: { '--block-alignment': 'var(--align-center)' },
+        name: 'left',
+        label: 'Left',
+        style: {
+          '--block-align': 'left',
+          '--block-image-margin-left': '0',
+          '--block-image-margin-right': 'calc(var(--spacing) * 4)',
+        },
       },
       {
         name: 'right',
         label: 'Right',
-        style: { '--block-alignment': 'var(--align-right)' },
+        style: {
+          '--block-align': 'right',
+          '--block-image-margin-left': 'calc(var(--spacing) * 4)',
+          '--block-image-margin-right': '0',
+        },
       },
     ]);
     expect(sizeUtility?.method()).toEqual([
@@ -101,12 +117,16 @@ describe('config/blocks', () => {
     ]);
   });
 
-  it('registers native image nodes with a default block width', () => {
+  it('registers a dedicated plateimage block config', () => {
     const config = {
       blocks: {
         widths: [],
         blocksConfig: {
-          image: {},
+          image: {
+            id: 'image',
+            title: 'Image',
+            view: vi.fn(),
+          },
         },
         plateBlocksConfig: {},
       },
@@ -115,10 +135,13 @@ describe('config/blocks', () => {
 
     install(config);
 
-    expect(config.blocks.plateBlocksConfig.img).toEqual({
-      blockWidth: {
-        defaultWidth: 'default',
-      },
+    expect(config.blocks.blocksConfig.plateimage).toMatchObject({
+      id: 'plateimage',
+      title: 'Image',
+      edit: expect.any(Function),
+      blockSchema: expect.any(Function),
+      restricted: true,
+      schemaEnhancer: undefined,
     });
   });
 });
