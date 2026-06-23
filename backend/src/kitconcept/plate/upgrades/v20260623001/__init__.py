@@ -1,5 +1,4 @@
 from copy import deepcopy
-
 from plone import api
 
 
@@ -21,10 +20,7 @@ def _migrate_somersault_node(node):
     if not isinstance(node, dict):
         return False
 
-    if (
-        node.get("type") == LEGACY_IMAGE_TYPE
-        and node.get("@type") == PLATE_IMAGE_TYPE
-    ):
+    if node.get("type") == LEGACY_IMAGE_TYPE and node.get("@type") == PLATE_IMAGE_TYPE:
         node["type"] = PLONE_BLOCK_TYPE
         changed = True
 
