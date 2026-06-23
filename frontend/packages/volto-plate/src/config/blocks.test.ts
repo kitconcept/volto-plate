@@ -72,29 +72,23 @@ describe('config/blocks', () => {
     expect(alignUtility?.method()).toEqual([
       {
         name: 'center',
-        label: 'Default',
+        label: 'Center',
         style: {
-          '--block-align': 'none',
-          '--block-image-margin-left': 'auto',
-          '--block-image-margin-right': 'auto',
+          '--block-alignment': 'none',
         },
       },
       {
         name: 'left',
         label: 'Left',
         style: {
-          '--block-align': 'left',
-          '--block-image-margin-left': '0',
-          '--block-image-margin-right': 'calc(var(--spacing) * 4)',
+          '--block-alignment': 'left',
         },
       },
       {
         name: 'right',
         label: 'Right',
         style: {
-          '--block-align': 'right',
-          '--block-image-margin-left': 'calc(var(--spacing) * 4)',
-          '--block-image-margin-right': '0',
+          '--block-alignment': 'right',
         },
       },
     ]);
@@ -102,7 +96,7 @@ describe('config/blocks', () => {
       {
         name: 'l',
         label: 'Large',
-        style: { '--block-size': '460px' },
+        style: {},
       },
       {
         name: 'm',
