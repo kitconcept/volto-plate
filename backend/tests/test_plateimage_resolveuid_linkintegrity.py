@@ -2,14 +2,14 @@
 
 from Acquisition import aq_inner
 from plone import api
-from plone.app.linkintegrity.interfaces import IRetriever
 from plone.app.linkintegrity.handlers import modifiedContent
+from plone.app.linkintegrity.interfaces import IRetriever
 from plone.app.linkintegrity.utils import referencedRelationship
 from plone.restapi.interfaces import IDeserializeFromJson
+from zc.relation.interfaces import ICatalog
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.intid.interfaces import IIntIds
-from zc.relation.interfaces import ICatalog
 
 import json
 
@@ -91,12 +91,10 @@ class TestPlateImageLinkIntegrity:
         intids = getUtility(IIntIds)
         result = []
 
-        for rel in catalog.findRelations(
-            {
-                "to_id": intids.getId(aq_inner(item)),
-                "from_attribute": referencedRelationship,
-            }
-        ):
+        for rel in catalog.findRelations({
+            "to_id": intids.getId(aq_inner(item)),
+            "from_attribute": referencedRelationship,
+        }):
             obj = intids.queryObject(rel.from_id)
             if obj is not None:
                 result.append(obj)
