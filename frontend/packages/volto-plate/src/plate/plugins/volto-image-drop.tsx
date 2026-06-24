@@ -1,6 +1,10 @@
 import { createPlatePlugin } from 'platejs/react';
 
-import { VoltoImageUploadBridge, insertVoltoImageBlocks, type VoltoImageUploadOptions } from './volto-image-upload';
+import {
+  VoltoImageUploadBridge,
+  insertVoltoImageBlocks,
+  type VoltoImageUploadOptions,
+} from './volto-image-upload';
 
 const VOLTO_IMAGE_DROP_PLUGIN_KEY = 'volto-image-drop';
 

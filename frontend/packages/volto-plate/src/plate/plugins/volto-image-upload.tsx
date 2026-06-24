@@ -138,17 +138,14 @@ export function VoltoImageUploadBridge({
   );
 
   React.useEffect(() => {
-    editor.setOption(
-      plugin,
-      'uploadVoltoImage',
-      (file: File) =>
-        uploadVoltoImageFile(
-          dispatch,
-          location.pathname,
-          isFolderish,
-          file,
-          requestPrefix,
-        ),
+    editor.setOption(plugin, 'uploadVoltoImage', (file: File) =>
+      uploadVoltoImageFile(
+        dispatch,
+        location.pathname,
+        isFolderish,
+        file,
+        requestPrefix,
+      ),
     );
 
     return () => {

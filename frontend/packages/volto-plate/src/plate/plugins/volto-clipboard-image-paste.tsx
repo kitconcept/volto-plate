@@ -1,10 +1,6 @@
-import {
-  createPlatePlugin,
-} from 'platejs/react';
+import { createPlatePlugin } from 'platejs/react';
 
-import {
-  isClipboardImagePaste,
-} from './volto-clipboard-image-paste-helpers';
+import { isClipboardImagePaste } from './volto-clipboard-image-paste-helpers';
 import {
   insertVoltoImageBlocks,
   VoltoImageUploadBridge,
