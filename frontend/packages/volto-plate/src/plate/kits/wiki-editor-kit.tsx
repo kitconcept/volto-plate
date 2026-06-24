@@ -8,6 +8,7 @@ import { BasicBlocksKit } from '@plone/plate/components/editor/plugins/basic-blo
 import { BasicMarksKit } from '@plone/plate/components/editor/plugins/basic-marks-kit';
 import { BlockMenuKit } from '@plone/plate/components/editor/plugins/block-menu-kit';
 import { BlockPlaceholderKit } from '@plone/plate/components/editor/plugins/block-placeholder-kit';
+import { BlockAnatomyKit } from '@plone/plate/components/editor/plugins/block-anatomy-kit';
 import { CalloutKit } from '@plone/plate/components/editor/plugins/callout-kit';
 import { CodeBlockKit } from '@plone/plate/components/editor/plugins/code-block-kit';
 import { ColumnKit } from '@plone/plate/components/editor/plugins/column-kit';
@@ -62,6 +63,7 @@ export const WikiEditorKit = [
   ...FontKit,
 
   // Block Style
+  ...BlockAnatomyKit,
   ...ListKit,
   ...AlignKit,
   ...LineHeightKit,

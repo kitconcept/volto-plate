@@ -129,9 +129,14 @@ test('Empty plate title block shows the translated placeholder', async ({
 
   await editorTitle.fill('');
 
-  await expect(
-    editorTitle.locator('.block-inner-container [aria-hidden="true"]').first(),
-  ).toHaveText('Type the title...');
+  await expect
+    .poll(async () => {
+      return editorTitle
+        .locator('.block-inner-container [aria-hidden="true"]')
+        .first()
+        .textContent();
+    })
+    .toBe('Type the title...');
 });
 
 test('Title placeholder is rendered inside the width-constrained inner container', async ({
@@ -146,34 +151,37 @@ test('Title placeholder is rendered inside the width-constrained inner container
 
   await editorTitle.fill('');
 
-  const placeholderStyles = await editorTitle.evaluate((element) => {
-    const innerContainer = element.querySelector('.block-inner-container');
-    const placeholder = innerContainer?.querySelector(
-      '[aria-hidden="true"]',
-    ) as HTMLElement | null;
+  await expect
+    .poll(async () => {
+      return editorTitle.evaluate((element) => {
+        const innerContainer = element.querySelector('.block-inner-container');
+        const placeholder = innerContainer?.querySelector(
+          '[aria-hidden="true"]',
+        ) as HTMLElement | null;
 
-    return {
-      className: element.className,
-      innerContainerClassName: innerContainer?.className,
-      innerContainerPosition: innerContainer
-        ? window.getComputedStyle(innerContainer).position
-        : null,
-      placeholderText: placeholder?.textContent,
-      placeholderParentClassName: placeholder?.parentElement?.className ?? null,
-      placeholderPosition: placeholder
-        ? window.getComputedStyle(placeholder).position
-        : null,
-    };
-  });
-
-  expect(placeholderStyles).toEqual({
-    className: expect.stringContaining('documentFirstHeading'),
-    innerContainerClassName: expect.stringContaining('block-inner-container'),
-    innerContainerPosition: 'relative',
-    placeholderText: 'Type the title...',
-    placeholderParentClassName: expect.stringContaining(
-      'block-inner-container',
-    ),
-    placeholderPosition: 'absolute',
-  });
+        return {
+          className: element.className,
+          innerContainerClassName: innerContainer?.className,
+          innerContainerPosition: innerContainer
+            ? window.getComputedStyle(innerContainer).position
+            : null,
+          placeholderText: placeholder?.textContent,
+          placeholderParentClassName:
+            placeholder?.parentElement?.className ?? null,
+          placeholderPosition: placeholder
+            ? window.getComputedStyle(placeholder).position
+            : null,
+        };
+      });
+    })
+    .toEqual({
+      className: expect.stringContaining('documentFirstHeading'),
+      innerContainerClassName: expect.stringContaining('block-inner-container'),
+      innerContainerPosition: 'relative',
+      placeholderText: 'Type the title...',
+      placeholderParentClassName: expect.stringContaining(
+        'block-inner-container',
+      ),
+      placeholderPosition: 'absolute',
+    });
 });

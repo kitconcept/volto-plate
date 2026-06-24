@@ -359,7 +359,7 @@
           "id": "MrBar9DchN",
           "image_field": "image",
           "size": "l",
-          "type": "img",
+          "type": "ploneBlock",
           "url": "../../resolveuid/66986686c75b4a3f9d5a6bfc7dd45a6e"
         },
         {
@@ -413,7 +413,7 @@
           "id": "75iSYudk6w",
           "image_field": "image",
           "size": "l",
-          "type": "img",
+          "type": "ploneBlock",
           "url": "../../resolveuid/ef9acfecdad34752818daa1e164baa24"
         },
         {
@@ -453,7 +453,7 @@
           "id": "O57OW2PTgx",
           "image_field": "image",
           "size": "l",
-          "type": "img",
+          "type": "ploneBlock",
           "url": "../../resolveuid/66986686c75b4a3f9d5a6bfc7dd45a6e"
         },
         {
@@ -477,7 +477,7 @@
           },
           "theme": "default",
           "title": "black-starry-night.jpg",
-          "type": "img",
+          "type": "ploneBlock",
           "url": "../resolveuid/d734eb39a18240dda73ce8614232ab40"
         },
         {

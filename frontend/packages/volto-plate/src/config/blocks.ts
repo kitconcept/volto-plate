@@ -1,6 +1,7 @@
 import type { ConfigType } from '@plone/registry';
 import { ImageSchema } from '../components/Blocks/Image/schema';
 import type { BlockConfigBase } from '@plone/types';
+import ImageEdit from '../components/Blocks/Image/Edit';
 
 // Backport Seven's typings
 declare module '@plone/types' {
@@ -36,12 +37,50 @@ export default function install(config: ConfigType) {
     method: () => config.blocks.widths ?? [],
   });
 
-  // Keep a Volto block registry entry for the adapted Plate image so the
-  // sidebar plugin can resolve its blockSchema from `@type: "plateimage"`.
+  const align = [
+    { name: 'center', label: 'Center', style: { '--block-alignment': 'none' } },
+    { name: 'left', label: 'Left', style: { '--block-alignment': 'left' } },
+    { name: 'right', label: 'Right', style: { '--block-alignment': 'right' } },
+  ];
+
+  config.registerUtility({
+    type: 'styleFieldDefinition',
+    name: 'align',
+    method: () => align,
+  });
+
+  const size = [
+    {
+      name: 'l',
+      label: 'Large',
+      style: {},
+    },
+    {
+      name: 'm',
+      label: 'Medium',
+      style: { '--block-size': '300px' },
+    },
+    {
+      name: 's',
+      label: 'Small',
+      style: { '--block-size': '220px' },
+    },
+  ];
+
+  config.registerUtility({
+    type: 'styleFieldDefinition',
+    name: 'size',
+    method: () => size,
+  });
+
+  // Register a dedicated Plone block config for wiki images so we can reuse
+  // Aurora's ploneBlock adapter while keeping the custom Volto edit component.
   config.blocks.blocksConfig.plateimage = {
     ...config.blocks.blocksConfig.image,
     ...config.blocks.blocksConfig.plateimage,
+    id: 'plateimage',
     blockSchema: ImageSchema,
+    edit: ImageEdit,
     restricted: true,
     schemaEnhancer: undefined,
   };
@@ -59,14 +98,6 @@ export default function install(config: ConfigType) {
     blockWidth: {
       defaultWidth: 'default',
       widths: ['default'],
-    },
-  };
-
-  config.blocks.plateBlocksConfig.img = {
-    ...config.blocks.plateBlocksConfig.img,
-    blockWidth: {
-      defaultWidth: 'default',
-      ...config.blocks.plateBlocksConfig.img?.blockWidth,
     },
   };
 

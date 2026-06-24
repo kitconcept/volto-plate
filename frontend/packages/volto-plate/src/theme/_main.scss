@@ -1,4 +1,5 @@
 @import 'navigation-sidebar';
+@import 'blocks';
 
 // `height: 100%` constrains body to viewport height.
 // Use `min-height: 100vh` so body fills the viewport initially
@@ -65,10 +66,11 @@ body {
 .block-inner-container {
   // in here, the display can't be grid.
   // TODO: review if we can get along with non-grid display everywhere.
-  display: block;
+  display: block !important; // !important needed for Volto current CSS set :(
   width: 100%;
-  max-width: var(--block-width);
+  max-width: var(--block-width) !important;
   margin-inline: auto;
+  place-content: initial !important; // !important needed for Volto current CSS set :(
 }
 
 .slate-a,

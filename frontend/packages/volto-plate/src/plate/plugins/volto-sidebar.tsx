@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
+import { PLONE_BLOCK_TYPE } from '@plone/helpers';
 import {
   BlockSelectionPlugin,
   createPlatePlugin,
@@ -10,7 +11,6 @@ import {
 import { BlockDataForm } from '@plone/volto/components/manage/Form';
 import config from '@plone/volto/registry';
 import type { BlockConfigBase } from '@plone/types';
-import { KEYS } from 'platejs';
 import { useEditorSelection } from 'platejs/react';
 import { useIntl } from 'react-intl';
 
@@ -43,12 +43,10 @@ const getVoltoBlockConfig = (
 
 const getVoltoBlockType = (node: unknown): string | null => {
   if (!ElementApi.isElement(node)) return null;
+  if (node.type !== PLONE_BLOCK_TYPE) return null;
 
   const explicitBlockType = node['@type'];
   if (typeof explicitBlockType === 'string') return explicitBlockType;
-
-  // Volto-backed Plate image nodes still use the native Plate image type.
-  if (node.type === KEYS.img) return 'plateimage';
 
   return null;
 };

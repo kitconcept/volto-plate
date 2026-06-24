@@ -38,6 +38,7 @@
     "@platejs/link": "^49.0.0",
     "@plone/plate": "workspace:*",
     "@plone/components": "workspace:^",
+    "@plone/helpers": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1"
   },
   "peerDependencies": {
