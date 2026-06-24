@@ -107,16 +107,20 @@ async function openSelectedImageBlockSidebar(
   const editorImage = page.locator(
     '.slate-editor img[alt="Inline test image"]',
   );
+  const imageBlock = editorImage.locator(
+    'xpath=ancestor::*[@data-slate-node="element"][1]',
+  );
+
   await expect(editorImage).toBeVisible();
-  await editorImage.dispatchEvent('click');
-  await page.getByRole('button', { name: 'Block' }).click();
+  await expect(imageBlock).toBeVisible();
+  await imageBlock.click({ force: true });
+  await page.getByRole('button', { name: 'Block', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Alt text' })).toBeVisible();
 
   return {
     editorHandle,
     editorImage,
-    imageBlock: editorImage.locator(
-      'xpath=ancestor::*[@data-slate-node="element"][1]',
-    ),
+    imageBlock,
   };
 }
 

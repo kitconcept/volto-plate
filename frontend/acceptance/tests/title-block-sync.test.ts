@@ -129,9 +129,14 @@ test('Empty plate title block shows the translated placeholder', async ({
 
   await editorTitle.fill('');
 
-  await expect(
-    editorTitle.locator('.block-inner-container [aria-hidden="true"]').first(),
-  ).toHaveText('Type the title...');
+  await expect
+    .poll(async () => {
+      return editorTitle
+        .locator('.block-inner-container [aria-hidden="true"]')
+        .first()
+        .textContent();
+    })
+    .toBe('Type the title...');
 });
 
 test('Title placeholder is rendered inside the width-constrained inner container', async ({
