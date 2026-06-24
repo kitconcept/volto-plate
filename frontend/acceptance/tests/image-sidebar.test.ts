@@ -110,12 +110,29 @@ async function openSelectedImageBlockSidebar(
   const imageBlock = editorImage.locator(
     'xpath=ancestor::*[@data-slate-node="element"][1]',
   );
+  const blockTab = page.locator('#sidebar .formtabs').getByRole('button', {
+    name: 'Block',
+    exact: true,
+  });
+  const altTextField = page.locator('#sidebar-properties').getByRole('textbox', {
+    name: 'Alt text',
+  });
 
   await expect(editorImage).toBeVisible();
   await expect(imageBlock).toBeVisible();
-  await imageBlock.click({ force: true });
-  await page.getByRole('button', { name: 'Block', exact: true }).click();
-  await expect(page.getByRole('textbox', { name: 'Alt text' })).toBeVisible();
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await editorImage.click({ force: true });
+    await imageBlock.click({ force: true });
+    await blockTab.click({ force: true });
+
+    try {
+      await expect(altTextField).toBeVisible({ timeout: 3000 });
+      break;
+    } catch (error) {
+      if (attempt === 2) throw error;
+    }
+  }
 
   return {
     editorHandle,
@@ -128,9 +145,11 @@ test('Selecting a Volto-adapted Plate image shows the sidebar form', async ({
   page,
 }) => {
   await openImageSidebarPage(page);
-  await expect(page.getByLabel('Alt text')).toHaveCount(0);
+  await expect(page.locator('#sidebar-properties').getByLabel('Alt text')).toHaveCount(0);
   await openSelectedImageBlockSidebar(page);
-  await expect(page.getByLabel('Alt text')).toHaveValue('Inline test image');
+  await expect(
+    page.locator('#sidebar-properties').getByLabel('Alt text'),
+  ).toHaveValue('Inline test image');
 });
 
 test('Changing Block width in the sidebar updates the rendered image width', async ({
