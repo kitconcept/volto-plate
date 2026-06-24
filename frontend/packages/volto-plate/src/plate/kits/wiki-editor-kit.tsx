@@ -22,7 +22,6 @@ import { FontKit } from '@plone/plate/components/editor/plugins/font-kit';
 import { LineHeightKit } from '@plone/plate/components/editor/plugins/line-height-kit';
 import { ListKit } from '@plone/plate/components/editor/plugins/list-kit';
 import { MarkdownKit } from '@plone/plate/components/editor/plugins/markdown-kit';
-import { MediaKit } from '@plone/plate/components/editor/plugins/media-kit';
 import { MentionKit } from '@plone/plate/components/editor/plugins/mention-kit';
 import { BlockWidthKit } from '@plone/plate/components/editor/plugins/block-width-kit';
 import { StyleFieldsKit } from '@plone/plate/components/editor/plugins/style-fields-kit';
@@ -34,6 +33,7 @@ import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-hotkey';
 
 import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
+import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image-paste';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { SidebarPlugin } from '../plugins/volto-sidebar';
 import { slashMenu } from '../wiki/slash-menu';
@@ -52,7 +52,6 @@ export const WikiEditorKit = [
   ...TableKit,
   ...ToggleKit,
   ...TocKit,
-  ...MediaKit,
   ...CalloutKit,
   ...ColumnKit,
   ...VoltoLinkKit,
@@ -81,6 +80,7 @@ export const WikiEditorKit = [
   ...CursorOverlayKit,
   // ...DndKit,
   ...ExitBreakKit,
+  VoltoClipboardImagePastePlugin,
   SidebarPlugin,
   SplitHotkeyPlugin,
   TrailingBlockPlugin,
