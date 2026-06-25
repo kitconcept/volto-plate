@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-ARG PLONE_VERSION=undefined
+ARG PLONE_VERSION=6.2.0
 FROM plone/server-builder:${PLONE_VERSION} AS builder
 
 WORKDIR /app
@@ -24,10 +24,10 @@ EOT
 
 FROM plone/server-acceptance:${PLONE_VERSION}
 
-LABEL maintainer="kitconcept, GmbH <info@kitconcept.com>" \
-      org.label-schema.name="kitconcept-plate-acceptance" \
-      org.label-schema.description="kitconcept.plate backend acceptance image." \
-      org.label-schema.vendor="kitconcept, GmbH"
+LABEL maintainer="Victor Fernandez de Alba <sneridagh@gmail.com>" \
+      org.label-schema.name="volto-plate-acceptance" \
+      org.label-schema.description="Volto Plate backend acceptance image." \
+      org.label-schema.vendor="Victor Fernandez de Alba"
 
 ENV CONFIGURE_PACKAGES="plone.restapi,plone.volto,plone.volto.cors,kitconcept.plate"
 ENV APPLY_PROFILES="kitconcept.plate:default"

@@ -1,1 +1,0 @@
-Added an upgrade step that migrates legacy Somersault wiki image nodes from native `img` elements to `ploneBlock` `plateimage` nodes so existing WikiPage content keeps rendering after the editor refactor. @sneridagh
