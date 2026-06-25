@@ -15,3 +15,78 @@ msgstr ""
 "Language-Name: Português do Brasil\n"
 "Preferred-Encodings: utf-8\n"
 "Domain: volto\n"
+
+#. Default: "The {type} block with the id {block} has encountered an error.{lineBreak}You can try to undo your changes (via the undo toolbar or pressing {shortcut}), or try to delete the block and recreate it again."
+#: components/Blocks/ErrorBoundaryMessage
+msgid "blockErrorBoundaryDescription"
+msgstr ""
+
+#. Default: "Block error:"
+#: components/Blocks/ErrorBoundaryMessage
+msgid "blockErrorBoundaryTitle"
+msgstr ""
+
+#. Default: "The {type} block with the id {block} errored and cannot be displayed.{lineBreak}Please contact the site administrator for further assistance."
+#: components/Blocks/ErrorBoundaryMessage
+msgid "blockErrorBoundaryViewDescription"
+msgstr ""
+
+#. Default: "Clear search"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_clear_search"
+msgstr ""
+
+#. Default: "Close navigation tree"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_close_panel"
+msgstr ""
+
+#. Default: "Loading…"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_loading"
+msgstr ""
+
+#. Default: "NAVIGATION"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_navigation_label"
+msgstr ""
+
+#. Default: "No results found"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_no_results"
+msgstr ""
+
+#. Default: "Open navigation"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_open_navigation"
+msgstr ""
+
+#. Default: "Resize navigation panel"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_resize_panel"
+msgstr ""
+
+#. Default: "Search navigation by title"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_search_aria_label"
+msgstr ""
+
+#. Default: "Search by title..."
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_search_placeholder"
+msgstr ""
+
+#. Default: "Search results"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_search_results"
+msgstr ""
+
+#. Default: "SITE"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_site_label"
+msgstr ""
+
+#. Default: "Site navigation"
+#: components/NavigationTree/NavigationTree
+msgid "navigation_tree_site_navigation"
+msgstr ""

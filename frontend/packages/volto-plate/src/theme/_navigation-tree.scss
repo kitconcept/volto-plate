@@ -1,0 +1,354 @@
+#navigation-tree {
+  position: relative;
+  z-index: 99;
+
+  .navigation-tree-panel {
+    height: 100%;
+
+    // Collapsed: narrow vertical strip
+    &:not(.is-open) {
+      display: flex;
+      width: 48px;
+      border-right: 1px solid #e8e8e8;
+      background: #f5f5f5;
+    }
+
+    // Open: full-width panel
+    &.is-open {
+      overflow: hidden;
+      width: 300px;
+      min-width: 300px;
+      border-right: 1px solid #e8e8e8;
+      background: #fff;
+    }
+  }
+
+  // ── Collapsed tab (shown when panel is closed) ─────────────────
+  .navigation-tree-collapsed-tab {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #1a1a1a;
+      outline-offset: -2px;
+    }
+  }
+
+  .navigation-tree-collapsed-icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 8px;
+    color: #aaa;
+    fill: currentcolor;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: currentcolor;
+    }
+  }
+
+  .navigation-tree-collapsed-label {
+    color: #999;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transform: rotate(180deg);
+    user-select: none;
+    writing-mode: vertical-rl;
+  }
+
+  .navigation-tree-wrapper {
+    display: flex;
+    overflow: hidden;
+    height: 100%;
+    flex-direction: column;
+
+    // ── Header ────────────────────────────────────────────────
+    .navigation-tree-header {
+      display: flex;
+      min-height: 60px;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #e8e8e8;
+      background: #fff;
+      gap: 10px;
+
+      .nav-tree-site-logo {
+        display: flex;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: #1a1a1a;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .nav-tree-site-info {
+        display: flex;
+        overflow: hidden;
+        flex: 1;
+        flex-direction: column;
+        gap: 2px;
+
+        .nav-tree-site-label {
+          color: #888;
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          line-height: 1;
+          text-transform: uppercase;
+        }
+
+        .nav-tree-site-title {
+          overflow: hidden;
+          color: #111;
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 1.3;
+          text-decoration: none;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    .nav-tree-close {
+      display: flex;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: #aaa;
+      cursor: pointer;
+
+      svg {
+        width: 16px;
+        height: 16px;
+        fill: currentcolor;
+      }
+
+      &:hover {
+        background: #f0f0f0;
+        color: #555;
+      }
+    }
+
+    // ── Search ────────────────────────────────────────────────
+    .navigation-tree-search {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8e8e8;
+      background: #f7f7f7;
+      gap: 8px;
+
+      .nav-tree-search-icon {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        color: #888;
+
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .nav-tree-search-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        color: #111;
+        font-size: 14px;
+        outline: none;
+
+        &::placeholder {
+          color: #aaa;
+        }
+      }
+
+      .nav-tree-search-clear {
+        display: flex;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 50%;
+        background: #ccc;
+        color: #555;
+        cursor: pointer;
+        font-size: 10px;
+
+        &:hover {
+          background: #aaa;
+          color: #fff;
+        }
+      }
+    }
+
+    // ── Section label ─────────────────────────────────────────
+    .navigation-tree-nav-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px 6px;
+      color: #888;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    // ── Tree (react-aria class names, same pattern as navigation-sidebar) ───
+    .navigation-tree {
+      flex: 1;
+      padding-bottom: 24px;
+      overflow-y: auto;
+
+      .react-aria-Tree {
+        width: 100%;
+        max-height: none;
+        padding: 6px;
+        border: none;
+        background: #fff;
+      }
+
+      .react-aria-TreeItem {
+        overflow: hidden;
+        color: #333;
+        font-size: 14px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        .react-aria-Button[slot='chevron'] {
+          flex-shrink: 0;
+        }
+
+        &.is-current {
+          border-left: 3px solid #1a1a1a;
+          background: #f0f0f0;
+          font-weight: 600;
+
+          .nav-tree-title {
+            color: #111;
+          }
+        }
+
+        &:hover:not(.is-current) {
+          background: #f7f7f7;
+        }
+
+        // Disabled loading placeholder — muted appearance
+        &[data-disabled] {
+          opacity: 0.5;
+        }
+      }
+    }
+
+    // ── Shared item content pieces ─────────────────────────────
+    .nav-tree-icon {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      margin-right: 4px;
+      vertical-align: middle;
+
+      svg {
+        width: 16px;
+        height: 16px;
+        color: #555;
+        fill: currentcolor;
+      }
+    }
+
+    .nav-tree-title {
+      overflow: hidden;
+      flex: 1;
+      text-decoration: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .nav-tree-state-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      margin-left: auto;
+    }
+
+    .nav-tree-loading-text {
+      color: #aaa;
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    .nav-tree-search-status {
+      padding: 8px 12px;
+    }
+
+    .nav-tree-empty {
+      padding: 12px 16px;
+      color: #888;
+      font-size: 13px;
+    }
+
+    // ── Resize handle (same as navigation-sidebar) ─────────────
+    .navigation-tree-resize-handle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 4px;
+      height: 100%;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: col-resize;
+
+      &:hover {
+        background: #1a1a1a;
+        opacity: 0.2;
+      }
+    }
+  }
+}
+
+@media print {
+  #navigation-tree {
+    display: none;
+  }
+}
