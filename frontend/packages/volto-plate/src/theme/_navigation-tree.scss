@@ -5,7 +5,6 @@
   .navigation-tree-panel {
     height: 100%;
 
-    // Collapsed: narrow vertical strip
     &:not(.is-open) {
       display: flex;
       width: 48px;
@@ -13,7 +12,6 @@
       background: #f5f5f5;
     }
 
-    // Open: full-width panel
     &.is-open {
       overflow: hidden;
       width: 300px;
@@ -23,7 +21,6 @@
     }
   }
 
-  // ── Collapsed tab (shown when panel is closed) ─────────────────
   .navigation-tree-collapsed-tab {
     display: flex;
     width: 100%;
@@ -77,7 +74,6 @@
     height: 100%;
     flex-direction: column;
 
-    // ── Header ────────────────────────────────────────────────
     .navigation-tree-header {
       display: flex;
       min-height: 60px;
@@ -160,7 +156,6 @@
       }
     }
 
-    // ── Search ────────────────────────────────────────────────
     .navigation-tree-search {
       display: flex;
       align-items: center;
@@ -215,7 +210,6 @@
       }
     }
 
-    // ── Section label ─────────────────────────────────────────
     .navigation-tree-nav-label {
       display: flex;
       align-items: center;
@@ -228,7 +222,6 @@
       text-transform: uppercase;
     }
 
-    // ── Tree (react-aria class names, same pattern as navigation-sidebar) ───
     .navigation-tree {
       flex: 1;
       padding-bottom: 24px;
@@ -267,14 +260,12 @@
           background: #f7f7f7;
         }
 
-        // Disabled loading placeholder — muted appearance
         &[data-disabled] {
           opacity: 0.5;
         }
       }
     }
 
-    // ── Shared item content pieces ─────────────────────────────
     .nav-tree-icon {
       display: inline-flex;
       flex-shrink: 0;
@@ -327,7 +318,6 @@
       font-size: 13px;
     }
 
-    // ── Resize handle (same as navigation-sidebar) ─────────────
     .navigation-tree-resize-handle {
       position: absolute;
       top: 0;
