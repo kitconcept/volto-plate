@@ -2,7 +2,7 @@ import { expect, test } from './test';
 import { login } from './login';
 import { createWikiPage } from './content';
 import { waitForPlateEditorReady } from './plate';
-import { getEditorHandle, getSelection } from '@platejs/playwright';
+import { getEditorHandle, getSelection, setSelection } from '@platejs/playwright';
 
 function withSomersaultBody(body: Record<string, unknown>) {
   const title = typeof body.title === 'string' ? body.title : '';
@@ -115,6 +115,27 @@ test('Plate title block updates the metadata title', async ({ page }) => {
   await openMetadataSidebar(page);
   await metadataTitleInput.click();
   await expect(metadataTitleInput).toHaveValue('Editor updated title');
+});
+
+test('Title block selection does not show the floating toolbar', async ({
+  page,
+}) => {
+  await openTitleSyncPage(page, {
+    contentId: 'title-sync-page-no-toolbar',
+    contentTitle: 'Original title',
+  });
+
+  const editorHandle = await getEditorHandle(
+    page,
+    page.locator('.slate-editor[data-slate-editor]'),
+  );
+
+  await setSelection(page, editorHandle, {
+    anchor: { path: [0, 0], offset: 0 },
+    focus: { path: [0, 0], offset: 'Original title'.length },
+  });
+
+  await expect(page.getByLabel('Editor toolbar')).toHaveCount(0);
 });
 
 test('Empty plate title block shows the translated placeholder', async ({
