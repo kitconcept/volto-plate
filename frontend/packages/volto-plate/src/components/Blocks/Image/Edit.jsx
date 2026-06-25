@@ -32,65 +32,55 @@ function Edit(props) {
 
   return (
     <>
-      <div
-        className={cx(
-          'block image align',
-          {
-            center: !Boolean(data.align),
-          },
-          data.align,
-        )}
-      >
-        {data.url ? (
-          <Image
-            className={cx({
-              'full-width': data.align === 'full',
-              large: data.size === 'l',
-              medium: data.size === 'm',
-              small: data.size === 's',
-            })}
-            item={
-              data.image_scales
-                ? {
-                    '@id': data.url,
-                    image_field: data.image_field,
-                    image_scales: data.image_scales,
-                  }
-                : undefined
-            }
-            src={
-              data.image_scales
-                ? undefined
-                : isInternalURL(data.url)
-                  ? // Backwards compat in the case that the block is storing the full server URL
-                    (() => {
-                      if (data.size === 'l')
-                        return `${flattenToAppURL(data.url)}/@@images/image`;
-                      if (data.size === 'm')
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/preview`;
-                      if (data.size === 's')
-                        return `${flattenToAppURL(data.url)}/@@images/image/mini`;
+      {data.url ? (
+        <Image
+          className={cx({
+            'full-width': data.align === 'full',
+            large: data.size === 'l',
+            medium: data.size === 'm',
+            small: data.size === 's',
+          })}
+          item={
+            data.image_scales
+              ? {
+                  '@id': data.url,
+                  image_field: data.image_field,
+                  image_scales: data.image_scales,
+                }
+              : undefined
+          }
+          src={
+            data.image_scales
+              ? undefined
+              : isInternalURL(data.url)
+                ? // Backwards compat in the case that the block is storing the full server URL
+                  (() => {
+                    if (data.size === 'l')
                       return `${flattenToAppURL(data.url)}/@@images/image`;
-                    })()
-                  : data.url
-            }
-            sizes={config.blocks.blocksConfig.image.getSizes(data)}
-            alt={data.alt || ''}
-            loading="lazy"
-            responsive={true}
-          />
-        ) : (
-          <ImageInput
-            onChange={handleChange}
-            placeholderLinkInput={data.placeholder}
-            block={block}
-            id={block}
-            objectBrowserPickerType={'image'}
-          />
-        )}
-      </div>
+                    if (data.size === 'm')
+                      return `${flattenToAppURL(
+                        data.url,
+                      )}/@@images/image/preview`;
+                    if (data.size === 's')
+                      return `${flattenToAppURL(data.url)}/@@images/image/mini`;
+                    return `${flattenToAppURL(data.url)}/@@images/image`;
+                  })()
+                : data.url
+          }
+          sizes={config.blocks.blocksConfig.image.getSizes(data)}
+          alt={data.alt || ''}
+          loading="lazy"
+          responsive={true}
+        />
+      ) : (
+        <ImageInput
+          onChange={handleChange}
+          placeholderLinkInput={data.placeholder}
+          block={block}
+          id={block}
+          objectBrowserPickerType={'image'}
+        />
+      )}
     </>
   );
 }

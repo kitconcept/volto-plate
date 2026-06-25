@@ -2,9 +2,32 @@ import type {
   SlashMenuConfig,
   SlashMenuGroup,
 } from '@plone/plate/components/editor/plugins/slash-menu';
-import { insertBlock } from '@plone/plate/components/editor/transforms';
+import { PLONE_BLOCK_TYPE } from '@plone/helpers';
 import { ImageIcon } from 'lucide-react';
-import { KEYS } from 'platejs';
+import { PathApi } from 'platejs';
+import type { PlateEditor } from 'platejs/react';
+
+const insertPloneBlock = (editor: PlateEditor, blockType: string) => {
+  editor.tf.withoutNormalizing(() => {
+    const block = editor.api.block();
+    if (!block) return;
+
+    editor.tf.insertNodes(
+      editor.api.create.block({
+        type: PLONE_BLOCK_TYPE,
+        '@type': blockType,
+      }),
+      {
+        at: PathApi.next(block[1]),
+        select: true,
+      },
+    );
+
+    if (block[0].type !== PLONE_BLOCK_TYPE) {
+      editor.tf.removeNodes({ previousEmptyBlock: true });
+    }
+  });
+};
 
 export const slashMenu: SlashMenuConfig = {
   extendGroups: (groups) =>
@@ -24,7 +47,7 @@ export const slashMenu: SlashMenuConfig = {
         if (group.group === 'Text blocks') {
           return {
             ...group,
-            items: group.items.some((item) => item.value === KEYS.img)
+            items: group.items.some((item) => item.value === 'block_plateimage')
               ? group.items
               : [
                   ...group.items,
@@ -32,9 +55,9 @@ export const slashMenu: SlashMenuConfig = {
                     icon: <ImageIcon />,
                     keywords: ['image', 'media', 'photo', 'picture'],
                     label: 'Image',
-                    value: KEYS.img,
+                    value: 'block_plateimage',
                     onSelect: (editor) => {
-                      insertBlock(editor, KEYS.img);
+                      insertPloneBlock(editor, 'plateimage');
                     },
                   },
                 ],

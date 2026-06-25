@@ -3,6 +3,7 @@ import { KEYS } from 'platejs';
 import { BaseAlignKit } from '@plone/plate/components/editor/plugins/align-base-kit';
 import { BaseBasicBlocksKit } from '@plone/plate/components/editor/plugins/basic-blocks-base-kit';
 import { BaseBasicMarksKit } from '@plone/plate/components/editor/plugins/basic-marks-base-kit';
+import { BaseBlockAnatomyKit } from '@plone/plate/components/editor/plugins/block-anatomy-base-kit';
 import { BaseCalloutKit } from '@plone/plate/components/editor/plugins/callout-base-kit';
 import { BaseCodeBlockKit } from '@plone/plate/components/editor/plugins/code-block-base-kit';
 import { BaseColumnKit } from '@plone/plate/components/editor/plugins/column-base-kit';
@@ -43,6 +44,7 @@ export const wikiBaseEditorKit = [
   ...BaseBasicMarksKit,
   ...BaseFontKit,
   ...BaseListKit,
+  ...BaseBlockAnatomyKit,
   ...BaseAlignKit,
   ...BaseLineHeightKit,
   ...BaseStyleFieldsKit,
