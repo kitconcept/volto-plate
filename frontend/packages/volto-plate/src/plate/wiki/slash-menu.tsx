@@ -55,7 +55,9 @@ export const slashMenu: SlashMenuConfig = {
         }
 
         if (group.group === 'Text blocks') {
-          if (group.items.some((item) => item.value === IMAGE_SLASH_ITEM.value)) {
+          if (
+            group.items.some((item) => item.value === IMAGE_SLASH_ITEM.value)
+          ) {
             return group;
           }
 

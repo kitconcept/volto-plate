@@ -144,8 +144,7 @@ export function VoltoFloatingToolbar({
   const floatingToolbarState = useFloatingToolbarState({
     editorId,
     focusedEditorId,
-    hideToolbar:
-      isFloatingLinkOpen || isAIChatOpen || isTitleBlockSelection,
+    hideToolbar: isFloatingLinkOpen || isAIChatOpen || isTitleBlockSelection,
     ...state,
     floatingOptions: {
       middleware: [
