@@ -71,6 +71,7 @@ jobs:
       working-directory: ${{ inputs.working-directory }}
       build-args: |
         PLONE_VERSION=${{ inputs.plone-version }}
+        PYTHON_VERSION=${{ inputs.python-version }}
       push: ${{ github.event_name != 'pull_request' }}
     secrets:
       username: ${{ github.actor }}
@@ -92,6 +93,7 @@ jobs:
       dockerfile: Dockerfile.demo
       build-args: |
         BASE_TAG=${{ inputs.base-tag }}
+        PYTHON_VERSION=${{ inputs.python-version }}
       push: ${{ github.event_name != 'pull_request' }}
     secrets:
       username: ${{ github.actor }}
