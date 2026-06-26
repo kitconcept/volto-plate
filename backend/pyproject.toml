@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "A new add-on for Plone that includes both backend and Volto frontend"
 readme = "README.md"
 license = "GPL-2.0-only"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 authors = [
     { name = "kitconcept, GmbH", email = "info@kitconcept.com" },
 ]
@@ -22,8 +22,6 @@ classifiers = [
     "Framework :: Plone :: Addon",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
