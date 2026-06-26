@@ -1,0 +1,22 @@
+{
+  "title": "Volto Plate",
+  "description": "A new project using Plone 6.",
+  "project_slug": "volto-plate",
+  "hostname": "volto-plate.example.com",
+  "author": "Victor Fernandez de Alba",
+  "email": "sneridagh@gmail.com",
+  "use_prerelease_versions": true,
+  "plone_version": "6.2.0",
+  "volto_version": "19.1.4",
+  "python_package_name": "kitconcept.plate",
+  "frontend_addon_name": "@kitconcept/volto-plate",
+  "language_code": "en",
+  "github_organization": "kitconcept",
+  "container_registry": "github",
+  "devops_storage": "relstorage",
+  "devops_cache": true,
+  "devops_ansible": true,
+  "devops_gha_deploy": true,
+  "initialize_documentation": true,
+  "__template__": "project"
+}
