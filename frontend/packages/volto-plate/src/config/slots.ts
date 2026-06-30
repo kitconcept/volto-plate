@@ -6,11 +6,6 @@ export default function installSlots(config: ConfigType) {
     slot: 'aboveContent',
     name: 'NavigationTree',
     component: NavigationTreePortal,
-    predicates: [
-      ({ location }) =>
-        !location.pathname.endsWith('/edit') &&
-        !location.pathname.endsWith('/add'),
-    ],
   });
 
   return config;

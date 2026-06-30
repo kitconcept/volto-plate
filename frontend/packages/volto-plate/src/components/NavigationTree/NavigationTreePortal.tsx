@@ -3,9 +3,9 @@ import { useIntl } from 'react-intl';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import cx from 'classnames';
-import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { ColumnbeforeIcon } from '@plone/components/Icons';
-import { NavigationTree, messages } from './NavigationTree';
+import { messages } from './messages';
+import { NavigationTree } from './NavigationTree';
 
 const STORAGE_KEY = 'navigation-tree-open';
 
@@ -28,7 +28,6 @@ export function NavigationTreePortal() {
 
   const siteData = useSelector((state: any) => state.site?.data);
   const siteTitle: string = siteData?.title ?? 'Site';
-  const siteUrl: string = flattenToAppURL(siteData?.['@id'] ?? '/');
 
   useEffect(() => {
     const toolbar = document.getElementById('toolbar');
@@ -64,26 +63,19 @@ export function NavigationTreePortal() {
       ref={panelRef}
       className={cx('navigation-tree-panel', { 'is-open': open })}
     >
-      {open ? (
-        <NavigationTree
-          siteTitle={siteTitle}
-          siteUrl={siteUrl}
-          onClose={handleClose}
-        />
-      ) : (
-        <button
-          type="button"
-          className="navigation-tree-collapsed-tab"
-          onClick={handleToggle}
-          aria-label={intl.formatMessage(messages.openNavigation)}
-          title={intl.formatMessage(messages.openNavigation)}
-        >
-          <ColumnbeforeIcon className="navigation-tree-collapsed-icon" />
-          <span className="navigation-tree-collapsed-label">
-            {intl.formatMessage(messages.navigationLabel)}
-          </span>
-        </button>
-      )}
+      <NavigationTree siteTitle={siteTitle} onClose={handleClose} />
+      <button
+        type="button"
+        className="navigation-tree-collapsed-tab"
+        onClick={handleToggle}
+        aria-label={intl.formatMessage(messages.openNavigation)}
+        title={intl.formatMessage(messages.openNavigation)}
+      >
+        <ColumnbeforeIcon className="navigation-tree-collapsed-icon" />
+        <span className="navigation-tree-collapsed-label">
+          {intl.formatMessage(messages.navigationLabel)}
+        </span>
+      </button>
     </div>,
     container,
   );
