@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
+import { useIntl } from 'react-intl';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import cx from 'classnames';
-import { ChevronrightIcon } from '@plone/components/Icons';
-import { NavigationSidebar } from './NavigationSidebar';
-import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+import { ColumnbeforeIcon } from '@plone/components/Icons';
+import { messages } from './messages';
+import { NavigationTree } from './NavigationTree';
 
-const STORAGE_KEY = 'navigation-sidebar-open';
+const STORAGE_KEY = 'navigation-tree-open';
 
 function loadOpenState(): boolean {
   if (typeof window === 'undefined') return true;
@@ -19,29 +20,22 @@ function saveOpenState(value: boolean): void {
   localStorage.setItem(STORAGE_KEY, String(value));
 }
 
-export function NavigationSidebarPortal() {
+export function NavigationTreePortal() {
+  const intl = useIntl();
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const [open, setOpen] = useState(loadOpenState);
   const panelRef = useRef<HTMLDivElement>(null);
-  const content = useSelector((state: any) => state.content.data);
-  const workspacePath = flattenToAppURL(
-    content?.['@components']?.['inherit']?.['kitconcept.plate.workspace']
-      ?.from?.['@id'],
-  );
-  const workSpaceTitle =
-    content?.['@components']?.['inherit']?.['kitconcept.plate.workspace']?.from
-      ?.title;
+
+  const siteData = useSelector((state: any) => state.site?.data);
+  const siteTitle: string = siteData?.title ?? 'Site';
 
   useEffect(() => {
     const toolbar = document.getElementById('toolbar');
-
     if (!toolbar) return;
 
     const element = document.createElement('div');
-    element.id = 'navigation-sidebar';
-
+    element.id = 'navigation-tree';
     toolbar.after(element);
-
     setContainer(element);
 
     return () => {
@@ -63,29 +57,28 @@ export function NavigationSidebarPortal() {
   }
 
   if (!container) return null;
+
   return createPortal(
     <div
       ref={panelRef}
-      className={cx('navigation-sidebar-panel', { 'is-open': open })}
+      className={cx('navigation-tree-panel', { 'is-open': open })}
     >
+      <NavigationTree siteTitle={siteTitle} onClose={handleClose} />
       <button
-        className="navigation-sidebar-toggle"
-        onClick={handleToggle}
-        aria-label={open ? 'Close navigation' : 'Open navigation'}
         type="button"
+        className="navigation-tree-collapsed-tab"
+        onClick={handleToggle}
+        aria-label={intl.formatMessage(messages.openNavigation)}
+        title={intl.formatMessage(messages.openNavigation)}
       >
-        <ChevronrightIcon />
+        <ColumnbeforeIcon className="navigation-tree-collapsed-icon" />
+        <span className="navigation-tree-collapsed-label">
+          {intl.formatMessage(messages.navigationLabel)}
+        </span>
       </button>
-      {open && (
-        <NavigationSidebar
-          onClose={handleClose}
-          workspacePath={workspacePath}
-          workspaceTitle={workSpaceTitle}
-        />
-      )}
     </div>,
     container,
   );
 }
 
-export default NavigationSidebarPortal;
+export default NavigationTreePortal;

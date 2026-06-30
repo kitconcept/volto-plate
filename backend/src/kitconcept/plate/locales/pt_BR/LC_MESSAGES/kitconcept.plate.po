@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-05-25 17:12+0000\n"
+"POT-Creation-Date: 2026-06-25 12:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,3 +13,53 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
+
+#: kitconcept/plate/profiles/default/types/WikiPage.xml
+msgid "A Plate-powered wiki page."
+msgstr ""
+
+#: kitconcept/plate/profiles/default/types/Workspace.xml
+msgid "A folderish workspace container."
+msgstr ""
+
+#: kitconcept/plate/profiles.zcml:13
+msgid "A new add-on for Plone that includes both backend and Volto frontend"
+msgstr ""
+
+#: kitconcept/plate/profiles.zcml:22
+msgid "Create example content to showcase this addon."
+msgstr ""
+
+#: kitconcept/plate/profiles/default/types/WikiPage.xml
+#: kitconcept/plate/profiles/default/types/Workspace.xml
+msgid "Edit"
+msgstr ""
+
+#: kitconcept/plate/profiles.zcml:30
+msgid "Uninstall kitconcept.plate setup."
+msgstr ""
+
+#: kitconcept/plate/profiles/default/types/WikiPage.xml
+#: kitconcept/plate/profiles/default/types/Workspace.xml
+msgid "View"
+msgstr ""
+
+#: kitconcept/plate/profiles/default/types/WikiPage.xml
+msgid "Wiki Page"
+msgstr ""
+
+#: kitconcept/plate/profiles/default/types/Workspace.xml
+msgid "Workspace"
+msgstr ""
+
+#: kitconcept/plate/profiles.zcml:22
+msgid "kitconcept.plate: Example content"
+msgstr ""
+
+#: kitconcept/plate/profiles.zcml:13
+msgid "kitconcept.plate: Install"
+msgstr ""
+
+#: kitconcept/plate/profiles.zcml:30
+msgid "kitconcept.plate: Uninstall"
+msgstr ""
