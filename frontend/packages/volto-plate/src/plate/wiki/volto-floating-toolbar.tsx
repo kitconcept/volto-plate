@@ -11,12 +11,15 @@ import {
 } from '@platejs/floating';
 import { cn } from '@plone/plate/lib/utils';
 import { Toolbar } from '@plone/plate/components/ui/toolbar';
-import { KEYS } from 'platejs';
+import { ElementApi, KEYS } from 'platejs';
 import {
+  useEditorSelector,
   useEditorId,
   useEventEditorValue,
   usePluginOption,
 } from 'platejs/react';
+
+import { TITLE_BLOCK_TYPE } from '../plugins/volto-title';
 
 const FLOATING_TOOLBAR_PADDING = 12;
 
@@ -127,12 +130,21 @@ export function VoltoFloatingToolbar({
   const focusedEditorId = useEventEditorValue('focus');
   const isFloatingLinkOpen = !!usePluginOption({ key: KEYS.link }, 'mode');
   const isAIChatOpen = usePluginOption({ key: KEYS.aiChat }, 'open');
+  const isTitleBlockSelection = useEditorSelector((editor) => {
+    const blockEntry = editor.api.block({ highest: true });
+    if (!blockEntry) return false;
+
+    return (
+      ElementApi.isElement(blockEntry[0]) &&
+      blockEntry[0].type === TITLE_BLOCK_TYPE
+    );
+  }, []);
   const viewportPadding = useViewportPadding();
 
   const floatingToolbarState = useFloatingToolbarState({
     editorId,
     focusedEditorId,
-    hideToolbar: isFloatingLinkOpen || isAIChatOpen,
+    hideToolbar: isFloatingLinkOpen || isAIChatOpen || isTitleBlockSelection,
     ...state,
     floatingOptions: {
       middleware: [

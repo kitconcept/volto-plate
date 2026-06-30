@@ -84,4 +84,4 @@ The project is licensed under GPLv2.
 
 ## Credits and acknowledgements 🙏
 
-Generated from the [`cookieplone-templates`  template](https://github.com/plone/cookieplone-templates/tree/main/) on 2026-02-16 16:36:30.. A special thanks to all contributors and supporters!
+Generated using [Cookieplone (2.0.0b3)](https://github.com/plone/cookieplone) and [cookieplone-templates (6bdd1ef)](https://github.com/plone/cookieplone-templates/commit/6bdd1efa3642c65710a3373c00637f50aca2b145) on 2026-06-25 19:10:07.781846. A special thanks to all contributors and supporters!

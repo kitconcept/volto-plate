@@ -97,6 +97,43 @@ describe('volto title block plugin', () => {
     });
   });
 
+  describe('keyboard restrictions', () => {
+    it('prevents formatting hotkeys inside the title block', () => {
+      const preventDefault = vi.fn();
+      const titleNode = {
+        type: TITLE_BLOCK_TYPE,
+        children: [{ text: 'Existing title' }],
+      };
+      const editor = {
+        api: {
+          block: () => [titleNode, [0]],
+          isCollapsed: () => false,
+        },
+        selection: {
+          anchor: { path: [0, 0], offset: 0 },
+          focus: { path: [0, 0], offset: 5 },
+        },
+        tf: {
+          insertNodes: vi.fn(),
+        },
+      };
+
+      BaseVoltoTitleBlockPlugin.handlers.onKeyDown?.({
+        editor,
+        event: {
+          key: 'b',
+          metaKey: true,
+          ctrlKey: false,
+          shiftKey: false,
+          preventDefault,
+        },
+      } as any);
+
+      expect(preventDefault).toHaveBeenCalledOnce();
+      expect(editor.tf.insertNodes).not.toHaveBeenCalled();
+    });
+  });
+
   describe('placeholder rendering', () => {
     it('renders a local placeholder when the title is empty', () => {
       const element = VoltoTitleBlockElement({

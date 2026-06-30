@@ -29,6 +29,16 @@ const insertPloneBlock = (editor: PlateEditor, blockType: string) => {
   });
 };
 
+const IMAGE_SLASH_ITEM = {
+  icon: <ImageIcon />,
+  keywords: ['image', 'media', 'photo', 'picture'],
+  label: 'Image',
+  value: 'block_plateimage',
+  onSelect: (editor: PlateEditor) => {
+    insertPloneBlock(editor, 'plateimage');
+  },
+};
+
 export const slashMenu: SlashMenuConfig = {
   extendGroups: (groups) =>
     groups
@@ -45,22 +55,26 @@ export const slashMenu: SlashMenuConfig = {
         }
 
         if (group.group === 'Text blocks') {
+          if (
+            group.items.some((item) => item.value === IMAGE_SLASH_ITEM.value)
+          ) {
+            return group;
+          }
+
+          const paragraphIndex = group.items.findIndex(
+            (item) => item.value === 'p',
+          );
+
           return {
             ...group,
-            items: group.items.some((item) => item.value === 'block_plateimage')
-              ? group.items
-              : [
-                  ...group.items,
-                  {
-                    icon: <ImageIcon />,
-                    keywords: ['image', 'media', 'photo', 'picture'],
-                    label: 'Image',
-                    value: 'block_plateimage',
-                    onSelect: (editor) => {
-                      insertPloneBlock(editor, 'plateimage');
-                    },
-                  },
-                ],
+            items:
+              paragraphIndex === -1
+                ? [...group.items, IMAGE_SLASH_ITEM]
+                : [
+                    ...group.items.slice(0, paragraphIndex + 1),
+                    IMAGE_SLASH_ITEM,
+                    ...group.items.slice(paragraphIndex + 1),
+                  ],
           };
         }
 
