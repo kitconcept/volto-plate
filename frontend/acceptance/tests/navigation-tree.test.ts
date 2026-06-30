@@ -59,13 +59,13 @@ test.describe('NavigationTree', () => {
       await expect(siteTitle).toHaveText('Site');
     });
 
-    test('panel is not visible on edit pages', async ({ page }) => {
+    test('navigation tree panel is visible on edit pages', async ({ page }) => {
       await login(page);
       await page.goto('/edit', { waitUntil: 'networkidle' });
 
       await expect(
         page.locator('.navigation-tree-panel.is-open'),
-      ).not.toBeVisible();
+      ).toBeVisible();
     });
   });
 
@@ -74,6 +74,7 @@ test.describe('NavigationTree', () => {
       page,
     }) => {
       await login(page);
+      await createNavTreeContent(page);
       await page.goto('/', { waitUntil: 'networkidle' });
 
       const nav = page.locator('nav.navigation-tree');
@@ -148,26 +149,39 @@ test.describe('NavigationTree', () => {
       await page.goto('/', { waitUntil: 'networkidle' });
 
       const searchInput = page.locator('.nav-tree-search-input');
+      const searchResponse = page.waitForResponse(
+        (resp) => resp.url().includes('@search') && resp.status() === 200,
+      );
       await searchInput.fill('Nav Tree Child Document');
+      await searchResponse;
 
       const nav = page.locator('nav.navigation-tree');
       await expect(
         nav.locator('.nav-tree-title', { hasText: 'Nav Tree Child Document' }),
-      ).toBeVisible({ timeout: 5000 });
+      ).toBeVisible();
     });
 
     test('clearing search restores tree view', async ({ page }) => {
       await login(page);
+      await createNavTreeContent(page);
       await page.goto('/', { waitUntil: 'networkidle' });
 
+      const nav = page.locator('nav.navigation-tree');
       const searchInput = page.locator('.nav-tree-search-input');
-      await searchInput.fill('something');
-      await expect(page.locator('.nav-tree-search-clear')).toBeVisible();
+
+      const searchResponse = page.waitForResponse(
+        (resp) => resp.url().includes('@search') && resp.status() === 200,
+      );
+      await searchInput.fill('Nav Tree Child');
+      await searchResponse;
+      await expect(
+        nav.locator('.nav-tree-title', { hasText: 'Nav Tree Child Document' }),
+      ).toBeVisible();
 
       await page.locator('.nav-tree-search-clear').click();
       await expect(
-        page.locator('nav.navigation-tree').getByRole('row').first(),
-      ).toBeVisible();
+        nav.locator('.nav-tree-title', { hasText: 'Nav Tree Test Section' }),
+      ).toBeVisible({ timeout: 5000 });
     });
   });
 
