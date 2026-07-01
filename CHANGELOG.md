@@ -7,6 +7,29 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a11 (2026-07-01)
+
+### Backend
+
+
+#### Internal:
+
+- Downgrade the backend to use Python 3.12. @sneridagh [#40](https://github.com/kitconcept/volto-plate/issues/40)
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a10 (2026-07-01)
 
 ### Backend
