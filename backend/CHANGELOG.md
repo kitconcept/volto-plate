@@ -9,6 +9,14 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a10 (2026-07-01)
+
+
+### Internal:
+
+- Update to Plone 6.2.0 @sneridagh 
+- Update translation. @iFlameing 
+
 ## 1.0.0a9 (2026-05-28)
 
 
