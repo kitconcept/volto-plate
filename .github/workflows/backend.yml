@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.13']
+        python-version: ['3.12']
         plone-version: ['6.2-latest']
     with:
       python-version: ${{ matrix.python-version }}

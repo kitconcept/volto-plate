@@ -14,7 +14,7 @@ on:
       python-version:
         required: false
         type: string
-        default: "3.13"
+        default: "3.12"
       environment:
         required: false
         type: string
