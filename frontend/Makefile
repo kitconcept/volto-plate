@@ -35,6 +35,7 @@ IMAGE_NAME=$(IMAGE_NAME_PREFIX)-frontend
 # Environment variables to be exported
 export VOLTO_VERSION := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.frontend.volto_version')
 export PLONE_VERSION := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.backend.base_package_version')
+export DOCKER_BUILDKIT := 1
 
 .PHONY: help
 help: ## Show this help
@@ -52,7 +53,7 @@ debug-settings:  ## Debug settings
 .PHONY: clean
 clean: ## Clean environment
 	@echo "$(RED)==> Cleaning Volto core and node_modules$(RESET)"
-	rm -rf core node_modules
+	rm -rf aurora core node_modules
 
 .PHONY: install
 install: ## Installs the add-on in a development environment
@@ -163,4 +164,4 @@ ci-acceptance-test: ## Run cypress tests in headless mode for CI
 
 .PHONY: build-image
 build-image:  ## Build Docker Image
-	@DOCKER_BUILDKIT=1 docker build . -t $(IMAGE_NAME):$(IMAGE_TAG) -f Dockerfile --build-arg VOLTO_VERSION=$(VOLTO_VERSION) --progress=plain
+	@docker build . -t $(IMAGE_NAME):$(IMAGE_TAG) -f Dockerfile --build-arg VOLTO_VERSION=$(VOLTO_VERSION) --progress=plain
