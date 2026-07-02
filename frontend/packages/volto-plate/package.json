@@ -1,6 +1,6 @@
 {
   "name": "@kitconcept/volto-plate",
-  "version": "1.0.0-alpha.13",
+  "version": "1.0.0-alpha.14",
   "description": "An add-on that adds a Plate.js block for Volto",
   "main": "src/index.ts",
   "license": "MIT",

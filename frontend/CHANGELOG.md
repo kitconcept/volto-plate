@@ -8,6 +8,12 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.14 (2026-07-02)
+
+### Internal
+
+- Missing @plone/plate updates. @sneridagh 
+
 ## 1.0.0-alpha.13 (2026-07-02)
 
 ### Internal
