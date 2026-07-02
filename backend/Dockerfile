@@ -19,6 +19,8 @@ RUN <<EOT
     rm -rf .venv
     ../bin/mxdev -c mx.ini
     ../bin/uv pip install -r requirements-mxdev.txt
+    # Add OpenTelemetry support
+    ../bin/uv pip install git+https://github.com/collective/collective.opentelemetry.git@5c41a13035a30d880ccbc772c2b3abbc45342c59
     ../bin/python /compile_mo.py
     mv container/docker-entrypoint.sh /app
     mv container/zope-otel.ini /app/etc/
