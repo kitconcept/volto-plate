@@ -17,6 +17,9 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "ruff.organizeImports": true,
+  "python-envs.workspaceSearchPaths": [
+    "backend/.venv"
+  ],
   "python.terminal.activateEnvironment": true,
   "python.testing.pytestArgs": [
     "backend/tests"
