@@ -8,6 +8,8 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.12 (2026-07-02)
+
 ## 1.0.0-alpha.11 (2026-07-01)
 
 ## 1.0.0-alpha.10 (2026-07-01)

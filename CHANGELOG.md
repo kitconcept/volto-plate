@@ -7,6 +7,29 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a12 (2026-07-02)
+
+### Backend
+
+
+#### Internal:
+
+- Use Python 3.14 and Plone 6.2.1 @sneridagh [#41](https://github.com/kitconcept/volto-plate/issues/41)
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a11 (2026-07-01)
 
 ### Backend
