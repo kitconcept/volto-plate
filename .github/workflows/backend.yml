@@ -39,8 +39,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.12']
-        plone-version: ['6.2-latest']
+        python-version: ['3.12', '3.13', '3.14']
+        plone-version: ['6.2-latest', '6.1-latest']
     with:
       python-version: ${{ matrix.python-version }}
       plone-version: ${{ matrix.plone-version }}
@@ -92,8 +92,8 @@ jobs:
       working-directory: ${{ inputs.working-directory }}
       dockerfile: Dockerfile.demo
       build-args: |
+        BASE_IMAGE=${{ inputs.image-name-prefix }}-${{ inputs.image-name-suffix }}
         BASE_TAG=${{ inputs.base-tag }}
-        PYTHON_VERSION=${{ inputs.python-version }}
       push: ${{ github.event_name != 'pull_request' }}
     secrets:
       username: ${{ github.actor }}
