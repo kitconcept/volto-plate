@@ -1,0 +1,1 @@
+Added the `python-envs` setting so the correct virtual environment is discovered. @ericof
