@@ -8,6 +8,12 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.13 (2026-07-02)
+
+### Internal
+
+- Removed the aurora clone step when running `make clean`. @ericof 
+
 ## 1.0.0-alpha.12 (2026-07-02)
 
 ## 1.0.0-alpha.11 (2026-07-01)

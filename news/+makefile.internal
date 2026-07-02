@@ -1,1 +1,0 @@
-Removed stray `*_cache` directories when running make clean. @ericof

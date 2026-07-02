@@ -9,6 +9,18 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a13 (2026-07-02)
+
+
+### Internal:
+
+- Updated the boilerplate to use the latest `monorepo_addon` template. @ericof [#440](https://github.com/kitconcept/volto-plate/issues/440)
+
+
+### Tests
+
+- Moved `test_upgrades.py` to `tests/setup` and switched `tests/test_comments` to use `http_request`. @ericof 
+
 ## 1.0.0a12 (2026-07-02)
 
 

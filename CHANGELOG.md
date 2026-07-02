@@ -7,6 +7,43 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a13 (2026-07-02)
+
+### Backend
+
+
+#### Internal:
+
+- Updated the boilerplate to use the latest `monorepo_addon` template. @ericof [#440](https://github.com/kitconcept/volto-plate/issues/440)
+
+
+#### Tests
+
+- Moved `test_upgrades.py` to `tests/setup` and switched `tests/test_comments` to use `http_request`. @ericof 
+
+
+
+### Frontend
+
+#### Internal
+
+- Removed the aurora clone step when running `make clean`. @ericof 
+
+
+
+### Project
+
+
+#### Internal
+
+- Updated `.cookieplone.json` and `repository.toml` with the `monorepo_addon` template answers. @ericof [#440](https://github.com/kitconcept/volto-plate/pull/440)
+- Added the `python-envs` setting so the correct virtual environment is discovered. @ericof 
+- Build and publish the backend, demo, and frontend container images as part of the staging deploy workflow. @ericof 
+- Fixed demo image generation in the `.github/workflows/backend.yml` workflow. @ericof 
+- Removed stray `*_cache` directories when running make clean. @ericof 
+
+
+
 ## 1.0.0a12 (2026-07-02)
 
 ### Backend

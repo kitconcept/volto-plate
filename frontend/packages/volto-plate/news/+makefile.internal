@@ -1,1 +1,0 @@
-Removed the aurora clone step when running `make clean`. @ericof
