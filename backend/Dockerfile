@@ -1,54 +1,38 @@
 # syntax=docker/dockerfile:1
-ARG PYTHON_VERSION=undefined
-FROM plone/server-builder:uv-${PYTHON_VERSION} AS builder
+ARG PLONE_VERSION=6.2.1
+FROM plone/server-builder:${PLONE_VERSION} AS builder
 
-# Install project dependencies based on uv.lock and pyproject.toml
-# We expect pyproject.toml to have an entry cointainer inside [dependency-groups]
-RUN --mount=type=cache,target=/root/.cache \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync \
-        --locked \
-        --no-dev \
-        --no-group test \
-        --group container \
-        --no-install-project
+WORKDIR /app
 
-COPY . /src
-WORKDIR /src
 
-# Install package
-RUN --mount=type=cache,target=/root/.cache \
-    uv sync \
-        --locked \
-        --no-dev \
-        --no-group test \
-        --group container \
-        --no-editable
+# Add local code
+COPY scripts/ scripts/
+COPY . src
 
-# Move skeleton files to /app
+# Install local requirements and pre-compile mo files
 RUN <<EOT
-    mv /app_skeleton/* /app
-    rm -Rf /app_skeleton
-    chmod +x /app/docker-entrypoint.sh
-    mv scripts/create_site.py /app/scripts/create_site.py
+    set -e
+    bin/pip install mxdev uv
+    sed -i 's/-e .\[test\]/./g' src/mx.ini
+    cd /app/src
+    # remove potentially existing virtualenv from local build
+    rm -rf .venv
+    ../bin/mxdev -c mx.ini
+    ../bin/uv pip install -r requirements-mxdev.txt
+    ../bin/python /compile_mo.py
+    mv container/docker-entrypoint.sh /app
+    mv container/zope-otel.ini /app/etc/
 EOT
 
-# Compile translation files
-RUN <<EOT
-    /app/bin/python /compile_mo.py
-EOT
+FROM plone/server-prod-config:${PLONE_VERSION}
 
-FROM plone/server-prod-config:uv-${PYTHON_VERSION}
+LABEL maintainer="kitconcept GmbH <info@kitconcept.com>" \
+      org.label-schema.name="volto-plate-backend" \
+      org.label-schema.description="Volto Plate backend image." \
+      org.label-schema.vendor="kitconcept GmbH"
 
-LABEL maintainer="kitconcept, GmbH <info@kitconcept.com>" \
-      org.label-schema.name="kitconcept-plate-backend" \
-      org.label-schema.description="kitconcept.plate backend image." \
-      org.label-schema.vendor="kitconcept, GmbH"
-
-# Copy the pre-built `/app` directory to the runtime container
-# and change the ownership to user app and group app in one step.
-COPY --from=builder --chown=500:500 /app /app
+# Copy /app from builder
+COPY --from=builder /app /app
 
 RUN <<EOT
     set -e
