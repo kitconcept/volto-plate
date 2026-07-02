@@ -106,6 +106,7 @@ clean:  ## Clean installation
 	@echo "Clean installation"
 	$(MAKE) -C "./backend/" clean
 	$(MAKE) -C "./frontend/" clean
+	@rm -Rf *_cache
 
 ###########################################
 # QA
