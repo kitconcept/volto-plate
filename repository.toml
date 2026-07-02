@@ -50,5 +50,5 @@ publish = false
 
 [cookieplone]
 template = "monorepo_addon"
-template_version = "2c5463046f43a87e36d11a7edc2b4176b2d593aa"
-generated_date = "2026-02-13 09:23:34"
+template_version = "6bdd1efa3642c65710a3373c00637f50aca2b145"
+generated_date = "2026-07-02 13:31:27"
