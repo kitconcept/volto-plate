@@ -3,7 +3,7 @@ import { NavigationTreePortal } from '../components/NavigationTree/NavigationTre
 
 export default function installSlots(config: ConfigType) {
   config.registerSlotComponent({
-    slot: 'aboveContent',
+    slot: 'aboveApp',
     name: 'NavigationTree',
     component: NavigationTreePortal,
   });
