@@ -1,4 +1,5 @@
 import type { ConfigType } from '@plone/registry';
+import type { apiExpandersType } from '@plone/types/src/config/Settings';
 
 export default function install(config: ConfigType) {
   config.settings.PlateEditorContentTypes = ['WikiPage'];
