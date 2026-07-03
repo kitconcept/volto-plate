@@ -3,8 +3,10 @@ import { useIntl } from 'react-intl';
 import { TreeItem } from 'react-aria-components';
 import { Tree, TreeItemContent } from '@plone/components';
 import { ColumnbeforeIcon } from '@plone/components/Icons';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { messages } from './messages';
-import { useNavigationTree } from './useNavigationTree';
+import { useNavigationTree, ROOT_ID } from './useNavigationTree';
+import { useActiveWorkspace } from './useActiveWorkspace';
 import { NavigationTreeHeader } from './NavigationTreeHeader';
 import { NavigationTreeSearch } from './NavigationTreeSearch';
 import { NavigationTreeItem } from './NavigationTreeItem';
@@ -16,6 +18,14 @@ interface NavigationTreeProps {
 
 export function NavigationTree({ siteTitle, onClose }: NavigationTreeProps) {
   const intl = useIntl();
+  const {
+    workspaces,
+    activeWorkspace,
+    isLoading: isWorkspacesLoading,
+  } = useActiveWorkspace();
+  const rootPath = activeWorkspace
+    ? flattenToAppURL(activeWorkspace['@id'])
+    : ROOT_ID;
   const {
     currentPath,
     expandedKeys,
@@ -30,7 +40,7 @@ export function NavigationTree({ siteTitle, onClose }: NavigationTreeProps) {
     getChildrenForPath,
     isLoadingForPath,
     fetchedPaths,
-  } = useNavigationTree();
+  } = useNavigationTree(rootPath);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -63,7 +73,12 @@ export function NavigationTree({ siteTitle, onClose }: NavigationTreeProps) {
 
   return (
     <div className="navigation-tree-wrapper" ref={wrapperRef}>
-      <NavigationTreeHeader siteTitle={siteTitle} />
+      <NavigationTreeHeader
+        siteTitle={siteTitle}
+        workspaces={workspaces}
+        activeWorkspace={activeWorkspace}
+        isWorkspacesLoading={isWorkspacesLoading}
+      />
 
       <NavigationTreeSearch
         searchQuery={searchQuery}

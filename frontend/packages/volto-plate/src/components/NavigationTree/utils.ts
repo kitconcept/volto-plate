@@ -9,7 +9,10 @@ export function getStateColor(reviewState: string): string {
   return 'grey';
 }
 
-export function collectAncestorPaths(currentPath: string): string[] {
+export function collectAncestorPaths(
+  currentPath: string,
+  rootPath: string = '/',
+): string[] {
   const parts = currentPath.split('/').filter(Boolean);
   const ancestors: string[] = ['/'];
   let acc = '';
@@ -17,5 +20,6 @@ export function collectAncestorPaths(currentPath: string): string[] {
     acc += '/' + part;
     ancestors.push(acc);
   }
-  return ancestors;
+  const rootIndex = ancestors.indexOf(rootPath);
+  return rootIndex === -1 ? ancestors : ancestors.slice(rootIndex);
 }
