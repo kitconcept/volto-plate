@@ -1,0 +1,1 @@
+Add workspace switcher and workspace-scoped navigation tree to the NavigationTree panel. @iFlameing
