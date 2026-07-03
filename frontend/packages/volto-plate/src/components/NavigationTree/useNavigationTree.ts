@@ -15,26 +15,29 @@ export interface SearchItem {
 }
 
 export const ROOT_ID = '/';
+const WORKSPACE_PORTAL_TYPE = 'Workspace';
 
-export function useNavigationTree() {
+export function useNavigationTree(rootPath: string = ROOT_ID) {
   const dispatch = useDispatch();
   const location = useLocation();
   const currentPath = flattenToAppURL(location.pathname);
 
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(
-    () => new Set([ROOT_ID]),
+    () => new Set([rootPath]),
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const fetchedPaths = useRef<Set<string>>(new Set([ROOT_ID]));
+  const fetchedPaths = useRef<Set<string>>(new Set());
 
   const subrequests = useSelector(
     (state: any) => state.search?.subrequests ?? {},
   );
 
   function getChildrenForPath(path: string): SearchItem[] {
-    return subrequests[`nav-tree-${path}`]?.items ?? [];
+    return (subrequests[`nav-tree-${path}`]?.items ?? []).filter(
+      (item: SearchItem) => item['@type'] !== WORKSPACE_PORTAL_TYPE,
+    );
   }
 
   function isLoadingForPath(path: string): boolean {
@@ -60,11 +63,7 @@ export function useNavigationTree() {
   );
 
   useEffect(() => {
-    dispatchFetch(ROOT_ID);
-  }, [dispatchFetch]);
-
-  useEffect(() => {
-    const ancestors = collectAncestorPaths(currentPath);
+    const ancestors = collectAncestorPaths(currentPath, rootPath);
     for (const path of ancestors) {
       if (!fetchedPaths.current.has(path)) {
         fetchedPaths.current.add(path);
@@ -72,7 +71,7 @@ export function useNavigationTree() {
       }
     }
     setExpandedKeys((prev) => new Set([...prev, ...ancestors]));
-  }, [currentPath, dispatchFetch]);
+  }, [currentPath, rootPath, dispatchFetch]);
 
   useEffect(() => {
     if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
@@ -88,7 +87,7 @@ export function useNavigationTree() {
     if (!debouncedSearch) return;
     dispatch(
       searchContent(
-        '/',
+        rootPath,
         {
           Title: `${debouncedSearch}*`,
           metadata_fields: ['is_folderish', 'review_state'],
@@ -97,12 +96,13 @@ export function useNavigationTree() {
         'nav-tree-search',
       ),
     );
-  }, [debouncedSearch, dispatch]);
+  }, [debouncedSearch, dispatch, rootPath]);
 
   const handleExpandedChange = useCallback(
     (newKeys: Set<Key>) => {
       for (const key of newKeys) {
-        const path = key === ROOT_ID ? ROOT_ID : flattenToAppURL(key as string);
+        const path =
+          key === rootPath ? rootPath : flattenToAppURL(key as string);
         if (!fetchedPaths.current.has(path)) {
           fetchedPaths.current.add(path);
           dispatchFetch(path);
@@ -110,14 +110,15 @@ export function useNavigationTree() {
       }
       setExpandedKeys(new Set(newKeys as Set<string>));
     },
-    [dispatchFetch],
+    [dispatchFetch, rootPath],
   );
 
-  const searchResults: SearchItem[] =
-    subrequests['nav-tree-search']?.items ?? [];
+  const searchResults: SearchItem[] = (
+    subrequests['nav-tree-search']?.items ?? []
+  ).filter((item: SearchItem) => item['@type'] !== WORKSPACE_PORTAL_TYPE);
   const isSearchLoading = !!subrequests['nav-tree-search']?.loading;
-  const rootChildren = getChildrenForPath(ROOT_ID);
-  const isRootLoading = isLoadingForPath(ROOT_ID);
+  const rootChildren = getChildrenForPath(rootPath);
+  const isRootLoading = isLoadingForPath(rootPath);
 
   return {
     currentPath,

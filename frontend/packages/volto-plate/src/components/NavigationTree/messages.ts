@@ -49,4 +49,8 @@ export const messages = defineMessages({
     id: 'navigation_tree_resize_panel',
     defaultMessage: 'Resize navigation panel',
   },
+  workspaceSwitcherLabel: {
+    id: 'navigation_tree_workspace_switcher_label',
+    defaultMessage: 'Switch workspace',
+  },
 });
