@@ -7,6 +7,34 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a15 (2026-07-03)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Feature
+
+- Add workspace switcher and workspace-scoped navigation tree to the NavigationTree panel. @iFlameing 
+
+#### Bugfix
+
+- Fix inherit logic. @sneridagh [#44](https://github.com/collective/volto-plate/issue/44)
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a14 (2026-07-02)
 
 ### Backend
