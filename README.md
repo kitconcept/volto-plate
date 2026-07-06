@@ -3,196 +3,197 @@
   <img align="right" width="200" alt="kitconcept, GmbH" src="https://kitconcept.com/kitconcept-black.svg">
 </picture>
 
-# Volto Plate.js support <br/>(@kitconcept/volto-plate)
+# volto-plate
 
 <div align="center">
 
-An add-on that adds a [Plate.js](https://www.platejs.org/) support in Volto.
+A Plone and Volto monorepo for experimenting with a Plate-powered wiki experience.
 
 [![npm](https://img.shields.io/npm/v/@kitconcept/volto-plate)](https://www.npmjs.com/package/@kitconcept/volto-plate)
 [![Code analysis checks](https://github.com/kitconcept/volto-plate/actions/workflows/main.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/main.yml)
 [![Acceptance tests](https://github.com/kitconcept/volto-plate/actions/workflows/acceptance.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/acceptance.yml)
 </div>
 
-> [!WARNING]
-> This package is in early development and should be used with caution in production environments.
-> It is subject to breaking changes and incomplete features.
-> Please test thoroughly and report any issues you encounter.
+`volto-plate` is a Plone and Volto monorepo for experimenting with a Plate-powered wiki experience.
 
-## Features
+It combines:
 
-This package provides support for the [Plate.js](https://www.platejs.org/) rich text editor in Volto.
+- a backend package, `kitconcept.plate`
+- a frontend add-on, `@kitconcept/volto-plate`
+- a demo distribution that wires both sides together
 
-It provides "on-the-fly" conversion between Slate.js and Plate.js data models, allowing seamless integration of Plate.js-based blocks in Volto.
-The conversion is only one-way: from Slate.js to Plate.js when loading data into the editor. Once in Plate.js, the data remains in Plate.js format.
-In the future, we may considering adding a backend package providing scripts for batch converting back and forth between the two formats if needed.
+The current project is centered around a dedicated `WikiPage` content type edited with a custom Wiki Editor built from the building blocks provided by Aurora's `@plone/plate`, plus a `Workspace` container type for organizing wiki content.
 
-Plate.js uses the concept of "blocks" that collide with the Volto ones. From now on, we will refer to Volto blocks as "Volto blocks" and Plate.js blocks as "Plate blocks" to avoid confusion.
+## Current feature set
 
-From the user perspective, it provides:
--   A total replacement of slate (text) default block using Plate.js (by default) using block model 3.
--   A new `Plate` block type, which uses Plate.js as the rich text editor.
--   Basic features using the inline floating toolbar, extending the default Volto one with experimental additions.
--   Slash commands to insert both Plate blocks and Volto blocks.
--   Split block in here slash command.
--   Add new block slash command.
--   Ability to insert a Volto image block as a Plate image block (inline).
--   Ability to insert existing "normal" Volto blocks via the (+) button inside the Plate block.
+### Content model
 
-## Behavior notes
+- `Workspace`: folderish container for wiki content, images, and files
+- `WikiPage`: Plate-powered page type with Volto blocks storage
+- example content profile that creates a browsable workspace tree for local development
 
-It keeps in place the default Volto rich text block (slate-based) assumptions, so you can have multiple plate.js-based blocks in the same page.
-However, pressing `ENTER` won't create a new block, instead, it will create a new paragraph inside the same block, as is standard behavior in rich text editors.
-You can create new blocks using the block chooser as usual, and using the `/` slash command inside the `plate.js`-based block.
+### Editing experience
 
-## Developer features
+- `WikiPage` is registered as a Plate editor content type through `config.settings.PlateEditorContentTypes`
+- custom Wiki Editor assembled from Aurora `@plone/plate` kits and plugins
+- dedicated title block synced both ways with the Volto metadata title field
+- block menu and slash commands for Plate blocks
+- Volto-aware slash actions to create new Volto blocks and split the editor into separate Volto blocks
+- custom `plateimage` block with width, alignment, and size controls
+- image insertion from slash menu, clipboard paste, and drag and drop
+- Volto-aware internal and external link handling
+- floating toolbar customized for the wiki editor
 
-From the developer perspective, it provides:
--   A Volto block adapter to reuse existing Volto blocks inside Plate-based editors (e.g. rich text).
--   A Plate plugin to reuse the Volto Image block inside Plate-based editors.
--   A Plate-based Text block implementation for Volto, replacing the default Slate-based one.
+### Rich text capabilities
 
-## Compatibility
+- headings, paragraphs, lists, inline marks, alignment, and line-height controls
+- code blocks, tables, toggles, table of contents, callouts, and columns
+- mentions, comments, discussions, and suggestions
+- Markdown and DOCX parsing support
 
-This package is only compatible with Volto 19 and later versions.
+### Backend integration
 
-## Quick Start 🏁
+- backend serializers and deserializers for persisted Plate discussions
+- permission `kitconcept.plate: Discuss content` for editing own discussion comments
+- upgrade steps for the evolving workspace/wiki model
 
-### Prerequisites ✅
+## Repository layout
 
--   An [operating system](https://6.docs.plone.org/install/create-project-cookieplone.html#prerequisites-for-installation) that runs all the requirements mentioned.
--   [uv](https://6.docs.plone.org/install/create-project-cookieplone.html#uv)
--   [nvm](https://6.docs.plone.org/install/create-project-cookieplone.html#nvm)
--   [Node.js and pnpm](https://6.docs.plone.org/install/create-project.html#node-js) 24
--   [Make](https://6.docs.plone.org/install/create-project-cookieplone.html#make)
--   [Git](https://6.docs.plone.org/install/create-project-cookieplone.html#git)
--   [Docker](https://docs.docker.com/get-started/get-docker/) (optional)
+- `backend/`: Plone package `kitconcept.plate`, site bootstrap, example content, upgrades, and tests
+- `frontend/`: Volto workspace used to develop and test the add-on
+- `frontend/packages/volto-plate/`: the actual frontend add-on source
+- `frontend/aurora/`: local checkout used during development for `@plone/plate` and `@plone/helpers`
+- `devops/`: container and stack support files
 
+## Requirements
 
-### Installation 🔧
+- `uv`
+- `corepack` with `pnpm`
+- Node.js `24`
+- Python `3.12+`
+- `make`
+- Docker, if you want the local stack
 
-1.  Clone this repository, then change your working directory.
+## Local development
 
-    ```shell
-    git clone git@github.com:kitconcept/volto-plate.git
-    cd volto-plate
-    ```
+Clone the repository and install both parts:
 
-2.  Install this code base.
+```sh
+git clone git@github.com:kitconcept/volto-plate.git
+cd volto-plate
+make install
+```
 
-    ```shell
-    make install
-    ```
+`make install` installs the backend, creates the Plone site, installs the frontend workspace, and builds the local frontend dependencies.
 
+Start the services in two terminals:
 
-### Fire Up the Servers 🔥
+```sh
+make backend-start
+make frontend-start
+```
 
-1.  Create a new Plone site on your first run.
+The default local URLs are:
 
-    ```shell
-    make backend-create-site
-    ```
+- backend: `http://localhost:8080`
+- frontend: `http://localhost:3000`
 
-2.  Start the backend at http://localhost:8080/.
+If you need to recreate the Plone site:
 
-    ```shell
-    make backend-start
-    ```
+```sh
+make backend-create-site
+```
 
-3.  In a new shell session, start the frontend at http://localhost:3000/.
+## Local stack
 
-    ```shell
-    make frontend-start
-    ```
+For a containerized local stack:
 
-Voila! Your Plone site should be live and kicking! 🎉
-
-### Local Stack Deployment 📦
-
-Deploy a local Docker Compose environment that includes the following.
-
-- Docker images for Backend and Frontend 🖼️
-- A stack with a Traefik router and a PostgreSQL database 🗃️
-- Accessible at [http://volto-plate.localhost](http://volto-plate.localhost) 🌐
-
-Run the following commands in a shell session.
-
-```shell
+```sh
 make stack-create-site
 make stack-start
 ```
 
-And... you're all set! Your Plone site is up and running locally! 🚀
+This starts the demo at `http://volto-plate.localhost`.
 
-## Project structure 🏗️
+## Testing and quality checks
 
-This monorepo consists of the following distinct sections:
+Use the repository Make targets instead of ad-hoc commands.
 
-- **backend**: Houses the API and Plone installation, utilizing pip instead of buildout, and includes a policy package named kitconcept.plate.
-- **frontend**: Contains the React (Volto) package.
-- **devops**: Encompasses Docker stack, Ansible playbooks, and cache settings.
-- **docs**: Scaffold for writing documentation for your project.
+### Main checks
 
-### Why this structure? 🤔
-
-- All necessary codebases to run the site are contained within the repository (excluding existing add-ons for Plone and React).
-- Specific GitHub Workflows are triggered based on changes in each codebase (refer to .github/workflows).
-- Simplifies the creation of Docker images for each codebase.
-- Demonstrates Plone installation/setup without buildout.
-
-## Code quality assurance 🧐
-
-To check your code against quality standards, run the following shell command.
-
-```shell
+```sh
 make check
+make test
 ```
 
-### Format the codebase
+### Backend
 
-To format and rewrite the code base, ensuring it adheres to quality standards, run the following shell command.
+```sh
+make backend-test
+```
 
-```shell
+If you need a targeted backend test, use the backend virtualenv:
+
+```sh
+cd backend
+.venv/bin/pytest tests/path_or_test.py
+```
+
+### Frontend
+
+```sh
+make frontend-test
+```
+
+### Acceptance tests
+
+Acceptance coverage is Playwright-based and lives in `frontend/acceptance/tests`.
+
+Start the backend:
+
+```sh
+make ci-acceptance-backend-start
+```
+
+Start the frontend in another terminal:
+
+```sh
+make acceptance-frontend-dev-start
+```
+
+Run the tests:
+
+```sh
+cd frontend
+pnpm exec playwright test --reporter=list,html
+```
+
+## Formatting, linting, and i18n
+
+```sh
 make format
-```
-
-| Section | Tool | Description | Configuration |
-| --- | --- | --- | --- |
-| backend | Ruff | Python code formatting, imports sorting  | [`backend/pyproject.toml`](./backend/pyproject.toml) |
-| backend | `zpretty` | XML and ZCML formatting  | -- |
-| frontend | ESLint | Fixes most common frontend issues | [`frontend/.eslintrc.js`](.frontend/.eslintrc.js) |
-| frontend | prettier | Format JS and Typescript code  | [`frontend/.prettierrc`](.frontend/.prettierrc) |
-| frontend | Stylelint | Format Styles (css, less, sass)  | [`frontend/.stylelintrc`](.frontend/.stylelintrc) |
-
-Formatters can also be run within the `backend` or `frontend` folders.
-
-### Linting the codebase
-or `lint`:
-
- ```shell
 make lint
-```
-
-| Section | Tool | Description | Configuration |
-| --- | --- | --- | --- |
-| backend | Ruff | Checks code formatting, imports sorting  | [`backend/pyproject.toml`](./backend/pyproject.toml) |
-| backend | Pyroma | Checks Python package metadata  | -- |
-| backend | check-python-versions | Checks Python version information  | -- |
-| backend | `zpretty` | Checks XML and ZCML formatting  | -- |
-| frontend | ESLint | Checks JS / Typescript lint | [`frontend/.eslintrc.js`](.frontend/.eslintrc.js) |
-| frontend | prettier | Check JS / Typescript formatting  | [`frontend/.prettierrc`](.frontend/.prettierrc) |
-| frontend | Stylelint | Check Styles (css, less, sass) formatting  | [`frontend/.stylelintrc`](.frontend/.stylelintrc) |
-
-Linters can be run individually within the `backend` or `frontend` folders.
-
-## Internationalization 🌐
-
-Generate translation files for Plone and Volto with ease:
-
-```shell
 make i18n
 ```
 
-## Credits and acknowledgements 🙏
+## Changelog fragments
 
-Generated using [Cookieplone (0.9.10)](https://github.com/plone/cookieplone) and [cookieplone-templates (2c54630)](https://github.com/plone/cookieplone-templates/commit/2c5463046f43a87e36d11a7edc2b4176b2d593aa) on 2026-02-13 10:21:42.975825. A special thanks to all contributors and supporters!
+This repository uses towncrier fragments.
+
+- backend changes: `backend/news/`
+- frontend add-on changes: `frontend/packages/volto-plate/news/`
+- repo-level changes: `news/`
+
+Fragment types include `breaking`, `feature`, `bugfix`, `internal`, and `documentation`.
+
+## Compatibility and status
+
+- frontend add-on targets Volto `19+`
+- backend metadata declares compatibility with Plone `6.1` and `6.2`
+- the project is still alpha and the feature set is evolving quickly
+
+## Related readmes
+
+- [backend/README.md](./backend/README.md)
+- [frontend/README.md](./frontend/README.md)
+- [frontend/packages/volto-plate/README.md](./frontend/packages/volto-plate/README.md)
