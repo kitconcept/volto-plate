@@ -3,6 +3,12 @@
   <img align="right" width="200" alt="kitconcept, GmbH" src="https://kitconcept.com/kitconcept-black.svg">
 </picture>
 
+> [!WARNING]
+> If you reached here and you don't work at kitconcept, please refrain from using this package in production.
+> There is a reason why we haven't opened it to the public and released it as an open-source package yet.
+> This package is in early and heavy development and should be used with caution in production environments.
+> It is subject to breaking changes and incomplete features and we won't support any upgrade step nor breaking change support whatsoever.
+
 # volto-plate
 
 <div align="center">

@@ -8,6 +8,12 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.16 (2026-07-06)
+
+### Breaking
+
+- Moved the navigation tree component to the distribution. @sneridagh 
+
 ## 1.0.0-alpha.15 (2026-07-03)
 
 ### Feature
