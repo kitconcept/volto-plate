@@ -9,6 +9,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a17 (2026-07-06)
+
+
+### Bug fixes:
+
+- We used to restrict the types for the navigation. Now it's not needed. @sneridagh 
+
 ## 1.0.0a16 (2026-07-06)
 
 No significant changes.

@@ -8,6 +8,8 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.17 (2026-07-06)
+
 ## 1.0.0-alpha.16 (2026-07-06)
 
 ### Breaking

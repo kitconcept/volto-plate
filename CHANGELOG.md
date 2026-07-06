@@ -7,6 +7,29 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a17 (2026-07-06)
+
+### Backend
+
+
+#### Bug fixes:
+
+- We used to restrict the types for the navigation. Now it's not needed. @sneridagh 
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a16 (2026-07-06)
 
 ### Backend
