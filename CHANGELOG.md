@@ -7,6 +7,30 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a18 (2026-07-06)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Bugfix
+
+- Fix for tables and SemanticUI .fixed and other collisions. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a17 (2026-07-06)
 
 ### Backend
