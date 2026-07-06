@@ -48,6 +48,14 @@ body {
   }
 }
 
+// fix for tailwind's fixed collision with SemanticUI
+.ui.fixed {
+  position: initial;
+}
+#page-login .q.container.loginForm .q.container.form {
+  display: flex;
+}
+
 // Remove if going full BMv3
 .category-inline {
   .block-inner-container {
