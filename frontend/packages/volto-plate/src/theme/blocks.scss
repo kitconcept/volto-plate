@@ -24,8 +24,7 @@
     display: block;
   }
 
-  // While not zoomed the image must not advertise a zoom-in cursor over its
-  // whole area; only the magnifier button triggers zoom. Pointer only when
+  // Pointer only when
   // the image is linked (href), default cursor otherwise.
   [data-rmiz-content] img {
     cursor: default;
@@ -36,9 +35,9 @@
   }
   .image-zoom-button {
     position: absolute;
+    z-index: 3; // above .block-plateimage img (z-index: 2)
     right: 0.5rem;
     bottom: 0.5rem;
-    z-index: 3; // above .block-plateimage img (z-index: 2)
     display: inline-flex;
     align-items: center;
     justify-content: center;
