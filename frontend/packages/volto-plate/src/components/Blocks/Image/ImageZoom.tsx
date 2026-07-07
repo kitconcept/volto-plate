@@ -1,14 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import { Controlled as ControlledZoom } from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
 import zoomInSVG from '@plone/volto/icons/zoom-in.svg';
 
-const ImageZoom = ({ children, hasLink = false }) => {
-  const [isZoomed, setIsZoomed] = React.useState(false);
+type ImageZoomProps = {
+  children: ReactNode;
+  hasLink?: boolean;
+};
 
-  const openZoom = (e) => {
+const ImageZoom = ({ children, hasLink = false }: ImageZoomProps) => {
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  const openZoom = (e: MouseEvent<HTMLButtonElement>) => {
     // Prevent a surrounding link (href) from being followed and stop the
     // click from reaching the image underneath.
     e.preventDefault();
@@ -35,11 +40,6 @@ const ImageZoom = ({ children, hasLink = false }) => {
       </button>
     </div>
   );
-};
-
-ImageZoom.propTypes = {
-  children: PropTypes.node.isRequired,
-  hasLink: PropTypes.bool,
 };
 
 export default ImageZoom;

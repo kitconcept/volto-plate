@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import cx from 'classnames';
 import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
 import ImageZoom from './ImageZoom';
+
+
 export const View = ({ className, data, detached, properties, style }) => {
   const href = data?.href?.[0]?.['@id'] || '';
 
@@ -89,15 +89,6 @@ export const View = ({ className, data, detached, properties, style }) => {
       )}
     </p>
   );
-};
-
-/**
- * Property types.
- * @property {Object} propTypes Property types.
- * @static
- */
-View.propTypes = {
-  data: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default withBlockExtensions(View);
