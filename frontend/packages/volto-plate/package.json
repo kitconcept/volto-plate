@@ -39,7 +39,8 @@
     "@plone/plate": "workspace:*",
     "@plone/components": "workspace:^",
     "@plone/helpers": "workspace:*",
-    "@tailwindcss/postcss": "^4.2.1"
+    "@tailwindcss/postcss": "^4.2.1",
+    "react-medium-image-zoom": "^5.4.8"
   },
   "peerDependencies": {
     "@platejs/ai": "^50.3.7",

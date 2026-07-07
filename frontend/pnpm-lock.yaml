@@ -1756,6 +1756,9 @@ importers:
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
+      react-medium-image-zoom:
+        specifier: ^5.4.8
+        version: 5.4.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       semantic-ui-react:
         specifier: ^2.1.5
         version: 2.1.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -11551,6 +11554,12 @@ packages:
     resolution: {integrity: sha512-OJc6XXmSFr0ApniFdCL1TliP6BG9eQabkcahWA9CbHha3y2IJXo1aAsQs7Irc2Wcek/N9QCeAY4wTitoMg5iLg==}
     peerDependencies:
       prop-types: ^15.5.8
+      react: 18.2.0
+      react-dom: 18.2.0
+
+  react-medium-image-zoom@5.4.8:
+    resolution: {integrity: sha512-72CIldEUaPejjcaDOYIeDsGlWzNKpmxyKgiPi1LBCkWCIGHDLlA2KTeo2uNtmN/m72Y3k/2uWDfon9SDiPbHaA==}
+    peerDependencies:
       react: 18.2.0
       react-dom: 18.2.0
 
@@ -24776,6 +24785,11 @@ snapshots:
   react-medium-image-zoom@3.0.15(prop-types@15.7.2)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       prop-types: 15.7.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+
+  react-medium-image-zoom@5.4.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+    dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
