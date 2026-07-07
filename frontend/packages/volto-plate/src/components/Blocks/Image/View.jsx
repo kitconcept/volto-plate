@@ -5,7 +5,6 @@ import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
 import ImageZoom from './ImageZoom';
 
-
 export const View = ({ className, data, detached, properties, style }) => {
   const href = data?.href?.[0]?.['@id'] || '';
 
