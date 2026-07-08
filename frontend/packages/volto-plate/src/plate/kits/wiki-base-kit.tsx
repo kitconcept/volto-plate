@@ -7,7 +7,6 @@ import { BaseBlockAnatomyKit } from '@plone/plate/components/editor/plugins/bloc
 import { BaseCalloutKit } from '@plone/plate/components/editor/plugins/callout-base-kit';
 import { BaseCodeBlockKit } from '@plone/plate/components/editor/plugins/code-block-base-kit';
 import { BaseColumnKit } from '@plone/plate/components/editor/plugins/column-base-kit';
-import { BaseCommentKit } from '@plone/plate/components/editor/plugins/comment-base-kit';
 import { BaseFontKit } from '@plone/plate/components/editor/plugins/font-base-kit';
 import { BaseLineHeightKit } from '@plone/plate/components/editor/plugins/line-height-base-kit';
 import { BaseLinkKit } from '@plone/plate/components/editor/plugins/link-base-kit';
@@ -22,6 +21,7 @@ import { BaseTocKit } from '@plone/plate/components/editor/plugins/toc-base-kit'
 import { BaseToggleKit } from '@plone/plate/components/editor/plugins/toggle-base-kit';
 
 import { overrideKitPlugin } from './override-kit-plugin';
+import { BaseCommentKit } from '../plugins/comment-base-kit';
 import { VoltoLinkElementStatic } from '../plugins/volto-link-node-static';
 
 const wikiBaseLinkKit = overrideKitPlugin(BaseLinkKit, KEYS.link, {

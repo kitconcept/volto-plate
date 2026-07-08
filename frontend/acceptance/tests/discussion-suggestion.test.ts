@@ -225,6 +225,57 @@ test.describe('Plate discussions and suggestions', () => {
     await expect(page.getByText(commentText)).toBeVisible();
   });
 
+  test('renders persisted discussions read-only in view mode', async ({
+    page,
+  }) => {
+    const commentText = 'Rendered comment from acceptance test';
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'discussion-renderer',
+      contentTitle: 'Discussion renderer',
+      wikiId: 'wiki-discussion-renderer',
+      transition: 'publish',
+      bodyModifier: withSomersaultDiscussionFixture({
+        bodyText: 'Discuss this rendered paragraph',
+        commentText,
+      }),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const commentMark = page.getByText('Discuss', { exact: true }).first();
+    const discussionButton = page.getByRole('button', { name: '1' });
+
+    await expect(commentMark).toBeVisible();
+    await expect(discussionButton).toBeVisible();
+
+    const markBox = await commentMark.boundingBox();
+    const buttonBox = await discussionButton.boundingBox();
+
+    await commentMark.click();
+
+    const discussionDialog = page.getByRole('dialog');
+    await expect(discussionDialog.getByText(commentText)).toBeVisible();
+    const dialogBox = await discussionDialog.boundingBox();
+
+    expect(markBox).not.toBeNull();
+    expect(buttonBox).not.toBeNull();
+    expect(dialogBox).not.toBeNull();
+
+    const dialogCenter = dialogBox!.x + dialogBox!.width / 2;
+    const markCenter = markBox!.x + markBox!.width / 2;
+    const buttonCenter = buttonBox!.x + buttonBox!.width / 2;
+
+    expect(Math.abs(dialogCenter - markCenter)).toBeLessThan(
+      Math.abs(dialogCenter - buttonCenter),
+    );
+
+    await expect(discussionDialog.getByText('Reply...')).toBeHidden();
+    await expect(discussionDialog.getByText('Edit comment')).toBeHidden();
+    await expect(discussionDialog.getByText('Delete comment')).toBeHidden();
+
+    await page.mouse.click(20, 20);
+    await expect(discussionDialog).toBeHidden();
+  });
+
   test('hydrates persisted suggestions in edit mode and renders them in view mode', async ({
     page,
   }) => {
