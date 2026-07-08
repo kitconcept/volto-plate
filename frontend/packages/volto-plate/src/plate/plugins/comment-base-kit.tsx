@@ -18,6 +18,11 @@ import {
 } from 'platejs/react';
 
 import { Button } from '@plone/plate/components/ui/button';
+import {
+  DiscussionPopoverHeader,
+  discussionPopoverContentClassName,
+  discussionTriggerClassName,
+} from '@plone/plate/components/ui/block-discussion';
 import { Comment } from '@plone/plate/components/ui/comment';
 import {
   Popover,
@@ -163,16 +168,25 @@ const ReadOnlyBlockCommentContent = ({
         )}
 
         <PopoverContent
-          className={`
-            max-h-[min(50dvh,calc(-24px+var(--radix-popper-available-height)))] w-[380px]
-            max-w-[calc(100vw-24px)] min-w-[130px] overflow-y-auto p-0
-            data-[state=closed]:opacity-0
-          `}
+          className={discussionPopoverContentClassName}
           onCloseAutoFocus={(event) => event.preventDefault()}
           onOpenAutoFocus={(event) => event.preventDefault()}
           align="center"
           side="bottom"
         >
+          <DiscussionPopoverHeader
+            count={
+              activeDiscussion
+                ? activeDiscussion.comments.length
+                : resolvedDiscussions.length
+            }
+            onClose={() => {
+              setOpen(false);
+              setClickedAnchorElement(null);
+              setOption('activeId', null);
+            }}
+            title="Comments"
+          />
           {discussions.map((discussion, index) => (
             <React.Fragment key={discussion.id}>
               <ReadOnlyBlockComment discussion={discussion} />
@@ -187,11 +201,7 @@ const ReadOnlyBlockCommentContent = ({
           <Button
             ref={discussionButtonRef}
             variant="ghost"
-            className={`
-              mt-1 ml-1 flex h-6 gap-1 !px-1.5 py-0 text-muted-foreground/80
-              hover:text-muted-foreground/80
-              data-[active=true]:bg-muted
-            `}
+            className={discussionTriggerClassName}
             data-active={open}
             contentEditable={false}
             onClick={() => {
@@ -200,8 +210,8 @@ const ReadOnlyBlockCommentContent = ({
               setOpen((currentOpen) => !currentOpen);
             }}
           >
-            <MessageSquareTextIcon className="size-4 shrink-0" />
-            <span className="text-xs font-semibold">
+            <MessageSquareTextIcon className="size-6 shrink-0" />
+            <span className="text-2xl leading-none font-medium">
               {resolvedDiscussions.length}
             </span>
           </Button>
@@ -215,7 +225,7 @@ function ReadOnlyBlockComment({ discussion }: { discussion: TDiscussion }) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
 
   return (
-    <div className="p-4">
+    <div className="px-8 pb-7">
       {discussion.comments.map((comment, index) => (
         <Comment
           key={comment.id ?? index}
