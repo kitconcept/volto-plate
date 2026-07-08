@@ -257,14 +257,14 @@ test.describe('Plate discussions and suggestions', () => {
     await expect(
       discussionDialog.getByRole('heading', { name: 'Comments (1)' }),
     ).toBeVisible();
-    await expect(discussionDialog).toHaveCSS('border-radius', '24px');
-    await expect(discussionButton).toHaveCSS('border-top-width', '3px');
+    await expect(discussionDialog).toHaveCSS('border-radius', '16px');
+    await expect(discussionButton).toHaveCSS('border-top-width', '2px');
     const dialogBox = await discussionDialog.boundingBox();
 
     expect(markBox).not.toBeNull();
     expect(buttonBox).not.toBeNull();
     expect(dialogBox).not.toBeNull();
-    expect(buttonBox!.height).toBeGreaterThanOrEqual(48);
+    expect(buttonBox!.height).toBeGreaterThanOrEqual(36);
 
     const dialogCenter = dialogBox!.x + dialogBox!.width / 2;
     const markCenter = markBox!.x + markBox!.width / 2;

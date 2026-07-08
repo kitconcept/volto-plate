@@ -210,8 +210,8 @@ const ReadOnlyBlockCommentContent = ({
               setOpen((currentOpen) => !currentOpen);
             }}
           >
-            <MessageSquareTextIcon className="size-6 shrink-0" />
-            <span className="text-2xl leading-none font-medium">
+            <MessageSquareTextIcon className="size-5 shrink-0" />
+            <span className="text-base leading-none font-medium">
               {resolvedDiscussions.length}
             </span>
           </Button>
@@ -225,7 +225,7 @@ function ReadOnlyBlockComment({ discussion }: { discussion: TDiscussion }) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
 
   return (
-    <div className="px-8 pb-7">
+    <div className="px-6 pb-5">
       {discussion.comments.map((comment, index) => (
         <Comment
           key={comment.id ?? index}
