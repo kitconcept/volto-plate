@@ -8,6 +8,12 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.19 (2026-07-08)
+
+### Bugfix
+
+- Fixed login screen CSS. @sneridagh 
+
 ## 1.0.0-alpha.18 (2026-07-06)
 
 ### Bugfix
