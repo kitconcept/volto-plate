@@ -23,10 +23,6 @@
   max-width: var(--block-size, 100%);
   float: var(--block-alignment);
 
-  [data-rmiz] {
-    display: block;
-  }
-
   [data-rmiz-content] img {
     // Pointer only when the image is linked (href), default cursor otherwise.
     cursor: default;
