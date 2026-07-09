@@ -4,8 +4,8 @@
     "package": "@plone/volto",
     "url": "git@github.com:plone/volto.git",
     "https": "https://github.com/plone/volto.git",
-    "tag": "19.1.5",
-    "filterBlobs": true
+    "filterBlobs": true,
+    "branch": "remove-stale-react-medium-image-zoom-ver"
   },
   "aurora": {
     "output": "./",

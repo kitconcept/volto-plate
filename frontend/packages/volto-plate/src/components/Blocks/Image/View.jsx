@@ -1,39 +1,20 @@
-import cx from 'classnames';
-import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
+import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
 import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
 import ImageZoom from './ImageZoom';
-
 export const View = ({ className, data, detached, properties, style }) => {
   const href = data?.href?.[0]?.['@id'] || '';
 
   const Image = config.getComponent({ name: 'Image' }).component;
 
   return (
-    <p
-      className={cx(
-        'block image align',
-        {
-          center: !Boolean(data.align),
-          detached,
-        },
-        data.align,
-        className,
-      )}
-      style={style}
-    >
+    <>
       {data.url && (
         <>
           {(() => {
             const image = (
               <Image
-                className={cx({
-                  'full-width': data.align === 'full',
-                  large: data.size === 'l',
-                  medium: data.size === 'm',
-                  small: data.size === 's',
-                })}
                 item={
                   data.image_scales
                     ? {
@@ -86,7 +67,7 @@ export const View = ({ className, data, detached, properties, style }) => {
           })()}
         </>
       )}
-    </p>
+    </>
   );
 };
 

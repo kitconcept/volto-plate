@@ -20,19 +20,22 @@
 .image-zoom-wrapper {
   position: relative;
   display: inline-block;
+  max-width: var(--block-size, 100%);
+  float: var(--block-alignment);
+
   [data-rmiz] {
     display: block;
   }
 
-  // Pointer only when
-  // the image is linked (href), default cursor otherwise.
   [data-rmiz-content] img {
+    // Pointer only when the image is linked (href), default cursor otherwise.
     cursor: default;
   }
 
   &.has-link [data-rmiz-content] img {
     cursor: pointer;
   }
+
   .image-zoom-button {
     position: absolute;
     z-index: 3; // above .block-plateimage img (z-index: 2)
