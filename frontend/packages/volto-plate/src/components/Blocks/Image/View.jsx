@@ -1,5 +1,5 @@
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
-import Caption from '../Caption/Caption';
+import Caption from '@kitconcept/volto-light-theme/components/Caption/Caption';
 import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
 import ImageZoom from './ImageZoom';

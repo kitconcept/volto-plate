@@ -3,7 +3,7 @@ import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
 import { ImageInput } from '@plone/volto/components/manage/Widgets/ImageWidget';
-import Caption from '../Caption/Caption';
+import Caption from '@kitconcept/volto-light-theme/components/Caption/Caption';
 
 function Edit(props) {
   const { data, block } = props;
