@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
@@ -8,12 +9,12 @@ function Edit(props) {
   const { data, block } = props;
   const Image = config.getComponent({ name: 'Image' }).component;
 
-  const onSelectItem = React.useCallback(
+  const onSelectItem = useCallback(
     (url, item) => {
       const dataAdapter = props.blocksConfig[props.data['@type']].dataAdapter;
       dataAdapter({
-        block: block,
-        data: data,
+        block: props.block,
+        data: props.data,
         onChangeBlock: props.onChangeBlock,
         id: 'url',
         value: url,
@@ -23,7 +24,7 @@ function Edit(props) {
     [props],
   );
 
-  const handleChange = React.useCallback(
+  const handleChange = useCallback(
     async (id, image, { title, image_field, image_scales } = {}) => {
       const url = Array.isArray(image)
         ? image?.[0]?.['@id']
@@ -32,11 +33,11 @@ function Edit(props) {
           : '';
 
       props.onChangeBlock(props.block, {
-        ...data,
+        ...props.data,
         url: flattenToAppURL(url),
         image_field,
         image_scales,
-        alt: data.alt || title || '',
+        alt: props.data.alt || title || '',
       });
     },
     [props],

@@ -8,10 +8,10 @@
 .block-plateimage figure {
   position: relative;
   z-index: 2;
-  margin: 0;
-  margin-inline: auto;
-  float: var(--block-alignment);
   max-width: var(--block-size, 100%);
+  margin: 0;
+  float: var(--block-alignment);
+  margin-inline: auto;
 }
 
 .block-plateimage a figcaption {
