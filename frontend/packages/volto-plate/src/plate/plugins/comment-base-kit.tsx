@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import type { RenderNodeWrapper } from 'platejs/react';
 
-import { MessageSquareTextIcon } from 'lucide-react';
+import { flushSync } from 'react-dom';
 import {
   type AnyPluginConfig,
   type NodeEntry,
@@ -17,18 +17,12 @@ import {
   usePluginOption,
 } from 'platejs/react';
 
-import { Button } from '@plone/plate/components/ui/button';
 import {
+  DiscussionPopover,
   DiscussionPopoverHeader,
-  discussionPopoverContentClassName,
-  discussionTriggerClassName,
+  DiscussionTriggerButton,
 } from '@plone/plate/components/ui/block-discussion';
 import { Comment } from '@plone/plate/components/ui/comment';
-import {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-} from '@plone/plate/components/ui/popover';
 import { usePlatePlugins } from '@plone/plate/components/editor/plate-plugins-context';
 import { commentPlugin } from '@plone/plate/components/editor/plugins/comment-kit';
 import type { TDiscussion } from '@plone/plate/components/editor/plugins/discussion-kit';
@@ -85,6 +79,8 @@ const ReadOnlyBlockCommentContent = ({
   const [_open, setOpen] = React.useState(selected);
   const [clickedAnchorElement, setClickedAnchorElement] =
     React.useState<HTMLElement | null>(null);
+  const [triggerAnchorElement, setTriggerAnchorElement] =
+    React.useState<HTMLElement | null>(null);
   const open = _open || selected;
   const discussions = activeDiscussion
     ? [activeDiscussion]
@@ -105,7 +101,7 @@ const ReadOnlyBlockCommentContent = ({
     return editor.api.toDOMNode(activeNode[0])!;
   }, [activeCommentId, commentNodes, editor]);
   const anchorElement =
-    clickedAnchorElement ?? activeAnchorElement ?? discussionButtonRef.current;
+    clickedAnchorElement ?? activeAnchorElement ?? triggerAnchorElement;
 
   if (resolvedDiscussions.length === 0) {
     return <div className="w-full">{children}</div>;
@@ -139,85 +135,77 @@ const ReadOnlyBlockCommentContent = ({
     const [node] = matchingNode;
     const id = api.comment.nodeId(node);
 
-    setClickedAnchorElement(commentElement);
+    flushSync(() => {
+      setClickedAnchorElement(commentElement);
+      setTriggerAnchorElement(null);
+      setOpen(!!id);
+    });
     setOption('activeId', id ?? null);
-    setOpen(!!id);
   };
 
+  const closePopover = () => {
+    setOpen(false);
+    setClickedAnchorElement(null);
+    setTriggerAnchorElement(null);
+    setOption('activeId', null);
+  };
+
+  const popoverContent = (
+    <React.Fragment>
+      <DiscussionPopoverHeader
+        count={
+          activeDiscussion
+            ? activeDiscussion.comments.length
+            : resolvedDiscussions.length
+        }
+        onClose={closePopover}
+        title="Comments"
+      />
+      {discussions.map((discussion, index) => (
+        <React.Fragment key={discussion.id}>
+          <ReadOnlyBlockComment discussion={discussion} />
+          {index < discussions.length - 1 && (
+            <div className="h-px w-full bg-muted" />
+          )}
+        </React.Fragment>
+      ))}
+    </React.Fragment>
+  );
+
   return (
-    <div className="flex w-full justify-between">
-      <Popover
-        open={open}
-        onOpenChange={(nextOpen) => {
-          setOpen(nextOpen);
+    <DiscussionPopover
+      anchorAsChild={false}
+      anchorElement={anchorElement}
+      content={popoverContent}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
 
-          if (!nextOpen) {
+        if (!nextOpen) {
+          setClickedAnchorElement(null);
+          setTriggerAnchorElement(null);
+          setOption('activeId', null);
+        }
+      }}
+      open={open}
+      trigger={
+        <DiscussionTriggerButton
+          ref={discussionButtonRef}
+          active={open}
+          count={resolvedDiscussions.length}
+          kind="comments"
+          onClick={() => {
             setClickedAnchorElement(null);
+            setTriggerAnchorElement(discussionButtonRef.current);
             setOption('activeId', null);
-          }
-        }}
-      >
-        <div className="w-full" onClickCapture={handleContentClick}>
-          {children}
-        </div>
-        {anchorElement && (
-          <PopoverAnchor
-            className="w-full"
-            virtualRef={{ current: anchorElement }}
-          />
-        )}
-
-        <PopoverContent
-          className={discussionPopoverContentClassName}
-          onCloseAutoFocus={(event) => event.preventDefault()}
-          onOpenAutoFocus={(event) => event.preventDefault()}
-          align="center"
-          side="bottom"
-        >
-          <DiscussionPopoverHeader
-            count={
-              activeDiscussion
-                ? activeDiscussion.comments.length
-                : resolvedDiscussions.length
-            }
-            onClose={() => {
-              setOpen(false);
-              setClickedAnchorElement(null);
-              setOption('activeId', null);
-            }}
-            title="Comments"
-          />
-          {discussions.map((discussion, index) => (
-            <React.Fragment key={discussion.id}>
-              <ReadOnlyBlockComment discussion={discussion} />
-              {index < discussions.length - 1 && (
-                <div className="h-px w-full bg-muted" />
-              )}
-            </React.Fragment>
-          ))}
-        </PopoverContent>
-
-        <div className="relative left-0 size-0 select-none">
-          <Button
-            ref={discussionButtonRef}
-            variant="ghost"
-            className={discussionTriggerClassName}
-            data-active={open}
-            contentEditable={false}
-            onClick={() => {
-              setClickedAnchorElement(null);
-              setOption('activeId', null);
-              setOpen((currentOpen) => !currentOpen);
-            }}
-          >
-            <MessageSquareTextIcon className="size-5 shrink-0" />
-            <span className="text-base leading-none font-medium">
-              {resolvedDiscussions.length}
-            </span>
-          </Button>
-        </div>
-      </Popover>
-    </div>
+            setOpen((currentOpen) => !currentOpen);
+          }}
+        />
+      }
+      triggerAsPopoverTrigger={false}
+      wrapperProps={{ onClickCapture: handleContentClick }}
+    >
+      {children}
+    </DiscussionPopover>
   );
 };
 

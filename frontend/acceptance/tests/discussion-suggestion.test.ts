@@ -240,6 +240,7 @@ test.describe('Plate discussions and suggestions', () => {
       }),
     });
 
+    await page.setViewportSize({ height: 768, width: 1024 });
     await page.goto(contentPath, { waitUntil: 'networkidle' });
     const commentMark = page.getByText('Discuss', { exact: true }).first();
     const discussionButton = page.getByRole('button', { name: '1' });
@@ -250,25 +251,82 @@ test.describe('Plate discussions and suggestions', () => {
     const markBox = await commentMark.boundingBox();
     const buttonBox = await discussionButton.boundingBox();
 
+    await page.evaluate(() => {
+      const testWindow = window as Window & {
+        __discussionPopoverFrames?: { width: number; x: number }[];
+      };
+
+      testWindow.__discussionPopoverFrames = [];
+
+      let frameCount = 0;
+      const recordDialogFrame = () => {
+        const dialog = document.querySelector('[role="dialog"]');
+
+        if (dialog) {
+          const rect = dialog.getBoundingClientRect();
+          testWindow.__discussionPopoverFrames?.push({
+            width: rect.width,
+            x: rect.x,
+          });
+          frameCount += 1;
+        }
+
+        if (frameCount < 8) {
+          window.requestAnimationFrame(recordDialogFrame);
+        }
+      };
+
+      window.requestAnimationFrame(recordDialogFrame);
+    });
+
     await commentMark.click();
 
     const discussionDialog = page.getByRole('dialog');
     await expect(discussionDialog.getByText(commentText)).toBeVisible();
+    await page.waitForFunction(
+      () =>
+        (
+          window as Window & {
+            __discussionPopoverFrames?: { width: number; x: number }[];
+          }
+        ).__discussionPopoverFrames?.length,
+    );
     await expect(
       discussionDialog.getByRole('heading', { name: 'Comments (1)' }),
     ).toBeVisible();
     await expect(discussionDialog).toHaveCSS('border-radius', '16px');
     await expect(discussionButton).toHaveCSS('border-top-width', '2px');
     const dialogBox = await discussionDialog.boundingBox();
+    const toolbarBox = await page.locator('#toolbar').boundingBox();
 
     expect(markBox).not.toBeNull();
     expect(buttonBox).not.toBeNull();
     expect(dialogBox).not.toBeNull();
+    expect(toolbarBox).not.toBeNull();
     expect(buttonBox!.height).toBeGreaterThanOrEqual(36);
+    expect(dialogBox!.x).toBeGreaterThanOrEqual(
+      toolbarBox!.x + toolbarBox!.width,
+    );
 
     const dialogCenter = dialogBox!.x + dialogBox!.width / 2;
     const markCenter = markBox!.x + markBox!.width / 2;
     const buttonCenter = buttonBox!.x + buttonBox!.width / 2;
+    const [firstDialogFrame] = await page.evaluate(
+      () =>
+        (
+          window as Window & {
+            __discussionPopoverFrames?: { width: number; x: number }[];
+          }
+        ).__discussionPopoverFrames ?? [],
+    );
+
+    expect(firstDialogFrame).toBeDefined();
+
+    const firstDialogCenter = firstDialogFrame.x + firstDialogFrame.width / 2;
+
+    expect(Math.abs(firstDialogCenter - markCenter)).toBeLessThan(
+      Math.abs(firstDialogCenter - buttonCenter),
+    );
 
     expect(Math.abs(dialogCenter - markCenter)).toBeLessThan(
       Math.abs(dialogCenter - buttonCenter),
