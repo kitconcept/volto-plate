@@ -1,12 +1,25 @@
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
-import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
+import Caption from '../Caption/Caption';
 import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
 import ImageZoom from './ImageZoom';
-export const View = ({ className, data, detached, properties, style }) => {
-  const href = data?.href?.[0]?.['@id'] || '';
+
+export const ImageView = ({ data }) => {
+  let href;
+  if (data.href?.length > 0) {
+    if (typeof data.href === 'object') {
+      href = data.href[0]['@id'];
+    } else if (typeof data.href === 'string') {
+      // just to catch cases where a string might be supplied
+      href = data.href;
+    }
+  }
 
   const Image = config.getComponent({ name: 'Image' }).component;
+  const shouldRenderCaption =
+    data.title ||
+    data.description ||
+    (data?.copyright_and_sources ?? data.credit?.data);
 
   return (
     <>
@@ -14,55 +27,45 @@ export const View = ({ className, data, detached, properties, style }) => {
         <>
           {(() => {
             const image = (
-              <Image
-                item={
-                  data.image_scales
-                    ? {
-                        '@id': data.url,
-                        image_field: data.image_field,
-                        image_scales: data.image_scales,
-                      }
-                    : undefined
-                }
-                src={
-                  data.image_scales
-                    ? undefined
-                    : isInternalURL(data.url)
-                      ? // Backwards compat in the case that the block is storing the full server URL
-                        (() => {
-                          if (data.size === 'l')
-                            return `${flattenToAppURL(data.url)}/@@images/image`;
-                          if (data.size === 'm')
-                            return `${flattenToAppURL(
-                              data.url,
-                            )}/@@images/image/preview`;
-                          if (data.size === 's')
-                            return `${flattenToAppURL(
-                              data.url,
-                            )}/@@images/image/mini`;
-                          return `${flattenToAppURL(data.url)}/@@images/image`;
-                        })()
-                      : data.url
-                }
-                sizes={config.blocks.blocksConfig.image.getSizes(data)}
-                alt={data.alt || ''}
-                loading="lazy"
-                responsive={true}
-              />
+              <figure>
+                <ImageZoom hasLink={data.href ? true : false}>
+                  <Image
+                    item={
+                      data.image_scales
+                        ? {
+                            '@id': data.url,
+                            image_field: data.image_field,
+                            image_scales: data.image_scales,
+                          }
+                        : undefined
+                    }
+                    src={data.image_scales ? undefined : data.url}
+                    sizes={config.blocks.blocksConfig.image.getSizes(data)}
+                    alt={data.alt || ''}
+                    loading="lazy"
+                    responsive={true}
+                  />
+                </ImageZoom>
+                {shouldRenderCaption && (
+                  <Caption
+                    title={data.title}
+                    description={data.description}
+                    credit={data?.copyright_and_sources ?? data.credit?.data}
+                  />
+                )}
+              </figure>
             );
             if (href) {
               return (
-                <ImageZoom hasLink={true}>
-                  <UniversalLink
-                    href={href}
-                    openLinkInNewTab={data.openLinkInNewTab}
-                  >
-                    {image}
-                  </UniversalLink>
-                </ImageZoom>
+                <UniversalLink
+                  href={href}
+                  openLinkInNewTab={data.openLinkInNewTab}
+                >
+                  {image}
+                </UniversalLink>
               );
             } else {
-              return <ImageZoom>{image}</ImageZoom>;
+              return image;
             }
           })()}
         </>
@@ -71,4 +74,4 @@ export const View = ({ className, data, detached, properties, style }) => {
   );
 };
 
-export default withBlockExtensions(View);
+export default withBlockExtensions(ImageView);

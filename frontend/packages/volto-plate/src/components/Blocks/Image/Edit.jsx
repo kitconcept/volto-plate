@@ -1,15 +1,27 @@
-import React from 'react';
-import cx from 'classnames';
-
-import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
-
 import { ImageInput } from '@plone/volto/components/manage/Widgets/ImageWidget';
+import Caption from '../Caption/Caption';
 
 function Edit(props) {
-  const { block, data, onChangeBlock } = props;
+  const { data, block } = props;
   const Image = config.getComponent({ name: 'Image' }).component;
+
+  const onSelectItem = React.useCallback(
+    (url, item) => {
+      const dataAdapter = props.blocksConfig[props.data['@type']].dataAdapter;
+      dataAdapter({
+        block: block,
+        data: data,
+        onChangeBlock: props.onChangeBlock,
+        id: 'url',
+        value: url,
+        item,
+      });
+    },
+    [props],
+  );
 
   const handleChange = React.useCallback(
     async (id, image, { title, image_field, image_scales } = {}) => {
@@ -19,7 +31,7 @@ function Edit(props) {
           ? image['@id'] || image
           : '';
 
-      onChangeBlock(block, {
+      props.onChangeBlock(props.block, {
         ...data,
         url: flattenToAppURL(url),
         image_field,
@@ -27,51 +39,35 @@ function Edit(props) {
         alt: data.alt || title || '',
       });
     },
-    [block, data, onChangeBlock],
+    [props],
   );
 
   return (
     <>
       {data.url ? (
-        <Image
-          className={cx({
-            'full-width': data.align === 'full',
-            large: data.size === 'l',
-            medium: data.size === 'm',
-            small: data.size === 's',
-          })}
-          item={
-            data.image_scales
-              ? {
-                  '@id': data.url,
-                  image_field: data.image_field,
-                  image_scales: data.image_scales,
-                }
-              : undefined
-          }
-          src={
-            data.image_scales
-              ? undefined
-              : isInternalURL(data.url)
-                ? // Backwards compat in the case that the block is storing the full server URL
-                  (() => {
-                    if (data.size === 'l')
-                      return `${flattenToAppURL(data.url)}/@@images/image`;
-                    if (data.size === 'm')
-                      return `${flattenToAppURL(
-                        data.url,
-                      )}/@@images/image/preview`;
-                    if (data.size === 's')
-                      return `${flattenToAppURL(data.url)}/@@images/image/mini`;
-                    return `${flattenToAppURL(data.url)}/@@images/image`;
-                  })()
-                : data.url
-          }
-          sizes={config.blocks.blocksConfig.image.getSizes(data)}
-          alt={data.alt || ''}
-          loading="lazy"
-          responsive={true}
-        />
+        <figure>
+          <Image
+            item={
+              data.image_scales
+                ? {
+                    '@id': data.url,
+                    image_field: data.image_field,
+                    image_scales: data.image_scales,
+                  }
+                : undefined
+            }
+            src={data.image_scales ? undefined : data.url}
+            sizes={config.blocks.blocksConfig.image.getSizes(data)}
+            alt={data.alt || ''}
+            loading="lazy"
+            responsive={true}
+          />
+          <Caption
+            title={data.title}
+            description={data.description}
+            credit={data?.copyright_and_sources ?? data.credit?.data}
+          />
+        </figure>
       ) : (
         <ImageInput
           onChange={handleChange}
@@ -79,6 +75,7 @@ function Edit(props) {
           block={block}
           id={block}
           objectBrowserPickerType={'image'}
+          onSelectItem={onSelectItem}
         />
       )}
     </>

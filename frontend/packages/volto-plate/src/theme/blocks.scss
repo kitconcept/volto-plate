@@ -2,10 +2,20 @@
   text-align: var(--block-alignment, center);
 }
 .block-plateimage img {
-  position: relative;
-  z-index: 2; // needed to be able to click on the image when it is floating
+  display: inline-block;
   max-width: var(--block-size, 100%);
+}
+.block-plateimage figure {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  margin-inline: auto;
   float: var(--block-alignment);
+  max-width: var(--block-size, 100%);
+}
+
+.block-plateimage a figcaption {
+  text-decoration: underline;
 }
 
 .block-plateimage[data-style-align='left'],
@@ -21,7 +31,6 @@
   position: relative;
   display: inline-block;
   max-width: var(--block-size, 100%);
-  float: var(--block-alignment);
 
   [data-rmiz-content] img {
     // Pointer only when the image is linked (href), default cursor otherwise.
@@ -34,7 +43,7 @@
 
   .image-zoom-button {
     position: absolute;
-    z-index: 3; // above .block-plateimage img (z-index: 2)
+    z-index: 3;
     right: 18px;
     bottom: 18px;
     display: inline-flex;
