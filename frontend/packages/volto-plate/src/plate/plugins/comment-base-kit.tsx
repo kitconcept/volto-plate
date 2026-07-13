@@ -8,7 +8,10 @@ import {
   type NodeEntry,
   type Path,
   type TCommentText,
+  type TElement,
+  type TSuggestionText,
   PathApi,
+  TextApi,
 } from 'platejs';
 import {
   createPlatePlugin,
@@ -22,10 +25,19 @@ import {
   DiscussionPopoverHeader,
   DiscussionTriggerButton,
 } from '@plone/plate/components/ui/block-discussion';
+import {
+  BlockSuggestionCard,
+  isResolvedSuggestion,
+  useResolveSuggestion,
+} from '@plone/plate/components/ui/block-suggestion';
 import { Comment } from '@plone/plate/components/ui/comment';
 import { usePlatePlugins } from '@plone/plate/components/editor/plate-plugins-context';
 import { commentPlugin } from '@plone/plate/components/editor/plugins/comment-kit';
 import type { TDiscussion } from '@plone/plate/components/editor/plugins/discussion-kit';
+import {
+  SuggestionPlugin,
+  suggestionPlugin,
+} from '@plone/plate/components/editor/plugins/suggestion-kit';
 
 const ReadOnlyBlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
   const { editor, element } = props;
@@ -37,13 +49,20 @@ const ReadOnlyBlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
     ...editor.getApi(commentPlugin).comment.nodes({ at: blockPath }),
   ];
 
-  if (commentNodes.length === 0) return;
+  // Persisted view-mode data has no transient (in-progress) suggestions, so the
+  // full node list can be used directly.
+  const suggestionNodes = [
+    ...editor.getApi(SuggestionPlugin).suggestion.nodes({ at: blockPath }),
+  ];
+
+  if (commentNodes.length === 0 && suggestionNodes.length === 0) return;
 
   // eslint-disable-next-line react/display-name
   return (props) => (
-    <ReadOnlyBlockCommentContent
+    <ReadOnlyBlockDiscussionContent
       blockPath={blockPath}
       commentNodes={commentNodes}
+      suggestionNodes={suggestionNodes}
       {...props}
     />
   );
@@ -55,57 +74,138 @@ export const readOnlyDiscussionPlugin = createPlatePlugin({
   render: { belowNodes: ReadOnlyBlockDiscussion },
 });
 
-export const BaseCommentKit = [readOnlyDiscussionPlugin, commentPlugin];
+// The renderer registers the interactive comment and suggestion plugins so the
+// read-only popover can resolve persisted metadata (comment ids, suggestion
+// paths) through the same plugin options the editor uses.
+export const BaseCommentKit = [
+  readOnlyDiscussionPlugin,
+  commentPlugin,
+  suggestionPlugin,
+];
 
-const ReadOnlyBlockCommentContent = ({
+const ReadOnlyBlockDiscussionContent = ({
   blockPath,
   children,
   commentNodes,
+  suggestionNodes,
 }: React.PropsWithChildren<{
   blockPath: Path;
   commentNodes: NodeEntry<TCommentText>[];
+  suggestionNodes: NodeEntry<TElement | TSuggestionText>[];
 }>) => {
   const editor = useEditorRef();
-  const { api, setOption } = useEditorPlugin(commentPlugin);
+  const { setOption: setCommentOption } = useEditorPlugin(commentPlugin);
+  const { setOption: setSuggestionOption } = useEditorPlugin(suggestionPlugin);
   const resolvedDiscussions = useResolvedDiscussion(commentNodes, blockPath);
+  const resolvedSuggestions = useResolveSuggestion(suggestionNodes, blockPath);
+
   const discussionButtonRef = React.useRef<HTMLButtonElement | null>(null);
   const activeCommentId = usePluginOption(commentPlugin, 'activeId');
+  const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId');
+
   const activeDiscussion =
     activeCommentId &&
     resolvedDiscussions.find((discussion) => discussion.id === activeCommentId);
-  const selected = resolvedDiscussions.some(
-    (discussion) => discussion.id === activeCommentId,
-  );
+  const activeSuggestion =
+    activeSuggestionId &&
+    resolvedSuggestions.find((s) => s.suggestionId === activeSuggestionId);
+
+  const suggestionsCount = resolvedSuggestions.length;
+  const discussionsCount = resolvedDiscussions.length;
+  const totalCount = suggestionsCount + discussionsCount;
+
+  const triggerKind =
+    suggestionsCount > 0 && discussionsCount === 0
+      ? 'suggestions'
+      : discussionsCount > 0 && suggestionsCount === 0
+        ? 'comments'
+        : 'mixed';
+  const popoverTitle =
+    triggerKind === 'suggestions'
+      ? 'Suggestions'
+      : triggerKind === 'comments'
+        ? 'Comments'
+        : 'Comments & Suggestions';
+
+  const noneActive = !activeDiscussion && !activeSuggestion;
+  const popoverHeaderCount = noneActive
+    ? totalCount
+    : activeDiscussion
+      ? activeDiscussion.comments.length
+      : 1;
+
+  const sortedMergedData = [
+    ...resolvedDiscussions,
+    ...resolvedSuggestions,
+  ].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+  const selected =
+    resolvedDiscussions.some((d) => d.id === activeCommentId) ||
+    resolvedSuggestions.some((s) => s.suggestionId === activeSuggestionId);
   const [_open, setOpen] = React.useState(selected);
   const [clickedAnchorElement, setClickedAnchorElement] =
     React.useState<HTMLElement | null>(null);
   const [triggerAnchorElement, setTriggerAnchorElement] =
     React.useState<HTMLElement | null>(null);
   const open = _open || selected;
-  const discussions = activeDiscussion
-    ? [activeDiscussion]
-    : [...resolvedDiscussions].sort(
-        (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
-      );
 
   const activeAnchorElement = React.useMemo(() => {
-    if (!activeCommentId) return null;
+    let activeNode: NodeEntry | undefined;
 
-    const activeNode = commentNodes.find(
-      ([node]) =>
-        editor.getApi(commentPlugin).comment.nodeId(node) === activeCommentId,
-    );
+    if (activeSuggestion) {
+      activeNode = suggestionNodes.find(
+        ([node]) =>
+          TextApi.isText(node) &&
+          editor.getApi(SuggestionPlugin).suggestion.nodeId(node) ===
+            activeSuggestion.suggestionId,
+      );
+    }
+
+    if (activeCommentId) {
+      activeNode = commentNodes.find(
+        ([node]) =>
+          editor.getApi(commentPlugin).comment.nodeId(node) === activeCommentId,
+      );
+    }
 
     if (!activeNode) return null;
 
-    return editor.api.toDOMNode(activeNode[0])!;
-  }, [activeCommentId, commentNodes, editor]);
+    return editor.api.toDOMNode(activeNode[0]) ?? null;
+  }, [
+    activeCommentId,
+    activeSuggestion,
+    commentNodes,
+    editor,
+    suggestionNodes,
+  ]);
   const anchorElement =
     clickedAnchorElement ?? activeAnchorElement ?? triggerAnchorElement;
 
-  if (resolvedDiscussions.length === 0) {
+  const resetActive = React.useCallback(() => {
+    setCommentOption('activeId', null);
+    setSuggestionOption('activeId', null);
+  }, [setCommentOption, setSuggestionOption]);
+
+  if (totalCount === 0) {
     return <div className="w-full">{children}</div>;
   }
+
+  // Resolve the id of the mark that was actually clicked. The leaf stamps its
+  // id onto the DOM (`data-comment-id` / `data-suggestion-id`), which is the
+  // reliable source in read-only render mode where `toDOMNode` cannot map the
+  // captured node back to its element (so every mark would otherwise resolve to
+  // the first one in the block).
+  const findClickedMarkId = (
+    markElement: HTMLElement,
+    dataAttribute: 'data-comment-id' | 'data-suggestion-id',
+    isResolved: (id: string) => boolean,
+  ): string | null => {
+    const stamped = markElement
+      .closest(`[${dataAttribute}]`)
+      ?.getAttribute(dataAttribute);
+
+    return stamped && isResolved(stamped) ? stamped : null;
+  };
 
   const handleContentClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.target;
@@ -114,61 +214,83 @@ const ReadOnlyBlockCommentContent = ({
 
     const commentElement = target.closest('.slate-comment');
 
-    if (!(commentElement instanceof HTMLElement)) return;
+    if (commentElement instanceof HTMLElement) {
+      const id = findClickedMarkId(commentElement, 'data-comment-id', (value) =>
+        resolvedDiscussions.some((discussion) => discussion.id === value),
+      );
 
-    const matchingNode =
-      commentNodes.find(([node]) => {
-        const domNode = editor.api.toDOMNode(node);
-
-        return domNode?.contains(commentElement);
-      }) ??
-      commentNodes.find(([node]) => {
-        const id = api.comment.nodeId(node);
-
-        return (
-          !!id && resolvedDiscussions.some((discussion) => discussion.id === id)
-        );
+      flushSync(() => {
+        setClickedAnchorElement(commentElement);
+        setTriggerAnchorElement(null);
+        setOpen(!!id);
       });
+      setSuggestionOption('activeId', null);
+      setCommentOption('activeId', id);
 
-    if (!matchingNode) return;
+      return;
+    }
 
-    const [node] = matchingNode;
-    const id = api.comment.nodeId(node);
+    const suggestionElement = target.closest('.slate-suggestion');
 
-    flushSync(() => {
-      setClickedAnchorElement(commentElement);
-      setTriggerAnchorElement(null);
-      setOpen(!!id);
-    });
-    setOption('activeId', id ?? null);
+    if (suggestionElement instanceof HTMLElement) {
+      const id = findClickedMarkId(
+        suggestionElement,
+        'data-suggestion-id',
+        (value) => resolvedSuggestions.some((s) => s.suggestionId === value),
+      );
+
+      flushSync(() => {
+        setClickedAnchorElement(suggestionElement);
+        setTriggerAnchorElement(null);
+        setOpen(!!id);
+      });
+      setCommentOption('activeId', null);
+      setSuggestionOption('activeId', id);
+    }
   };
 
   const closePopover = () => {
     setOpen(false);
     setClickedAnchorElement(null);
     setTriggerAnchorElement(null);
-    setOption('activeId', null);
+    resetActive();
   };
+
+  const renderCard = (
+    item: TDiscussion | (typeof resolvedSuggestions)[number],
+    index: number,
+    isLast: boolean,
+  ) =>
+    isResolvedSuggestion(item) ? (
+      <BlockSuggestionCard
+        key={item.suggestionId}
+        idx={index}
+        isLast={isLast}
+        suggestion={item}
+      />
+    ) : (
+      <React.Fragment key={item.id}>
+        <ReadOnlyBlockComment discussion={item} />
+        {!isLast && <div className="h-px w-full bg-muted" />}
+      </React.Fragment>
+    );
 
   const popoverContent = (
     <React.Fragment>
       <DiscussionPopoverHeader
-        count={
-          activeDiscussion
-            ? activeDiscussion.comments.length
-            : resolvedDiscussions.length
-        }
+        count={popoverHeaderCount}
         onClose={closePopover}
-        title="Comments"
+        title={popoverTitle}
       />
-      {discussions.map((discussion, index) => (
-        <React.Fragment key={discussion.id}>
-          <ReadOnlyBlockComment discussion={discussion} />
-          {index < discussions.length - 1 && (
-            <div className="h-px w-full bg-muted" />
-          )}
-        </React.Fragment>
-      ))}
+      {noneActive
+        ? sortedMergedData.map((item, index) =>
+            renderCard(item, index, index === sortedMergedData.length - 1),
+          )
+        : activeSuggestion
+          ? renderCard(activeSuggestion, 0, true)
+          : activeDiscussion
+            ? renderCard(activeDiscussion, 0, true)
+            : null}
     </React.Fragment>
   );
 
@@ -183,7 +305,7 @@ const ReadOnlyBlockCommentContent = ({
         if (!nextOpen) {
           setClickedAnchorElement(null);
           setTriggerAnchorElement(null);
-          setOption('activeId', null);
+          resetActive();
         }
       }}
       open={open}
@@ -191,12 +313,12 @@ const ReadOnlyBlockCommentContent = ({
         <DiscussionTriggerButton
           ref={discussionButtonRef}
           active={open}
-          count={resolvedDiscussions.length}
-          kind="comments"
+          count={totalCount}
+          kind={triggerKind}
           onClick={() => {
             setClickedAnchorElement(null);
             setTriggerAnchorElement(discussionButtonRef.current);
-            setOption('activeId', null);
+            resetActive();
             setOpen((currentOpen) => !currentOpen);
           }}
         />

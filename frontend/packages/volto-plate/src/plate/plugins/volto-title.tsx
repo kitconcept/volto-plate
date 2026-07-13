@@ -68,6 +68,27 @@ const getNodeText = (node: unknown): string => {
   return node.children.map((child) => getNodeText(child)).join('');
 };
 
+// The title is never track-change editable, so any programmatic mutation of it
+// must bypass suggestion tracking. Otherwise, while suggestion mode is active,
+// the suggestion plugin marks the node we insert here, the title normalizer
+// strips it, and the two fight until Slate throws "Could not completely
+// normalize the editor". Falls back to running the callback directly when the
+// suggestion plugin is not registered.
+const runWithoutSuggestions = (editor: unknown, run: () => void) => {
+  const withoutSuggestions = (
+    editor as {
+      api?: { suggestion?: { withoutSuggestions?: (fn: () => void) => void } };
+    }
+  )?.api?.suggestion?.withoutSuggestions;
+
+  if (typeof withoutSuggestions === 'function') {
+    withoutSuggestions(run);
+    return;
+  }
+
+  run();
+};
+
 type SyncAction = 'none' | 'store-to-editor' | 'editor-to-store';
 
 export function getTitleSyncAction({
@@ -133,13 +154,15 @@ function TitleMetadataSync() {
           return;
         }
 
-        editor.tf.replaceNodes(
-          {
-            ...(titleEntry.node as object),
-            children: [{ text: normalizedTitle }],
-          },
-          { at: titlePath },
-        );
+        runWithoutSuggestions(editor, () => {
+          editor.tf.replaceNodes(
+            {
+              ...(titleEntry.node as object),
+              children: [{ text: normalizedTitle }],
+            },
+            { at: titlePath },
+          );
+        });
       }
     }
 
@@ -264,13 +287,15 @@ export const BaseVoltoTitleBlockPlugin = createSlatePlugin({
         node.type === TITLE_BLOCK_TYPE &&
         !hasNormalizedTitleChildren(node)
       ) {
-        editor.tf.replaceNodes(
-          {
-            ...node,
-            children: [{ text: getNodeText(node) }],
-          },
-          { at: path },
-        );
+        runWithoutSuggestions(editor, () => {
+          editor.tf.replaceNodes(
+            {
+              ...node,
+              children: [{ text: getNodeText(node) }],
+            },
+            { at: path },
+          );
+        });
         return;
       }
 

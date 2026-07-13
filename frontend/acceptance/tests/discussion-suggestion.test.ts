@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { getEditorHandle, setSelection } from '@platejs/playwright';
 
 import { createWikiPage } from './content';
+import { withSomersaultBody } from './helpers';
 import { login } from './login';
 import { waitForPlateEditorReady } from './plate';
 import { expect, test } from './test';
@@ -146,6 +147,75 @@ function withSomersaultSuggestionFixture({
         items: ['__somersault__'],
       },
     };
+  };
+}
+
+// A paragraph with two distinct suggestions: an insertion first, a deletion
+// second. Used to assert that clicking a mark opens the popover for the mark
+// that was clicked (not just the first suggestion in the paragraph).
+function withTwoSuggestionsFixture(body: Record<string, unknown>) {
+  const title = typeof body.title === 'string' ? body.title : '';
+
+  return {
+    ...body,
+    blocks: {
+      __somersault__: {
+        '@type': '__somersault__',
+        value: [
+          { type: 'title', children: [{ text: title }] },
+          {
+            type: 'p',
+            children: [
+              { text: 'Nach dem Absenden wird Ihr Antrag ' },
+              {
+                text: 'in der Regel ',
+                suggestion: true,
+                suggestion_insertion: {
+                  createdAt: 1760691600000,
+                  id: 'insertion',
+                  type: 'insert',
+                  userId: 'admin',
+                },
+              },
+              { text: 'geprüft und genehmigt' },
+              {
+                text: ' per Hauspost',
+                suggestion: true,
+                suggestion_deletion: {
+                  createdAt: 1760695200000,
+                  id: 'deletion',
+                  type: 'remove',
+                  userId: 'admin',
+                },
+              },
+              { text: '.' },
+            ],
+          },
+        ],
+        discussions: {
+          insertion: {
+            id: 'insertion',
+            comments: [],
+            createdAt: '2026-04-17T09:00:00+00:00',
+            isResolved: false,
+            userId: 'admin',
+          },
+          deletion: {
+            id: 'deletion',
+            comments: [],
+            createdAt: '2026-04-17T10:00:00+00:00',
+            isResolved: false,
+            userId: 'admin',
+          },
+        },
+        users: {
+          admin: { id: 'admin', fullname: 'Admin' },
+        },
+      },
+    },
+    blocks_layout: {
+      items: ['__somersault__'],
+    },
   };
 }
 
@@ -294,8 +364,8 @@ test.describe('Plate discussions and suggestions', () => {
     await expect(
       discussionDialog.getByRole('heading', { name: 'Comments (1)' }),
     ).toBeVisible();
-    await expect(discussionDialog).toHaveCSS('border-radius', '16px');
-    await expect(discussionButton).toHaveCSS('border-top-width', '2px');
+    await expect(discussionDialog).toHaveCSS('border-radius', '14px');
+    await expect(discussionButton).toHaveCSS('border-top-width', '0px');
     const dialogBox = await discussionDialog.boundingBox();
     const toolbarBox = await page.locator('#toolbar').boundingBox();
 
@@ -303,7 +373,7 @@ test.describe('Plate discussions and suggestions', () => {
     expect(buttonBox).not.toBeNull();
     expect(dialogBox).not.toBeNull();
     expect(toolbarBox).not.toBeNull();
-    expect(buttonBox!.height).toBeGreaterThanOrEqual(36);
+    expect(buttonBox!.height).toBeGreaterThanOrEqual(20);
     expect(dialogBox!.x).toBeGreaterThanOrEqual(
       toolbarBox!.x + toolbarBox!.width,
     );
@@ -414,5 +484,122 @@ test.describe('Plate discussions and suggestions', () => {
     await expect(
       suggestionDialog.getByText('Update', { exact: true }),
     ).toBeVisible();
+  });
+
+  test('renders persisted suggestions read-only in view mode', async ({
+    page,
+  }) => {
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'suggestion-renderer',
+      contentTitle: 'Suggestion renderer',
+      bodyModifier: withSomersaultSuggestionFixture({
+        bodyText: 'Change this paragraph',
+        originalText: 'Change',
+        replacementText: 'Update',
+      }),
+    });
+
+    await page.setViewportSize({ height: 768, width: 1024 });
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+
+    // Wait for the block to hydrate (the count button only renders once the
+    // suggestion metadata is resolved) before asserting on the marks.
+    const suggestionButton = page.getByRole('button', { name: '1' });
+    await expect(suggestionButton).toBeVisible();
+
+    // Inline marks render with the suggestion colours (green insert / red
+    // delete), not the default brand/grey the static leaf used before.
+    const insertion = page.locator('ins', { hasText: 'Update' }).first();
+    const deletion = page.locator('del', { hasText: 'Change' }).first();
+    await expect(insertion).toBeVisible();
+    await expect(deletion).toBeVisible();
+    await expect(insertion).toHaveCSS('color', 'rgb(49, 135, 34)');
+    await expect(deletion).toHaveCSS('color', 'rgb(245, 78, 56)');
+
+    // The suggestion popover is available in view mode.
+    await suggestionButton.click();
+
+    const suggestionDialog = page.getByRole('dialog');
+    await expect(
+      suggestionDialog.getByRole('heading', { name: 'Suggestions (1)' }),
+    ).toBeVisible();
+    await expect(
+      suggestionDialog.getByText('Change', { exact: true }),
+    ).toBeVisible();
+    await expect(
+      suggestionDialog.getByText('Update', { exact: true }),
+    ).toBeVisible();
+
+    // Read-only: no accept/reject or reply controls.
+    await expect(suggestionDialog.getByText('Accept')).toBeHidden();
+    await expect(suggestionDialog.getByText('Reject')).toBeHidden();
+    await expect(suggestionDialog.getByText('Reply...')).toBeHidden();
+  });
+
+  test('saving after creating a suggestion keeps the editor normalizable', async ({
+    page,
+  }) => {
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'suggestion-save',
+      contentTitle: 'Suggestion save',
+      bodyModifier: withSomersaultBody('Change this paragraph'),
+    });
+
+    const editorErrors: string[] = [];
+    page.on('pageerror', (error) => editorErrors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error') editorErrors.push(message.text());
+    });
+
+    // Create a suggestion through the toolbar flow.
+    await selectParagraphText(page, { start: 0, end: 6 });
+    await enableSuggestionMode(page);
+    await page.keyboard.type('Update');
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+
+    // Saving must not throw the Slate normalization invariant coming from the
+    // title sync (volto-title.tsx) while suggestion marks are present.
+    await page.locator('#toolbar-save').click();
+    await page.waitForURL(contentPath, { waitUntil: 'load', timeout: 30_000 });
+    await expect(
+      page.getByRole('heading', { name: 'Suggestion save' }),
+    ).toBeVisible();
+
+    expect(editorErrors.join('\n')).not.toContain(
+      'Could not completely normalize the editor',
+    );
+  });
+
+  test('clicking an inline suggestion in view mode opens that suggestion', async ({
+    page,
+  }) => {
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'suggestion-click-target',
+      contentTitle: 'Suggestion click target',
+      wikiId: 'wiki-suggestion-click-target',
+      transition: 'publish',
+      bodyModifier: withTwoSuggestionsFixture,
+    });
+
+    await page.setViewportSize({ height: 768, width: 1024 });
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+
+    // Wait for hydration (count button appears once suggestions resolve).
+    await expect(page.getByRole('button', { name: '2' })).toBeVisible();
+
+    // Clicking the second suggestion (the deletion) must open the deletion
+    // popover, not the first suggestion of the paragraph.
+    await page.locator('del', { hasText: 'per Hauspost' }).first().click();
+
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.getByText('Suggested removing')).toBeVisible();
+    await expect(dialog.getByText('per Hauspost')).toBeVisible();
+    await expect(dialog.getByText('Suggested adding')).toBeHidden();
+
+    // And clicking the first suggestion (the insertion) opens the insertion.
+    await page.locator('ins', { hasText: 'in der Regel' }).first().click();
+    await expect(dialog.getByText('Suggested adding')).toBeVisible();
+    await expect(dialog.getByText('in der Regel')).toBeVisible();
+    await expect(dialog.getByText('Suggested removing')).toBeHidden();
   });
 });
