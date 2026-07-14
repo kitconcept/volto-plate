@@ -335,7 +335,7 @@ function ReadOnlyBlockComment({ discussion }: { discussion: TDiscussion }) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
 
   return (
-    <div className="px-6 pb-5">
+    <div className="px-4 pt-1 pb-3.5">
       {discussion.comments.map((comment, index) => (
         <Comment
           key={comment.id ?? index}
