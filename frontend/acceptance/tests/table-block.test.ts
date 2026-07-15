@@ -1,4 +1,4 @@
-import { type Page } from '@playwright/test';
+import { type Locator, type Page } from '@playwright/test';
 import { createWikiPage } from './content';
 import { expect, test } from './test';
 import { login } from './login';
@@ -34,6 +34,17 @@ async function insertTable(page: Page) {
   return table;
 }
 
+async function fillAllCells(page: Page, table: Locator, prefix: string) {
+  const cells = table.locator('td:has([contenteditable])');
+  const count = await cells.count();
+  for (let i = 0; i < count; i++) {
+    const text = `${prefix} ${i + 1}`;
+    await cells.nth(i).locator('[data-slate-node="element"]').first().click();
+    await page.keyboard.insertText(text);
+    await expect(cells.nth(i)).toContainText(text);
+  }
+}
+
 test.describe('Table Block', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
@@ -49,6 +60,8 @@ test.describe('Table Block', () => {
 
     await expect(table.locator('tr')).toHaveCount(2);
 
+    await fillAllCells(page, table, 'Cell');
+
     await savePage(page, contentPath, 'Table Insert Slash');
 
     await expect(page.locator('table').first()).toBeVisible();
@@ -61,6 +74,8 @@ test.describe('Table Block', () => {
     });
 
     const table = await insertTable(page);
+
+    await fillAllCells(page, table, 'Row after');
 
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
@@ -81,6 +96,8 @@ test.describe('Table Block', () => {
 
     const table = await insertTable(page);
 
+    await fillAllCells(page, table, 'Row before');
+
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
 
@@ -100,13 +117,14 @@ test.describe('Table Block', () => {
 
     const table = await insertTable(page);
 
+    await fillAllCells(page, table, 'Del row');
+
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
 
     const floatingToolbar = page.locator('[data-slot="popover-content"]');
     await expect(floatingToolbar).toBeVisible({ timeout: 5_000 });
 
-    // First .lucide-x = Delete row; second = Delete column
     await floatingToolbar.locator('button:has(.lucide-x)').nth(0).click();
 
     await expect(table.locator('tr')).toHaveCount(1);
@@ -119,6 +137,8 @@ test.describe('Table Block', () => {
     });
 
     const table = await insertTable(page);
+
+    await fillAllCells(page, table, 'Col after');
 
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
@@ -140,6 +160,8 @@ test.describe('Table Block', () => {
 
     const table = await insertTable(page);
 
+    await fillAllCells(page, table, 'Col before');
+
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
 
@@ -159,6 +181,8 @@ test.describe('Table Block', () => {
     });
 
     const table = await insertTable(page);
+
+    await fillAllCells(page, table, 'Del col');
 
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
@@ -181,6 +205,8 @@ test.describe('Table Block', () => {
 
     const table = await insertTable(page);
 
+    await fillAllCells(page, table, 'BG color');
+
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
 
@@ -191,13 +217,21 @@ test.describe('Table Block', () => {
 
     const colorMenu = page.locator('[data-slot="dropdown-menu-content"]');
     await expect(colorMenu).toBeVisible();
-    await page.locator('[data-slot="dropdown-menu-item"][style="background-color: rgb(0, 0, 0);"]').click();
+    await colorMenu.locator('[data-slot="dropdown-menu-item"][style="background-color: rgb(254, 0, 0);"]').click();
 
 
 
     await savePage(page, contentPath, 'Table BG Color');
 
-    await expect(table.locator('tr').first().locator('td').first()).toHaveAttribute('style', /--cellBackground.*#000000/i);
+    await expect(table.locator('tr').first().locator('td').first()).toHaveAttribute('style', /--cellBackground.*#FE0000/i);
+
+    const viewCell = page.locator('table td').first();
+    await expect(viewCell).toBeVisible();
+    await expect
+      .poll(async () =>
+        viewCell.evaluate((el) => window.getComputedStyle(el).backgroundColor),
+      )
+      .toBe('rgb(254, 0, 0)');
   });
 
   test('Clear cell background color via floating toolbar', async ({ page }) => {
@@ -208,29 +242,29 @@ test.describe('Table Block', () => {
 
     const table = await insertTable(page);
 
+    await fillAllCells(page, table, 'Clear BG');
+
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
 
     const floatingToolbar = page.locator('[data-slot="popover-content"]');
     await expect(floatingToolbar).toBeVisible({ timeout: 5_000 });
 
-    // Set a color first
     await floatingToolbar.locator('button:has(.lucide-paint-bucket)').click();
 
     const colorMenu = page.locator('[data-slot="dropdown-menu-content"]');
     await expect(colorMenu).toBeVisible();
-    await page.locator('[data-slot="dropdown-menu-item"][style="background-color: rgb(0, 0, 0);"]').click();
+    await page.locator('[data-slot="dropdown-menu-item"][style="background-color: rgb(254, 0, 0);"]').click();
 
-    await expect(firstCell).toHaveAttribute('style', /--cellBackground.*#000000/i);
+    await expect(firstCell).toHaveAttribute('style', /--cellBackground.*#FE0000/i);
 
-    // Re-open color menu and clear
     await firstCell.click();
     await expect(floatingToolbar).toBeVisible({ timeout: 5_000 });
     await floatingToolbar.locator('button:has(.lucide-paint-bucket)').click();
     await expect(colorMenu).toBeVisible();
     await page.getByRole('menuitem', { name: 'Clear' }).click();
 
-    await expect(firstCell).not.toHaveAttribute('style', /--cellBackground.*#000000/i);
+    await expect(firstCell).not.toHaveAttribute('style', /--cellBackground.*#FE0000/i);
   });
 
   test('Merge cells via floating toolbar', async ({ page }) => {
@@ -240,6 +274,8 @@ test.describe('Table Block', () => {
     });
 
     const table = await insertTable(page);
+
+    await fillAllCells(page, table, 'Merge');
 
     const firstRow = table.locator('tr').first();
     const cells = firstRow.locator('td:has([contenteditable])');
@@ -268,6 +304,8 @@ test.describe('Table Block', () => {
 
     const firstRow = table.locator('tr').first();
     const cells = firstRow.locator('td:has([contenteditable])');
+
+    await fillAllCells(page, table, 'Split');
 
     // Merge first
     await cells.nth(0).click();
@@ -299,6 +337,8 @@ test.describe('Table Block', () => {
 
     const table = await insertTable(page);
     const editor = page.locator('.slate-editor[data-slate-editor]');
+
+    await fillAllCells(page, table, 'Del table');
 
     const firstCell = table.locator('tr').first().locator('td:has([contenteditable])').first();
     await firstCell.click();
