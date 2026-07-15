@@ -1,0 +1,18 @@
+.block-plateimage {
+  text-align: var(--block-alignment, center);
+}
+.block-plateimage img {
+  position: relative;
+  z-index: 2; // needed to be able to click on the image when it is floating
+  max-width: var(--block-size, 100%);
+  float: var(--block-alignment);
+}
+
+.block-plateimage[data-style-align='left'],
+.block-plateimage[data-style-align='right'] {
+  outline-width: 0; // No outline when the image is floated, as it looks weird and is not needed.
+
+  .block-inner-container {
+    padding-bottom: 0; // No padding-bottom when the image is floated, as it looks weird and is not needed.
+  }
+}

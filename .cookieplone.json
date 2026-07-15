@@ -1,0 +1,16 @@
+{
+    "title": "Volto Plate",
+    "description": "Volto Plate.js support",
+    "project_slug": "volto-plate",
+    "author": "kitconcept GmbH",
+    "email": "info@kitconcept.com",
+    "use_prerelease_versions": false,
+    "plone_version": "6.2.1",
+    "volto_version": "19.1.4",
+    "python_package_name": "kitconcept.plate",
+    "npm_package_name": "@kitconcept/volto-plate",
+    "github_organization": "kitconcept",
+    "container_registry": "github",
+    "initialize_documentation": false,
+    "__template__": "monorepo_addon"
+}

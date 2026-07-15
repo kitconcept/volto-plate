@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "A new add-on for Plone that includes both backend and Volto frontend"
 readme = "README.md"
 license = "GPL-2.0-only"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [
     { name = "kitconcept, GmbH", email = "info@kitconcept.com" },
 ]
@@ -22,9 +22,9 @@ classifiers = [
     "Framework :: Plone :: Addon",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "Products.CMFPlone",
@@ -35,12 +35,13 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "horse-with-no-namespace",
+    "horse-with-no-namespace>=20250408.0",
+    "Products.PrintingMailHost",
     "plone.app.testing",
     "plone.restapi[test]",
     "pytest",
     "pytest-cov",
-    "pytest-plone>=1.0.0a2",
+    "pytest-plone>=1.0.0",
 ]
 
 [project.urls]
@@ -48,7 +49,6 @@ Homepage = "https://github.com/kitconcept/volto-plate"
 PyPI = "https://pypi.org/project/kitconcept.plate"
 Source = "https://github.com/kitconcept/volto-plate"
 Tracker = "https://github.com/kitconcept/volto-plate/issues"
-
 
 [project.entry-points."plone.autoinclude.plugin"]
 target = "plone"

@@ -26,9 +26,8 @@ endif
 REPOSITORY_SETTINGS := $(shell uvx repoplone settings dump)
 IMAGE_NAME_PREFIX := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.container_images_prefix')
 IMAGE_TAG=latest
-IMAGE_NAME_BACKEND=$(IMAGE_NAME_PREFIX)-backend
-IMAGE_NAME=$(IMAGE_NAME_BACKEND):$(IMAGE_TAG)
-IMAGE_NAME_DEMO=$(IMAGE_NAME_PREFIX)-demo:$(IMAGE_TAG)
+IMAGE_NAME=$(IMAGE_NAME_PREFIX)-backend
+IMAGE_NAME_DEMO=$(IMAGE_NAME_PREFIX)-demo
 
 PLONE_SITE_ID=Plone
 BACKEND_FOLDER=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
@@ -42,8 +41,15 @@ BIN_FOLDER=$(VENV_FOLDER)/bin
 # Environment variables to be exported
 export PYTHONWARNINGS := ignore
 export DOCKER_BUILDKIT := 1
-export PYTHON_VERSION := 3.11
+export PYTHON_VERSION := 3.13
 export PLONE_VERSION := $(shell echo '$(REPOSITORY_SETTINGS)' | jq -r '.backend.base_package_version')
+
+ifdef CI
+UV_VENV_ARGS :=
+else
+UV_VENV_ARGS := --python=$(PYTHON_VERSION)
+endif
+
 
 all: build
 
@@ -60,21 +66,16 @@ debug-settings:  ## Debug settings
 	@echo "PACKAGE_NAME: $(PACKAGE_NAME)"
 	@echo "EXAMPLE_CONTENT_FOLDER: $(EXAMPLE_CONTENT_FOLDER)"
 	@echo "IMAGE_NAME: $(IMAGE_NAME)"
-	@echo "IMAGE_NAME_DEMO: $(IMAGE_NAME_DEMO)"
 
 
 requirements-mxdev.txt: pyproject.toml mx.ini ## Generate constraints file
 	@echo "$(GREEN)==> Generate constraints file$(RESET)"
 	@echo '-c https://dist.plone.org/release/$(PLONE_VERSION)/constraints.txt' > requirements.txt
-	@uvx mxdev -c mx.ini
+	@uvx 'mxdev[uv]' -c mx.ini
 
 $(VENV_FOLDER): requirements-mxdev.txt ## Install dependencies
 	@echo "$(GREEN)==> Install environment$(RESET)"
-ifdef CI
-	@uv venv $(VENV_FOLDER)
-else
-	@uv venv --python=$(PYTHON_VERSION) $(VENV_FOLDER)
-endif
+	@if [[ -d "$(VENV_FOLDER)" ]]; then echo "$(YELLOW)==> Environment already exists at $(VENV_FOLDER)$(RESET)"; else uv venv $(UV_VENV_ARGS) $(VENV_FOLDER); fi
 	@uv pip install -r requirements-mxdev.txt
 
 .PHONY: sync
@@ -84,7 +85,7 @@ sync: $(VENV_FOLDER) ## Sync project dependencies
 
 instance/etc/zope.ini instance/etc/zope.conf: instance.yaml ## Create instance configuration
 	@echo "$(GREEN)==> Create instance configuration$(RESET)"
-	@uvx cookiecutter -f --no-input -c 2.1.1 --config-file instance.yaml gh:plone/cookiecutter-zope-instance
+	@uvx cookiecutter -f --no-input -c 2.4.1 --config-file instance.yaml gh:plone/cookiecutter-zope-instance
 
 .PHONY: config
 config: instance/etc/zope.ini
@@ -155,8 +156,8 @@ test-coverage: $(VENV_FOLDER) ## run tests with coverage
 # Build Docker images
 .PHONY: build-image
 build-image:  ## Build Docker Images
-	@docker build . -t $(IMAGE_NAME) -f Dockerfile --build-arg PLONE_VERSION=$(PLONE_VERSION)
-	@docker build . -t $(IMAGE_NAME_DEMO) -f Dockerfile.demo --build-arg BASE_IMAGE=$(IMAGE_NAME_BACKEND) --build-arg BASE_TAG=$(IMAGE_TAG)
+	@docker build . -t $(IMAGE_NAME):$(IMAGE_TAG) -f Dockerfile --build-arg PLONE_VERSION=$(PLONE_VERSION)
+	@docker build . -t $(IMAGE_NAME_DEMO):$(IMAGE_TAG) -f Dockerfile.demo --build-arg BASE_IMAGE=$(IMAGE_NAME) --build-arg BASE_TAG=$(IMAGE_TAG)
 
 # Acceptance tests
 .PHONY: acceptance-backend-start

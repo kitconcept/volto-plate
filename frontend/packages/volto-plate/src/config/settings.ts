@@ -1,4 +1,5 @@
 import type { ConfigType } from '@plone/registry';
+import type { apiExpandersType } from '@plone/types/src/config/Settings';
 
 export default function install(config: ConfigType) {
   config.settings.PlateEditorContentTypes = ['WikiPage'];
@@ -9,10 +10,20 @@ export default function install(config: ConfigType) {
     {
       match: '',
       GET_CONTENT: ['inherit'],
-      querystring: {
-        'expand.inherit.behaviors': EXPANDERS_INHERIT_BEHAVIORS,
+      querystring: (config, querystring) => {
+        if (querystring['expand.inherit.behaviors']) {
+          return {
+            'expand.inherit.behaviors': querystring[
+              'expand.inherit.behaviors'
+            ].concat(',', EXPANDERS_INHERIT_BEHAVIORS),
+          };
+        } else {
+          return {
+            'expand.inherit.behaviors': EXPANDERS_INHERIT_BEHAVIORS,
+          };
+        }
       },
-    },
+    } as apiExpandersType,
   ];
 
   config.settings.cssLayers = [

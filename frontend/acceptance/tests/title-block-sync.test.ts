@@ -2,7 +2,7 @@ import { expect, test } from './test';
 import { login } from './login';
 import { createWikiPage } from './content';
 import { waitForPlateEditorReady } from './plate';
-import { getEditorHandle, getSelection } from '@platejs/playwright';
+import { getEditorHandle, getSelection, setSelection } from '@platejs/playwright';
 
 function withSomersaultBody(body: Record<string, unknown>) {
   const title = typeof body.title === 'string' ? body.title : '';
@@ -117,6 +117,27 @@ test('Plate title block updates the metadata title', async ({ page }) => {
   await expect(metadataTitleInput).toHaveValue('Editor updated title');
 });
 
+test('Title block selection does not show the floating toolbar', async ({
+  page,
+}) => {
+  await openTitleSyncPage(page, {
+    contentId: 'title-sync-page-no-toolbar',
+    contentTitle: 'Original title',
+  });
+
+  const editorHandle = await getEditorHandle(
+    page,
+    page.locator('.slate-editor[data-slate-editor]'),
+  );
+
+  await setSelection(page, editorHandle, {
+    anchor: { path: [0, 0], offset: 0 },
+    focus: { path: [0, 0], offset: 'Original title'.length },
+  });
+
+  await expect(page.getByLabel('Editor toolbar')).toHaveCount(0);
+});
+
 test('Empty plate title block shows the translated placeholder', async ({
   page,
 }) => {
@@ -129,9 +150,14 @@ test('Empty plate title block shows the translated placeholder', async ({
 
   await editorTitle.fill('');
 
-  await expect(
-    editorTitle.locator('.block-inner-container [aria-hidden="true"]').first(),
-  ).toHaveText('Type the title...');
+  await expect
+    .poll(async () => {
+      return editorTitle
+        .locator('.block-inner-container [aria-hidden="true"]')
+        .first()
+        .textContent();
+    })
+    .toBe('Type the title...');
 });
 
 test('Title placeholder is rendered inside the width-constrained inner container', async ({
@@ -146,34 +172,37 @@ test('Title placeholder is rendered inside the width-constrained inner container
 
   await editorTitle.fill('');
 
-  const placeholderStyles = await editorTitle.evaluate((element) => {
-    const innerContainer = element.querySelector('.block-inner-container');
-    const placeholder = innerContainer?.querySelector(
-      '[aria-hidden="true"]',
-    ) as HTMLElement | null;
+  await expect
+    .poll(async () => {
+      return editorTitle.evaluate((element) => {
+        const innerContainer = element.querySelector('.block-inner-container');
+        const placeholder = innerContainer?.querySelector(
+          '[aria-hidden="true"]',
+        ) as HTMLElement | null;
 
-    return {
-      className: element.className,
-      innerContainerClassName: innerContainer?.className,
-      innerContainerPosition: innerContainer
-        ? window.getComputedStyle(innerContainer).position
-        : null,
-      placeholderText: placeholder?.textContent,
-      placeholderParentClassName: placeholder?.parentElement?.className ?? null,
-      placeholderPosition: placeholder
-        ? window.getComputedStyle(placeholder).position
-        : null,
-    };
-  });
-
-  expect(placeholderStyles).toEqual({
-    className: expect.stringContaining('documentFirstHeading'),
-    innerContainerClassName: expect.stringContaining('block-inner-container'),
-    innerContainerPosition: 'relative',
-    placeholderText: 'Type the title...',
-    placeholderParentClassName: expect.stringContaining(
-      'block-inner-container',
-    ),
-    placeholderPosition: 'absolute',
-  });
+        return {
+          className: element.className,
+          innerContainerClassName: innerContainer?.className,
+          innerContainerPosition: innerContainer
+            ? window.getComputedStyle(innerContainer).position
+            : null,
+          placeholderText: placeholder?.textContent,
+          placeholderParentClassName:
+            placeholder?.parentElement?.className ?? null,
+          placeholderPosition: placeholder
+            ? window.getComputedStyle(placeholder).position
+            : null,
+        };
+      });
+    })
+    .toEqual({
+      className: expect.stringContaining('documentFirstHeading'),
+      innerContainerClassName: expect.stringContaining('block-inner-container'),
+      innerContainerPosition: 'relative',
+      placeholderText: 'Type the title...',
+      placeholderParentClassName: expect.stringContaining(
+        'block-inner-container',
+      ),
+      placeholderPosition: 'absolute',
+    });
 });

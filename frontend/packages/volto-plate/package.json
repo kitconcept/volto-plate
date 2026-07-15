@@ -1,6 +1,6 @@
 {
   "name": "@kitconcept/volto-plate",
-  "version": "1.0.0-alpha.9",
+  "version": "1.0.0-alpha.19",
   "description": "An add-on that adds a Plate.js block for Volto",
   "main": "src/index.ts",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "access": "public"
   },
   "scripts": {
-    "check-ts": "tsc --project tsconfig.json",
+    "check:ts": "tsc --project tsconfig.json",
     "i18n": "rm -rf build/messages && NODE_ENV=production i18n --addon",
     "dry-release": "release-it --dry-run",
     "release": "release-it",
@@ -38,6 +38,7 @@
     "@platejs/link": "^49.0.0",
     "@plone/plate": "workspace:*",
     "@plone/components": "workspace:^",
+    "@plone/helpers": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1"
   },
   "peerDependencies": {

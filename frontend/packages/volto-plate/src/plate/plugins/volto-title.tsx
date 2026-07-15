@@ -20,9 +20,32 @@ type TitleData = {
 };
 
 const TITLE_PLACEHOLDER = 'Type the title...';
+const TITLE_FORMATTING_HOTKEYS = new Set(['b', 'e', 'i']);
 
 const isTitleNode = (node: unknown) =>
   ElementApi.isElement(node) && node.type === TITLE_BLOCK_TYPE;
+
+const isPlainTextLeaf = (node: unknown) =>
+  !!node &&
+  typeof node === 'object' &&
+  typeof (node as { text?: unknown }).text === 'string' &&
+  Object.keys(node as object).length === 1;
+
+const hasNormalizedTitleChildren = (node: unknown) =>
+  ElementApi.isElement(node) &&
+  Array.isArray(node.children) &&
+  node.children.length === 1 &&
+  isPlainTextLeaf(node.children[0]);
+
+const isFormattingHotkey = (event: KeyboardEvent) => {
+  const key = event.key.toLowerCase();
+  const hasModifier = event.metaKey || event.ctrlKey;
+
+  if (!hasModifier) return false;
+  if (TITLE_FORMATTING_HOTKEYS.has(key)) return true;
+
+  return key === 'm' && event.shiftKey;
+};
 
 const getTitleNodeEntry = (nodes: unknown[]) => {
   for (let index = 0; index < nodes.length; index += 1) {
@@ -168,11 +191,8 @@ export const BaseVoltoTitleBlockPlugin = createSlatePlugin({
   key: TITLE_BLOCK_TYPE,
   handlers: {
     onKeyDown: ({ editor, event }) => {
-      const nativeEvent = (event as any)?.nativeEvent ?? event;
-      if (!nativeEvent || nativeEvent.key !== 'Enter') return;
-      if (!editor.selection || !editor.api.isCollapsed()) return;
-
       const currentEntry = editor.api.block({ highest: true });
+      const nativeEvent = (event as any)?.nativeEvent ?? event;
       if (!currentEntry) return;
 
       const [currentNode, currentPath] = currentEntry;
@@ -182,6 +202,14 @@ export const BaseVoltoTitleBlockPlugin = createSlatePlugin({
       ) {
         return;
       }
+
+      if (nativeEvent && isFormattingHotkey(nativeEvent)) {
+        event.preventDefault();
+        return;
+      }
+
+      if (!nativeEvent || nativeEvent.key !== 'Enter') return;
+      if (!editor.selection || !editor.api.isCollapsed()) return;
 
       event.preventDefault();
       editor.tf.insertNodes(
@@ -228,7 +256,23 @@ export const BaseVoltoTitleBlockPlugin = createSlatePlugin({
     };
 
     editor.normalizeNode = (entry) => {
-      const [, path] = entry;
+      const [node, path] = entry;
+
+      if (
+        path.length > 0 &&
+        ElementApi.isElement(node) &&
+        node.type === TITLE_BLOCK_TYPE &&
+        !hasNormalizedTitleChildren(node)
+      ) {
+        editor.tf.replaceNodes(
+          {
+            ...node,
+            children: [{ text: getNodeText(node) }],
+          },
+          { at: path },
+        );
+        return;
+      }
 
       if (path.length === 0) {
         const titleIndexes = editor.children.reduce<number[]>(

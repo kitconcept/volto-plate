@@ -64,11 +64,13 @@ export function ImageSchema({ formData = {} }: ImageSchemaArgs): JSONSchema {
         widget: 'align',
         default: 'center',
         actions: ['left', 'right', 'center'],
+        styleField: true,
       },
       size: {
         title: 'Image size',
         widget: 'size',
         default: 'l',
+        styleField: true,
       },
       href: {
         title: 'Link to',

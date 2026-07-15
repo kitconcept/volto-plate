@@ -16,9 +16,9 @@ class TestCommentsDeserializer:
     """Test the comments deserializer functionality."""
 
     @pytest.fixture(autouse=True)
-    def _setup(self, portal):
+    def _setup(self, portal, http_request):
         self.portal = portal
-        self.request = portal.REQUEST
+        self.request = http_request
 
         with api.env.adopt_roles(["Manager"]):
             # WikiPage is only addable inside a Workspace.

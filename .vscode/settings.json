@@ -1,4 +1,5 @@
 {
+  "typescript.tsdk": "frontend/packages/volto-plate/node_modules/typescript/lib",
   "search.exclude": {
     "**/core": false
   },
@@ -17,13 +18,13 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "ruff.organizeImports": true,
+  "python-envs.workspaceSearchPaths": ["backend/.venv"],
   "python.terminal.activateEnvironment": true,
-  "python.testing.pytestArgs": [
-    "backend/tests"
-  ],
+  "python.testing.pytestArgs": ["backend/tests"],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "[markdown]": {
     "editor.formatOnSave": false
-  }
+  },
+  "js/ts.tsdk.path": "frontend/packages/volto-plate/node_modules/typescript/lib"
 }

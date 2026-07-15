@@ -5,12 +5,6 @@ import installSlots from './config/slots';
 import './theme/tailwind.css';
 import '@plone/components/dist/basic.css';
 
-export {
-  VoltoImageBlockElement,
-  VoltoImageBlockPlugin,
-} from './plate/plugins/volto-image-block';
-export { createVoltoBlockAdapter } from './plate/plugins/volto-block-adapter';
-
 function applyConfig(config: ConfigType) {
   installSettings(config);
   installBlocks(config);

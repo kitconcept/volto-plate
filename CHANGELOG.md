@@ -7,6 +7,281 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a19 (2026-07-08)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Bugfix
+
+- Fixed login screen CSS. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a18 (2026-07-06)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Bugfix
+
+- Fix for tables and SemanticUI .fixed and other collisions. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a17 (2026-07-06)
+
+### Backend
+
+
+#### Bug fixes:
+
+- We used to restrict the types for the navigation. Now it's not needed. @sneridagh 
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a16 (2026-07-06)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Breaking
+
+- Moved the navigation tree component to the distribution. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a15 (2026-07-03)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Feature
+
+- Add workspace switcher and workspace-scoped navigation tree to the NavigationTree panel. @iFlameing 
+
+#### Bugfix
+
+- Fix inherit logic. @sneridagh [#44](https://github.com/collective/volto-plate/issue/44)
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a14 (2026-07-02)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Internal
+
+- Missing @plone/plate updates. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a13 (2026-07-02)
+
+### Backend
+
+
+#### Internal:
+
+- Updated the boilerplate to use the latest `monorepo_addon` template. @ericof [#440](https://github.com/kitconcept/volto-plate/issues/440)
+
+
+#### Tests
+
+- Moved `test_upgrades.py` to `tests/setup` and switched `tests/test_comments` to use `http_request`. @ericof 
+
+
+
+### Frontend
+
+#### Internal
+
+- Removed the aurora clone step when running `make clean`. @ericof 
+
+
+
+### Project
+
+
+#### Internal
+
+- Updated `.cookieplone.json` and `repository.toml` with the `monorepo_addon` template answers. @ericof [#440](https://github.com/kitconcept/volto-plate/pull/440)
+- Added the `python-envs` setting so the correct virtual environment is discovered. @ericof 
+- Build and publish the backend, demo, and frontend container images as part of the staging deploy workflow. @ericof 
+- Fixed demo image generation in the `.github/workflows/backend.yml` workflow. @ericof 
+- Removed stray `*_cache` directories when running make clean. @ericof 
+
+
+
+## 1.0.0a12 (2026-07-02)
+
+### Backend
+
+
+#### Internal:
+
+- Use Python 3.14 and Plone 6.2.1 @sneridagh [#41](https://github.com/kitconcept/volto-plate/issues/41)
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a11 (2026-07-01)
+
+### Backend
+
+
+#### Internal:
+
+- Downgrade the backend to use Python 3.12. @sneridagh [#40](https://github.com/kitconcept/volto-plate/issues/40)
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a10 (2026-07-01)
+
+### Backend
+
+
+#### Internal:
+
+- Update to Plone 6.2.0 @sneridagh 
+- Update translation. @iFlameing 
+
+
+
+### Frontend
+
+#### Feature
+
+- Adapt to style fields from @plone/plate. @sneridagh 
+- Add Navigation tree. @iFlameing 
+- Clipboard image paste in the wiki editor now uploads through Volto's `createContent` action and inserts a `plateimage` block pointing to the created Image object, while removing the unused generic Plate media kit wiring from that editor. 
+- Dragging image files from the desktop into the wiki Plate editor now uploads them through Volto's `createContent` action and inserts `plateimage` blocks, with edit and add views following the same target resolution rules as image paste. 
+- Refactored wiki editor images to use dedicated `plateimage` ploneBlock rendering, schema-driven styled fields, and semantic `data-style-*` hooks instead of the old native Plate image adapter path. @sneridagh 
+
+#### Bugfix
+
+- Adapt to use @plone/aurora. @sneridagh [#31](https://github.com/collective/volto-plate/issue/31)
+- Kept the wiki editor floating toolbar above Volto chrome by using a local portaled toolbar with Volto-aware positioning. [#33](https://github.com/collective/volto-plate/issue/33)
+- Disabled the floating formatting toolbar for the title block and kept title content normalized to plain text. [#34](https://github.com/collective/volto-plate/issue/34)
+- Moved the slash menu Image entry to appear directly after the paragraph option. [#35](https://github.com/collective/volto-plate/issue/35)
+- Fix misalignment when we have longer titles. @iFlameing 
+- Hide navigation sidebar when printing Wiki pages to remove unwanted blank space on the left. @iFlameing 
+- Reverted the decision to have the images as a non-native Plate plugin.
+  The Image block in this add-on is a full fledged Plate plugin piggy-backing in the original Plate Image plugin, but that exposes the Volto Image block.
+  This keeps the things simple since the Wiki-editor does not use any other Volto block. @sneridagh 
+
+
+
+### Project
+
+
+#### Internal
+
+- Update to Plone 6.2.0 @sneridagh 
+
+
+
 ## 1.0.0a9 (2026-05-28)
 
 ### Backend

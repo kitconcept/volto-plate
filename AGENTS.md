@@ -19,7 +19,6 @@ These instructions apply to the whole `volto-plate` monorepo unless a deeper `AG
 - Node is expected to be `24`
 - Package manager is `pnpm`
 - `corepack` is the expected way to enable `pnpm`
-- Docker is optional for local stack and acceptance/container workflows
 
 ## Bootstrap
 
@@ -120,9 +119,9 @@ Frontend formatting/linting is driven by:
 
 This repo checks for towncrier fragments in CI.
 
-- Backend changes usually need a fragment under `backend/news/`
-- Frontend add-on changes usually need a fragment under `frontend/packages/volto-plate/news/`
-- Repo-level changes may need a fragment under the root `news/`
+- Backend changes need a fragment under `backend/news/`
+- Frontend add-on changes need a fragment under `frontend/packages/volto-plate/news/`
+- Repo-level (not related to `backend` or `frontend`) changes may need a fragment under the root `news/`
 
 Use the fragment type that matches the change, such as:
 
@@ -130,7 +129,6 @@ Use the fragment type that matches the change, such as:
 - `bugfix`
 - `internal`
 - `documentation`
-- `tests`
 - `breaking`
 
 ## CI Awareness
@@ -146,4 +144,5 @@ Use the fragment type that matches the change, such as:
 - After meaningful code changes, run the relevant scoped tests using the repo-sanctioned command path
 - For backend validation, prefer `make -C backend test` or `backend/.venv/bin/pytest`, never global `pytest`
 - For frontend validation, prefer `make -C frontend test` or the package scripts behind it
+- For all changes made, run the full repo `make check` to ensure all formatting and linting is satisfied
 - If a command fails because dependencies are not installed yet, bootstrap with the corresponding Make target instead of working around the environment manually
