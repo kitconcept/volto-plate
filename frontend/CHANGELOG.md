@@ -8,6 +8,12 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.20 (2026-07-17)
+
+### Feature
+
+- Add read-only comment and suggestion popovers to the wiki renderer, with the correct inline suggestion colours and per-mark popover targeting, and fix an editor normalization error when saving with active suggestions. [#comment-renderer-support](https://github.com/collective/volto-plate/issue/comment-renderer-support)
+
 ## 1.0.0-alpha.19 (2026-07-08)
 
 ### Bugfix
