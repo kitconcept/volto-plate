@@ -1,0 +1,1 @@
+Add read-only comment and suggestion popovers to the wiki renderer, with the correct inline suggestion colours and per-mark popover targeting, and fix an editor normalization error when saving with active suggestions.

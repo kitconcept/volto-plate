@@ -37,6 +37,7 @@ const PlateEditorRenderer = ({ content }: PlateEditorRendererProps) => {
       <PlatePluginsProvider
         initialDiscussions={initialDiscussions}
         initialUsers={initialUsers}
+        readOnly
       >
         <PlateRenderer
           editorConfig={wikiEditorRenderer}

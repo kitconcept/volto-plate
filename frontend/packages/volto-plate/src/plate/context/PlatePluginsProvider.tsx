@@ -16,6 +16,7 @@ type PlatePluginsProviderProps = React.PropsWithChildren<{
   initialDiscussions: TDiscussion[];
   initialUsers: Record<string, TDiscussionUser>;
   onDiscussionsChange?: (discussions: TDiscussion[]) => void;
+  readOnly?: boolean;
 }>;
 
 export const getCurrentUserFromToken = (
@@ -50,6 +51,7 @@ export function PlatePluginsProvider({
   initialDiscussions,
   initialUsers,
   onDiscussionsChange,
+  readOnly = false,
 }: PlatePluginsProviderProps) {
   const token = useSelector((state: any) => state.userSession?.token);
   const currentUser = React.useMemo(
@@ -91,13 +93,13 @@ export function PlatePluginsProvider({
 
   const value = React.useMemo(
     () => ({
-      currentUser,
-      currentUserId: currentUser?.id ?? null,
+      currentUser: readOnly ? null : currentUser,
+      currentUserId: readOnly ? null : currentUser?.id ?? null,
       discussions,
       setDiscussions,
       users: resolvedUsers,
     }),
-    [currentUser, discussions, resolvedUsers, setDiscussions],
+    [currentUser, discussions, readOnly, resolvedUsers, setDiscussions],
   );
 
   return (

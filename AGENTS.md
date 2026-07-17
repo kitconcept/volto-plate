@@ -69,12 +69,13 @@ Reason:
 
 The repo acceptance flow is Playwright-based from `frontend/`.
 
-- Start backend acceptance server:
+- Start backend acceptance server only if it is not already started in port 55001:
   - `make ci-acceptance-backend-start`
-- Start frontend for acceptance:
+- Start frontend for acceptance only if it is not already started in port 3000:
   - `make acceptance-frontend-dev-start`
 - Run acceptance tests:
   - `cd frontend && pnpm exec playwright test --reporter=list,html`
+- When running acceptance tests as an agent, launch Playwright unsandboxed on the first attempt. Do not try the sandboxed path first.
 
 If you only need the standard interactive wrapper:
 
@@ -144,5 +145,6 @@ Use the fragment type that matches the change, such as:
 - After meaningful code changes, run the relevant scoped tests using the repo-sanctioned command path
 - For backend validation, prefer `make -C backend test` or `backend/.venv/bin/pytest`, never global `pytest`
 - For frontend validation, prefer `make -C frontend test` or the package scripts behind it
+- For Playwright acceptance validation, request unsandboxed execution immediately instead of retrying after a sandbox failure
 - For all changes made, run the full repo `make check` to ensure all formatting and linting is satisfied
 - If a command fails because dependencies are not installed yet, bootstrap with the corresponding Make target instead of working around the environment manually
