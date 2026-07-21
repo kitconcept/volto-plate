@@ -139,9 +139,7 @@ def test_mentions_service_does_not_enumerate_without_a_search(portal, http_reque
     }
 
 
-def test_mentions_service_uses_default_limit_for_an_invalid_value(
-    portal, http_request
-):
+def test_mentions_service_uses_default_limit_for_an_invalid_value(portal, http_request):
     with api.env.adopt_roles(["Manager"]):
         api.user.create(
             username="limit-user",
