@@ -20,22 +20,12 @@
   <include package=".controlpanels" />
   <include package=".deserializers" />
   <include package=".indexers" />
+  <include package=".mentions" />
   <include package=".serializers" />
   <include package=".services" />
+  <include package=".subscribers" />
   <include package=".vocabularies" />
   <include package=".upgrades" />
-
-  <subscriber
-      for="plone.dexterity.interfaces.IDexterityContent
-           zope.lifecycleevent.interfaces.IObjectAddedEvent"
-      handler=".mentions.send_pending_notifications"
-      />
-
-  <subscriber
-      for="plone.dexterity.interfaces.IDexterityContent
-           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler=".mentions.send_pending_notifications"
-      />
 
   <!-- -*- extra stuff goes here -*- -->
 

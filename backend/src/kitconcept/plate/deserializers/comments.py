@@ -1,5 +1,4 @@
-from kitconcept.plate.mentions import new_mentions
-from kitconcept.plate.mentions import queue_notifications
+from kitconcept.plate.mentions import mentions_utility
 from plone import api
 from plone.restapi.interfaces import IBlockFieldDeserializationTransformer
 from zExceptions import BadRequest
@@ -70,10 +69,10 @@ class CommentsDeserializer:
         # ``contentRich`` value. Notify only nodes introduced by this save;
         # stable mention ids prevent later, unrelated edits from resending mail.
         if current_user:
-            queue_notifications(
+            utility = mentions_utility()
+            utility.queue_notifications(
                 self.context,
-                self.request,
-                new_mentions(block, self._get_existing_block()),
+                utility.new_mentions(block, self._get_existing_block()),
                 current_user,
             )
 

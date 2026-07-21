@@ -1,0 +1,12 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <!-- Register Mentions utility -->
+  <utility
+      factory=".utility.Mentions"
+      provides="kitconcept.plate.interfaces.IMentions"
+      name="kitconcept.plate.mentions"
+      />
+
+  <!-- -*- extra stuff goes here -*- -->
+
+</configure>
