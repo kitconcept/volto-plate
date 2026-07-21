@@ -149,6 +149,28 @@ const ReadOnlyBlockDiscussionContent = ({
     React.useState<HTMLElement | null>(null);
   const open = _open || selected;
 
+  React.useEffect(() => {
+    const mentionId = new URLSearchParams(window.location.search).get(
+      'plateMention',
+    );
+    if (!mentionId) return;
+
+    const discussion = resolvedDiscussions.find((item) =>
+      JSON.stringify(item.comments).includes(`"mentionId":"${mentionId}"`),
+    );
+    if (!discussion) return;
+
+    setCommentOption('activeId', discussion.id);
+    setOpen(true);
+
+    const timer = window.setTimeout(() => {
+      const target = document.getElementById(`plate-mention-${mentionId}`);
+      target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target?.classList.add('ring-2', 'ring-primary');
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [resolvedDiscussions, setCommentOption]);
+
   const activeAnchorElement = React.useMemo(() => {
     let activeNode: NodeEntry | undefined;
 

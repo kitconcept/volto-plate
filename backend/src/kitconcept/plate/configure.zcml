@@ -21,8 +21,21 @@
   <include package=".deserializers" />
   <include package=".indexers" />
   <include package=".serializers" />
+  <include package=".services" />
   <include package=".vocabularies" />
   <include package=".upgrades" />
+
+  <subscriber
+      for="zope.interface.Interface
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".mentions.send_pending_notifications"
+      />
+
+  <subscriber
+      for="zope.interface.Interface
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".mentions.send_pending_notifications"
+      />
 
   <!-- -*- extra stuff goes here -*- -->
 
