@@ -8,7 +8,9 @@
   <records interface="plone.base.interfaces.controlpanel.INavigationSchema"
            prefix="plone"
   >
-    <value key="displayed_types" purge="false">
+    <value key="displayed_types"
+           purge="false"
+    >
       <element>WikiPage</element>
       <element>Workspace</element>
     </value>

@@ -1,0 +1,17 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".mentions.send_pending_notifications"
+      />
+
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".mentions.send_pending_notifications"
+      />
+
+  <!-- -*- extra stuff goes here -*- -->
+
+</configure>

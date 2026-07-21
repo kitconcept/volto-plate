@@ -11,41 +11,43 @@ import {
   normalizeUsers,
 } from '../../plate/discussion-data';
 import { PlatePluginsProvider } from '../../plate/context/PlatePluginsProvider';
+import MentionLinkTarget from './MentionLinkTarget';
 
 type PlateEditorRendererProps = {
   content: Content;
 };
 
+type SomersaultBlock = {
+  value?: Value;
+  discussions?: Record<string, unknown>;
+  users?: Record<string, { id: string; fullname?: string; portrait?: string }>;
+};
+
 const PlateEditorRenderer = ({ content }: PlateEditorRendererProps) => {
   const somersaultBlock = content.blocks?.[SOMERSAULT_KEY] as
-    | {
-        value?: Value;
-        discussions?: Record<string, unknown>;
-        users?: Record<
-          string,
-          { id: string; fullname?: string; portrait?: string }
-        >;
-      }
+    | SomersaultBlock
     | undefined;
+
+  if (!somersaultBlock?.value) return null;
+
   const initialDiscussions = normalizeDiscussions(somersaultBlock?.discussions);
   const initialUsers = normalizeUsers(somersaultBlock?.users);
 
-  return somersaultBlock?.value ? (
+  return (
     <PlateController>
-      {/* View mode uses the same provider contract so persisted comment and
-          suggestion metadata can be resolved while rendering. */}
       <PlatePluginsProvider
         initialDiscussions={initialDiscussions}
         initialUsers={initialUsers}
         readOnly
       >
+        <MentionLinkTarget />
         <PlateRenderer
           editorConfig={wikiEditorRenderer}
           value={somersaultBlock.value as Value}
         />
       </PlatePluginsProvider>
     </PlateController>
-  ) : null;
+  );
 };
 
 export default PlateEditorRenderer;

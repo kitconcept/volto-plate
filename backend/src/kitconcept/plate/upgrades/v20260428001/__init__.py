@@ -4,7 +4,6 @@ from plone.base.utils import base_hasattr
 
 def rename_wiki_to_workspace(context):
     """Rename the Wiki container type to Workspace on existing sites."""
-    portal = api.portal.get()
     portal_types = api.portal.get_tool("portal_types")
 
     for brain in api.content.find(portal_type="Wiki"):
