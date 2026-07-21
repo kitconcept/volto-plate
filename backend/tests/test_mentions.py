@@ -139,6 +139,24 @@ def test_mentions_service_does_not_enumerate_without_a_search(portal, http_reque
     }
 
 
+def test_mentions_service_uses_default_limit_for_an_invalid_value(
+    portal, http_request
+):
+    with api.env.adopt_roles(["Manager"]):
+        api.user.create(
+            username="limit-user",
+            email="limit-user@example.com",
+            properties={"fullname": "Limit User"},
+        )
+
+    http_request["QUERY_STRING"] = "search=Limit&limit=not-a-number"
+
+    result = mentions_service(portal, http_request).reply()
+
+    assert result["items_total"] == 1
+    assert result["items"][0]["id"] == "limit-user"
+
+
 def test_mentions_service_returns_a_user_portrait(portal, http_request):
     with api.env.adopt_roles(["Manager"]):
         user = api.user.create(
@@ -166,6 +184,11 @@ def test_mention_notification_is_printed_instead_of_sent(
     from Products import PrintingMailHost
 
     with api.env.adopt_roles(["Manager"]):
+        workspace = api.content.create(
+            container=portal,
+            type="Workspace",
+            title="Mentioned page",
+        )
         author = api.user.create(
             username="mentioning-user",
             email="mentioning-user@example.com",
@@ -179,7 +202,6 @@ def test_mention_notification_is_printed_instead_of_sent(
         api.portal.set_registry_record(
             "plone.email_from_address", "noreply@example.com"
         )
-        portal.setTitle("Mentioned page")
 
     monkeypatch.setenv("ENABLE_PRINTING_MAILHOST", "True")
     PrintingMailHost.initialize(None)
@@ -190,12 +212,12 @@ def test_mention_notification_is_printed_instead_of_sent(
         setRequest(http_request)
         with caplog.at_level(logging.INFO, logger="PrintingMailHost"):
             queue_notifications(
-                portal,
+                workspace,
                 http_request,
                 [Mention("abc", "mentioned-user")],
                 author,
             )
-            notify(ObjectModifiedEvent(portal))
+            notify(ObjectModifiedEvent(workspace))
     finally:
         setRequest(None)
         undo_patches()

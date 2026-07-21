@@ -18,10 +18,11 @@ class MentionsGet(Service):
         query = parse_qs(self.request.get("QUERY_STRING", ""))
         user_id = query.get("id", [""])[0].strip()
         search = query.get("search", [""])[0].strip()
-        limit = min(
-            max(int(query.get("limit", [DEFAULT_LIMIT])[0]), 1),
-            MAX_LIMIT,
-        )
+        try:
+            limit = int(query.get("limit", [DEFAULT_LIMIT])[0])
+        except ValueError:
+            limit = DEFAULT_LIMIT
+        limit = min(max(limit, 1), MAX_LIMIT)
 
         # Do not turn this endpoint into a user-directory enumeration API.
         # The picker searches by name, while rendered mentions resolve one

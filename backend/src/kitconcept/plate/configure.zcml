@@ -26,13 +26,13 @@
   <include package=".upgrades" />
 
   <subscriber
-      for="zope.interface.Interface
+      for="plone.dexterity.interfaces.IDexterityContent
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler=".mentions.send_pending_notifications"
       />
 
   <subscriber
-      for="zope.interface.Interface
+      for="plone.dexterity.interfaces.IDexterityContent
            zope.lifecycleevent.interfaces.IObjectModifiedEvent"
       handler=".mentions.send_pending_notifications"
       />
