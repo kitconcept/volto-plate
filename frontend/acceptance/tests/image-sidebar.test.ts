@@ -168,9 +168,7 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
     .locator('[role="radiogroup"][aria-label="Block width"]');
   await expect(blockWidthField).toBeVisible();
 
-  const narrowOption = blockWidthField.locator(
-    'label:has(input[type="radio"][value="narrow"])',
-  );
+  const narrowOption = blockWidthField.getByRole('radio', { name: 'Narrow' });
   await narrowOption.click({ force: true });
 
   await expect(imageBlock).toHaveAttribute(
@@ -180,8 +178,7 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
 
   await expect
     .poll(async () => {
-
-
+      
       const imageNodeHandle = await getNodeByPath(page, editorHandle, [2]);
       const imageNode = (await imageNodeHandle.jsonValue()) as Record<
         string,
