@@ -163,12 +163,15 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
   const { editorHandle, imageBlock } = await openSelectedImageBlockSidebar(page);
 
   await expect(imageBlock).toBeVisible();
-  const blockWidthField = page
-    .locator('#sidebar-properties')
-    .locator('[role="radiogroup"][aria-label="Block width"]');
+  const blockWidthField = page.locator(
+    '#sidebar-properties .field-wrapper-blockWidth',
+  );
   await expect(blockWidthField).toBeVisible();
 
-  const narrowOption = blockWidthField.getByRole('radio', { name: 'Narrow' });
+  const narrowOption = blockWidthField.locator(
+    'label:has(input[type="radio"][value="narrow"])',
+  );
+  await expect(narrowOption).toBeVisible();
   await narrowOption.click({ force: true });
 
   await expect(imageBlock).toHaveAttribute(
