@@ -8,6 +8,12 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.21 (2026-07-22)
+
+### Feature
+
+- Add Plone user mentions with portraits in Plate text and discussion comments. [#mentions](https://github.com/collective/volto-plate/issue/mentions)
+
 ## 1.0.0-alpha.20 (2026-07-17)
 
 ### Feature
