@@ -1,3 +1,4 @@
+from kitconcept.plate.mentions import mentions_utility
 from plone import api
 from plone.restapi.interfaces import IBlockFieldDeserializationTransformer
 from zExceptions import BadRequest
@@ -64,18 +65,32 @@ class CommentsDeserializer:
             # Keep existing discussions if none in request
             block["discussions"] = existing_discussions
 
+        # Mentions may live in the document value or in a comment's
+        # ``contentRich`` value. Notify only nodes introduced by this save;
+        # stable mention ids prevent later, unrelated edits from resending mail.
+        if current_user:
+            utility = mentions_utility()
+            utility.queue_notifications(
+                self.context,
+                utility.new_mentions(block, self._get_existing_block()),
+                current_user,
+            )
+
         return block
+
+    def _get_existing_block(self):
+        """Return the stored somersault block, if there is one."""
+        if hasattr(self.context, "blocks"):
+            blocks = self.context.blocks or {}
+            block = blocks.get("__somersault__")
+            if isinstance(block, dict):
+                return block
+        return {}
 
     def _get_existing_discussions(self):
         """Get existing discussions from the context if available."""
         # Try to get from blocks if context has blocks
-        if hasattr(self.context, "blocks"):
-            blocks = self.context.blocks
-            if blocks and "__somersault__" in blocks:
-                block_data = blocks["__somersault__"]
-                if isinstance(block_data, dict):
-                    return block_data.get("discussions", {})
-        return {}
+        return self._get_existing_block().get("discussions", {})
 
     def _validate_unchanged_comments(
         self, incoming_discussions, existing_discussions, current_user
@@ -111,10 +126,12 @@ class CommentsDeserializer:
                     if not incoming_comment:
                         # Comment was removed - not allowed
                         raise BadRequest(
-                            f"Cannot delete comment {comment_id} created by another user"
+                            "Cannot delete comment "
+                            f"{comment_id} created by another user"
                         )
                     # Comment still exists - verify it's unchanged
                     if incoming_comment != existing_comment:
                         raise BadRequest(
-                            f"Cannot modify comment {comment_id} created by another user"
+                            "Cannot modify comment "
+                            f"{comment_id} created by another user"
                         )

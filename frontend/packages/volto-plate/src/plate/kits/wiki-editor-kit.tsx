@@ -22,7 +22,6 @@ import { FontKit } from '@plone/plate/components/editor/plugins/font-kit';
 import { LineHeightKit } from '@plone/plate/components/editor/plugins/line-height-kit';
 import { ListKit } from '@plone/plate/components/editor/plugins/list-kit';
 import { MarkdownKit } from '@plone/plate/components/editor/plugins/markdown-kit';
-import { MentionKit } from '@plone/plate/components/editor/plugins/mention-kit';
 import { BlockWidthKit } from '@plone/plate/components/editor/plugins/block-width-kit';
 import { StyleFieldsKit } from '@plone/plate/components/editor/plugins/style-fields-kit';
 import { createSlashKit } from '@plone/plate/components/editor/plugins/slash-kit';
@@ -36,6 +35,7 @@ import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
 import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image-paste';
 import { VoltoImageDropPlugin } from '../plugins/volto-image-drop';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
+import { VoltoMentionKit } from '../plugins/volto-mention-kit';
 import { SidebarPlugin } from '../plugins/volto-sidebar';
 import { slashMenu } from '../wiki/slash-menu';
 
@@ -56,7 +56,7 @@ export const WikiEditorKit = [
   ...CalloutKit,
   ...ColumnKit,
   ...VoltoLinkKit,
-  ...MentionKit,
+  ...VoltoMentionKit,
 
   // Marks
   ...BasicMarksKit,

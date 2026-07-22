@@ -12,7 +12,6 @@ import { BaseLineHeightKit } from '@plone/plate/components/editor/plugins/line-h
 import { BaseLinkKit } from '@plone/plate/components/editor/plugins/link-base-kit';
 import { BaseListKit } from '@plone/plate/components/editor/plugins/list-base-kit';
 import { BaseMediaKit } from '@plone/plate/components/editor/plugins/media-base-kit';
-import { BaseMentionKit } from '@plone/plate/components/editor/plugins/mention-base-kit';
 import { BaseBlockWidthKit } from '@plone/plate/components/editor/plugins/block-width-base-kit';
 import { BaseStyleFieldsKit } from '@plone/plate/components/editor/plugins/style-fields-base-kit';
 import { BaseTableKit } from '@plone/plate/components/editor/plugins/table-base-kit';
@@ -22,6 +21,7 @@ import { BaseToggleKit } from '@plone/plate/components/editor/plugins/toggle-bas
 import { overrideKitPlugin } from './override-kit-plugin';
 import { BaseCommentKit } from '../plugins/comment-base-kit';
 import { VoltoLinkElementStatic } from '../plugins/volto-link-node-static';
+import { VoltoMentionBaseKit } from '../plugins/volto-mention-kit';
 
 const wikiBaseLinkKit = overrideKitPlugin(BaseLinkKit, KEYS.link, {
   node: {
@@ -39,7 +39,7 @@ export const wikiBaseEditorKit = [
   ...BaseCalloutKit,
   ...BaseColumnKit,
   ...wikiBaseLinkKit,
-  ...BaseMentionKit,
+  ...VoltoMentionBaseKit,
   ...BaseBasicMarksKit,
   ...BaseFontKit,
   ...BaseListKit,
