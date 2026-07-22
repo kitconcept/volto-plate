@@ -1,1 +1,0 @@
-Refactored mention extraction and notification into a named `IMentions` utility, backed by shared `types` and mail-settings helpers. @ericof

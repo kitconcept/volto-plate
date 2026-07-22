@@ -1,1 +1,0 @@
-Reorganized the backend test suite to mirror the package layout and added functional mail-delivery coverage through `collective.MockMailHost`. @ericof

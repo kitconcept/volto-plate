@@ -7,6 +7,42 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a21 (2026-07-22)
+
+### Backend
+
+
+#### New features:
+
+- Add a permission-scoped @mentions user search endpoint and email notifications for new Plate mentions. [#mentions](https://github.com/kitconcept/volto-plate/issues/mentions)
+
+
+#### Internal:
+
+- Refactored mention extraction and notification into a named `IMentions` utility, backed by shared `types` and mail-settings helpers. @ericof 
+
+
+#### Tests
+
+- Reorganized the backend test suite to mirror the package layout and added functional mail-delivery coverage through `collective.MockMailHost`. @ericof 
+
+
+
+### Frontend
+
+#### Feature
+
+- Add Plone user mentions with portraits in Plate text and discussion comments. [#mentions](https://github.com/collective/volto-plate/issue/mentions)
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a20 (2026-07-17)
 
 ### Backend
