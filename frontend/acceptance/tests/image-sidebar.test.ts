@@ -30,7 +30,7 @@ async function getRootVariable(
   page: Parameters<typeof test>[0]['page'],
   name: string,
 ) {
-  return page.evaluate((variableName) => {
+  return page.evaluate((variableName: string) => {
     return getComputedStyle(document.documentElement)
       .getPropertyValue(variableName)
       .trim();
@@ -168,11 +168,8 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
     .locator('[role="radiogroup"][aria-label="Block width"]');
   await expect(blockWidthField).toBeVisible();
 
-  await blockWidthField
-    .getByRole('radio', { name: 'Narrow' })
-    .check({ force: true });
-
-  const expectedWidth = await getRootVariable(page, '--narrow-container-width');
+  const narrowOption = blockWidthField.getByRole('radio', { name: 'Narrow' });
+  await narrowOption.click({ force: true });
 
   await expect(imageBlock).toHaveAttribute(
     'style',
@@ -191,6 +188,7 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
     })
     .toBe('narrow');
 
+  const expectedWidth = await getRootVariable(page, '--narrow-container-width');
   await expect
     .poll(async () => getInheritedBlockWidth(imageBlock))
     .toBe(expectedWidth);
