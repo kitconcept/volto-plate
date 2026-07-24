@@ -6,6 +6,10 @@ vi.mock('../components/Blocks/Image/Edit', () => ({
   default: vi.fn(),
 }));
 
+vi.mock('../components/Blocks/Image/View', () => ({
+  default: vi.fn(),
+}));
+
 describe('config/blocks', () => {
   it('registers the blockWidth style field utility', () => {
     const registerUtility = vi.fn();

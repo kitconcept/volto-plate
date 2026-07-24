@@ -2,10 +2,20 @@
   text-align: var(--block-alignment, center);
 }
 .block-plateimage img {
-  position: relative;
-  z-index: 2; // needed to be able to click on the image when it is floating
+  display: inline-block;
   max-width: var(--block-size, 100%);
+}
+.block-plateimage figure {
+  position: relative;
+  z-index: 2;
+  max-width: var(--block-size, 100%);
+  margin: 0;
   float: var(--block-alignment);
+  margin-inline: auto;
+}
+
+.block-plateimage a figcaption {
+  text-decoration: underline;
 }
 
 .block-plateimage[data-style-align='left'],
@@ -14,5 +24,43 @@
 
   .block-inner-container {
     padding-bottom: 0; // No padding-bottom when the image is floated, as it looks weird and is not needed.
+  }
+}
+
+.image-zoom-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: var(--block-size, 100%);
+
+  [data-rmiz-content] img {
+    // Pointer only when the image is linked (href), default cursor otherwise.
+    cursor: default;
+  }
+
+  &.has-link [data-rmiz-content] img {
+    cursor: pointer;
+  }
+
+  .image-zoom-button {
+    position: absolute;
+    z-index: 3;
+    right: 18px;
+    bottom: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border: 0;
+    border-radius: 4px;
+    background: rgb(0 0 0 / 55%);
+    color: #fff;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+  }
+
+  &:hover .image-zoom-button,
+  .image-zoom-button:focus-visible {
+    opacity: 1;
   }
 }

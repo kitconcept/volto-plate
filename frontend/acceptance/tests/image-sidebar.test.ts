@@ -30,7 +30,7 @@ async function getRootVariable(
   page: Parameters<typeof test>[0]['page'],
   name: string,
 ) {
-  return page.evaluate((variableName) => {
+  return page.evaluate((variableName: string) => {
     return getComputedStyle(document.documentElement)
       .getPropertyValue(variableName)
       .trim();
@@ -114,20 +114,24 @@ async function openSelectedImageBlockSidebar(
     name: 'Block',
     exact: true,
   });
+
   const altTextField = page.locator('#sidebar-properties').getByRole('textbox', {
     name: 'Alt text',
   });
+  const blockWidthField = page.locator(
+    '#sidebar-properties .field-wrapper-blockWidth',
+  );
 
   await expect(editorImage).toBeVisible();
   await expect(imageBlock).toBeVisible();
 
   for (let attempt = 0; attempt < 3; attempt += 1) {
     await editorImage.click({ force: true });
-    await imageBlock.click({ force: true });
     await blockTab.click({ force: true });
 
     try {
       await expect(altTextField).toBeVisible({ timeout: 3000 });
+      await expect(blockWidthField).toBeVisible({ timeout: 3000 });
       break;
     } catch (error) {
       if (attempt === 2) throw error;
@@ -163,14 +167,16 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
   const { editorHandle, imageBlock } = await openSelectedImageBlockSidebar(page);
 
   await expect(imageBlock).toBeVisible();
-  const blockWidthField = page.getByRole('radiogroup', { name: 'Block width' });
+  const blockWidthField = page.locator(
+    '#sidebar-properties .field-wrapper-blockWidth',
+  );
   await expect(blockWidthField).toBeVisible();
 
-  await blockWidthField
-    .getByRole('radio', { name: 'Narrow' })
-    .check({ force: true });
-
-  const expectedWidth = await getRootVariable(page, '--narrow-container-width');
+  const narrowOption = blockWidthField.locator(
+    'label:has(input[type="radio"][value="narrow"])',
+  );
+  await expect(narrowOption).toBeVisible();
+  await narrowOption.click({ force: true });
 
   await expect(imageBlock).toHaveAttribute(
     'style',
@@ -179,6 +185,7 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
 
   await expect
     .poll(async () => {
+
       const imageNodeHandle = await getNodeByPath(page, editorHandle, [2]);
       const imageNode = (await imageNodeHandle.jsonValue()) as Record<
         string,
@@ -189,6 +196,7 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
     })
     .toBe('narrow');
 
+  const expectedWidth = await getRootVariable(page, '--narrow-container-width');
   await expect
     .poll(async () => getInheritedBlockWidth(imageBlock))
     .toBe(expectedWidth);
