@@ -77,6 +77,13 @@ body {
   margin-inline: auto;
   place-content: initial !important; // !important needed for Volto current CSS set :(
 }
+.slate-editor
+  h1.documentFirstHeading
+  .block-inner-container
+  > [aria-hidden='true'] {
+  top: 0;
+  translate: none;
+}
 
 .slate-a,
 .slate-a:hover {
