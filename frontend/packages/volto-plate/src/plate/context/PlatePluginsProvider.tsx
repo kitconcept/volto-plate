@@ -6,6 +6,8 @@ import type {
   TDiscussion,
   TDiscussionUser,
 } from '@plone/plate/components/editor/plugins/discussion-kit';
+import { BasicMarksKit } from '@plone/plate/components/editor/plugins/basic-marks-kit';
+import { VoltoMentionKit } from '../plugins/volto-mention-kit';
 
 type AuthTokenPayload = {
   fullname?: string;
@@ -98,6 +100,7 @@ export function PlatePluginsProvider({
       discussions,
       setDiscussions,
       users: resolvedUsers,
+      commentEditorPlugins: [...BasicMarksKit, ...VoltoMentionKit],
     }),
     [currentUser, discussions, readOnly, resolvedUsers, setDiscussions],
   );

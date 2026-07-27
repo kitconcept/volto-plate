@@ -2,7 +2,7 @@ import type { ConfigType } from '@plone/registry';
 import { ImageSchema } from '../components/Blocks/Image/schema';
 import type { BlockConfigBase } from '@plone/types';
 import ImageEdit from '../components/Blocks/Image/Edit';
-
+import ImageView from '../components/Blocks/Image/View';
 // Backport Seven's typings
 declare module '@plone/types' {
   export interface BlocksConfigData {
@@ -81,6 +81,7 @@ export default function install(config: ConfigType) {
     id: 'plateimage',
     blockSchema: ImageSchema,
     edit: ImageEdit,
+    view: ImageView,
     restricted: true,
     schemaEnhancer: undefined,
   };

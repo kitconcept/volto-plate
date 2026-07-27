@@ -16,13 +16,16 @@ class Layer(PloneSandboxLayer):
         # Load any other ZCML that is required for your tests.
         # The z3c.autoinclude feature is disabled in the Plone fixture base
         # layer.
+        import collective.MockMailHost
         import plone.restapi
 
         self.loadZCML(package=plone.restapi)
+        self.loadZCML(package=collective.MockMailHost)
         self.loadZCML(package=kitconcept.plate)
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, "kitconcept.plate:default")
+        applyProfile(portal, "collective.MockMailHost:default")
 
 
 FIXTURE = Layer()

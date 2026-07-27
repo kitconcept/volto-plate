@@ -36,6 +36,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "horse-with-no-namespace>=20250408.0",
+    "collective.MockMailHost",
     "Products.PrintingMailHost",
     "plone.app.testing",
     "plone.restapi[test]",

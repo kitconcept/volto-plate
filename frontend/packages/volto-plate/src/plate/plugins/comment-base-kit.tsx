@@ -83,6 +83,19 @@ export const BaseCommentKit = [
   suggestionPlugin,
 ];
 
+const hasMentionId = (value: unknown, mentionId: string): boolean => {
+  if (Array.isArray(value)) {
+    return value.some((item) => hasMentionId(item, mentionId));
+  }
+  if (!value || typeof value !== 'object') return false;
+
+  const record = value as Record<string, unknown>;
+  return (
+    record.mentionId === mentionId ||
+    Object.values(record).some((item) => hasMentionId(item, mentionId))
+  );
+};
+
 const ReadOnlyBlockDiscussionContent = ({
   blockPath,
   children,
@@ -148,6 +161,38 @@ const ReadOnlyBlockDiscussionContent = ({
   const [triggerAnchorElement, setTriggerAnchorElement] =
     React.useState<HTMLElement | null>(null);
   const open = _open || selected;
+
+  React.useEffect(() => {
+    const mentionId = new URLSearchParams(window.location.search).get(
+      'plateMention',
+    );
+    if (!mentionId) return;
+
+    const discussion = resolvedDiscussions.find((item) =>
+      hasMentionId(item.comments, mentionId),
+    );
+    if (!discussion) return;
+
+    setCommentOption('activeId', discussion.id);
+    setOpen(true);
+
+    let target: HTMLElement | null = null;
+    let highlightTimer: number | undefined;
+    const scrollTimer = window.setTimeout(() => {
+      target = document.getElementById(`plate-mention-${mentionId}`);
+      target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target?.classList.add('ring-2', 'ring-primary');
+
+      highlightTimer = window.setTimeout(() => {
+        target?.classList.remove('ring-2', 'ring-primary');
+      }, 3000);
+    }, 0);
+    return () => {
+      window.clearTimeout(scrollTimer);
+      if (highlightTimer) window.clearTimeout(highlightTimer);
+      target?.classList.remove('ring-2', 'ring-primary');
+    };
+  }, [resolvedDiscussions, setCommentOption]);
 
   const activeAnchorElement = React.useMemo(() => {
     let activeNode: NodeEntry | undefined;

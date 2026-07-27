@@ -17,7 +17,15 @@ export function ImageSchema({ formData = {} }: ImageSchemaArgs): JSONSchema {
         title: 'Default',
         fields: [
           ...(formData.url
-            ? ['url', 'alt', 'blockWidth', 'align', 'size']
+            ? [
+                'url',
+                'alt',
+                'title',
+                'description',
+                'blockWidth',
+                'align',
+                'size',
+              ]
             : []),
         ],
       },
@@ -51,6 +59,14 @@ export function ImageSchema({ formData = {} }: ImageSchemaArgs): JSONSchema {
             Leave empty if the image is purely decorative.
           </>
         ),
+      },
+      title: {
+        title: 'Title',
+        widget: 'text',
+      },
+      description: {
+        title: 'Description',
+        widget: 'textarea',
       },
       blockWidth: {
         title: 'Block width',

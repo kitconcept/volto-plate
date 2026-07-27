@@ -1,6 +1,6 @@
 {
   "name": "@kitconcept/volto-plate",
-  "version": "1.0.0-alpha.20",
+  "version": "1.0.0-alpha.21",
   "description": "An add-on that adds a Plate.js block for Volto",
   "main": "src/index.ts",
   "license": "MIT",
@@ -38,11 +38,13 @@
     "@platejs/floating": "^49.0.0",
     "@platejs/link": "^49.0.0",
     "@platejs/slash-command": "^49.0.0",
+    "@platejs/mention": "^49.0.0",
     "@plone/plate": "workspace:*",
     "@plone/components": "workspace:^",
     "@plone/helpers": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1",
-    "react-aria-components": "catalog:"
+    "react-aria-components": "catalog:",
+    "react-medium-image-zoom": "^5.4.8"
   },
   "peerDependencies": {
     "@platejs/ai": "^50.3.7",
