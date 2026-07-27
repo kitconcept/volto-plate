@@ -21,6 +21,7 @@ import { BaseToggleKit } from '@plone/plate/components/editor/plugins/toggle-bas
 
 import { overrideKitPlugin } from './override-kit-plugin';
 import { BaseCommentKit } from '../plugins/comment-base-kit';
+import { BaseDateKit } from '../plugins/date-base-kit';
 import { VoltoLinkElementStatic } from '../plugins/volto-link-node-static';
 
 const wikiBaseLinkKit = overrideKitPlugin(BaseLinkKit, KEYS.link, {
@@ -40,6 +41,7 @@ export const wikiBaseEditorKit = [
   ...BaseColumnKit,
   ...wikiBaseLinkKit,
   ...BaseMentionKit,
+  ...BaseDateKit,
   ...BaseBasicMarksKit,
   ...BaseFontKit,
   ...BaseListKit,

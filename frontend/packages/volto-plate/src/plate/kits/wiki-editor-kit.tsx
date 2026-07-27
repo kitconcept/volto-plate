@@ -1,4 +1,4 @@
-import { type Value, TrailingBlockPlugin } from 'platejs';
+import { KEYS, type Value, TrailingBlockPlugin } from 'platejs';
 import { type TPlateEditor, useEditorRef } from 'platejs/react';
 
 // import { AIKit } from '@plone/plate/components/editor/plugins/ai-kit';
@@ -37,11 +37,19 @@ import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image
 import { VoltoImageDropPlugin } from '../plugins/volto-image-drop';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { SidebarPlugin } from '../plugins/volto-sidebar';
+import { DateKit } from '../plugins/date-kit';
 import { slashMenu } from '../wiki/slash-menu';
+import { WikiSlashInputElement } from '../wiki/date-slash-input';
+import { overrideKitPlugin } from './override-kit-plugin';
 
-const WikiSlashKit = createSlashKit({
-  menu: slashMenu,
-});
+// Swap in the addon's own slash-input component so typing a second "/" right
+// after the slash menu opens (i.e. "//") shows a date picker instead of the
+// command list — see wiki/date-slash-input.tsx.
+const WikiSlashKit = overrideKitPlugin(
+  createSlashKit({ menu: slashMenu }),
+  KEYS.slashInput,
+  { node: { component: WikiSlashInputElement } },
+);
 
 export const WikiEditorKit = [
   // ...AIKit,
@@ -57,6 +65,7 @@ export const WikiEditorKit = [
   ...ColumnKit,
   ...VoltoLinkKit,
   ...MentionKit,
+  ...DateKit,
 
   // Marks
   ...BasicMarksKit,
