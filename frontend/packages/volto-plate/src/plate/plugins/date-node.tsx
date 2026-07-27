@@ -46,9 +46,7 @@ export function DateElement(props: PlateElementProps<TDateElement>) {
   const locale = intl?.locale;
   const translate = React.useCallback(
     (id: string) =>
-      intl?.formatMessage
-        ? intl.formatMessage({ defaultMessage: id, id })
-        : id,
+      intl?.formatMessage ? intl.formatMessage({ defaultMessage: id, id }) : id,
     [intl],
   );
 
@@ -67,14 +65,15 @@ export function DateElement(props: PlateElementProps<TDateElement>) {
     >
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverAnchor asChild>
-          <span
-            className="inline-flex items-center gap-1"
+          <button
+            className="inline-flex items-center gap-1 border-none bg-transparent p-0"
             contentEditable={false}
             onClick={() => setOpen(true)}
+            type="button"
           >
             <CalendarIcon className="size-3.5" />
             {formatDatePillLabel(element.value, locale)}
-          </span>
+          </button>
         </PopoverAnchor>
 
         <PopoverContent align="start" className="w-auto p-0">

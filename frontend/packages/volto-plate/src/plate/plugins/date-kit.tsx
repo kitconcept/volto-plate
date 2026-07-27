@@ -8,8 +8,7 @@ export const BaseDatePlugin = createSlatePlugin({
   node: { isElement: true, isInline: true, isVoid: true },
 });
 
-export const DatePlugin = toPlatePlugin(BaseDatePlugin).withComponent(
-  DateElement,
-);
+export const DatePlugin =
+  toPlatePlugin(BaseDatePlugin).withComponent(DateElement);
 
 export const DateKit = [DatePlugin];

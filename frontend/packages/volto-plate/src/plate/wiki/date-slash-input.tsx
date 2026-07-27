@@ -163,14 +163,7 @@ export function WikiSlashInputElement(
                 <InlineComboboxGroupLabel>{group}</InlineComboboxGroupLabel>
 
                 {items.map(
-                  ({
-                    focusEditor,
-                    icon,
-                    keywords,
-                    label,
-                    value,
-                    onSelect,
-                  }) => (
+                  ({ focusEditor, icon, keywords, label, value, onSelect }) => (
                     <InlineComboboxItem
                       key={value}
                       value={value}
