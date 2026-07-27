@@ -136,7 +136,7 @@ export function WikiSlashInputElement(
             // box-shadow, since the panel fills this container almost
             // exactly with no room for the shadow's blur/spread to bleed
             // outward. `overflow-visible` here is what lets it actually show.
-            className="max-h-[500px] w-[300px] overflow-visible bg-transparent shadow-none"
+            className="max-h-[500px] w-[320px] overflow-visible bg-transparent shadow-none"
           >
             {/*
               InlineCombobox only opens its floating popover once it has
