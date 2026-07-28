@@ -115,9 +115,11 @@ async function openSelectedImageBlockSidebar(
     exact: true,
   });
 
-  const altTextField = page.locator('#sidebar-properties').getByRole('textbox', {
-    name: 'Alt text',
-  });
+  const altTextField = page
+    .locator('#sidebar-properties')
+    .getByRole('textbox', {
+      name: 'Alt text',
+    });
   const blockWidthField = page.locator(
     '#sidebar-properties .field-wrapper-blockWidth',
   );
@@ -149,56 +151,60 @@ test('Selecting a Volto-adapted Plate image shows the sidebar form', async ({
   page,
 }) => {
   await openImageSidebarPage(page);
-  await expect(page.locator('#sidebar-properties').getByLabel('Alt text')).toHaveCount(0);
+  await expect(
+    page.locator('#sidebar-properties').getByLabel('Alt text'),
+  ).toHaveCount(0);
   await openSelectedImageBlockSidebar(page);
   await expect(
     page.locator('#sidebar-properties').getByLabel('Alt text'),
   ).toHaveValue('Inline test image');
 });
 
-// Disabling the test temporarily because it is failing in CI. It works locally, so it may be a timing issue or a difference in the environment. We should re-enable it once we find the cause.
-// test('Changing Block width in the sidebar updates the rendered image width', async ({
-//   page,
-// }) => {
-//   await openImageSidebarPage(page, {
-//     contentId: 'image-sidebar-block-width-page',
-//     contentTitle: 'Image sidebar block width page',
-//   });
+test('Changing Block width in the sidebar updates the rendered image width', async ({
+  page,
+}) => {
+  await openImageSidebarPage(page, {
+    contentId: 'image-sidebar-block-width-page',
+    contentTitle: 'Image sidebar block width page',
+  });
 
-//   const { editorHandle, imageBlock } = await openSelectedImageBlockSidebar(page);
+  const editorHandle = await getEditorHandle(
+    page,
+    page.locator('.slate-editor[data-slate-editor]'),
+  );
 
-//   await expect(imageBlock).toBeVisible();
-//   const blockWidthField = page.locator(
-//     '#sidebar-properties .field-wrapper-blockWidth',
-//   );
-//   await expect(blockWidthField).toBeVisible();
+  const editorImage = page.locator(
+    '.slate-editor img[alt="Inline test image"]',
+  );
+  const imageBlock = editorImage.locator(
+    'xpath=ancestor::*[@data-slate-node="element"][1]',
+  );
 
-//   const narrowOption = blockWidthField.locator(
-//     'label:has(input[type="radio"][value="narrow"])',
-//   );
-//   await expect(narrowOption).toBeVisible();
-//   await narrowOption.click({ force: true });
+  await editorImage.click({ force: true });
 
-//   await expect(imageBlock).toHaveAttribute(
-//     'style',
-//     /--block-width:\s*var\(--narrow-container-width\)/,
-//   );
+  const narrowOption = page
+    .locator('#sidebar-properties .field-wrapper-blockWidth')
+    .getByRole('radio', { name: 'Narrow' });
+  await narrowOption.click({ force: true });
+  await expect(imageBlock).toHaveAttribute(
+    'style',
+    /--block-width:\s*var\(--narrow-container-width\)/,
+  );
 
-//   await expect
-//     .poll(async () => {
+  await expect
+    .poll(async () => {
+      const imageNodeHandle = await getNodeByPath(page, editorHandle, [2]);
+      const imageNode = (await imageNodeHandle.jsonValue()) as Record<
+        string,
+        unknown
+      >;
 
-//       const imageNodeHandle = await getNodeByPath(page, editorHandle, [2]);
-//       const imageNode = (await imageNodeHandle.jsonValue()) as Record<
-//         string,
-//         unknown
-//       >;
+      return imageNode.blockWidth;
+    })
+    .toBe('narrow');
 
-//       return imageNode.blockWidth;
-//     })
-//     .toBe('narrow');
-
-//   const expectedWidth = await getRootVariable(page, '--narrow-container-width');
-//   await expect
-//     .poll(async () => getInheritedBlockWidth(imageBlock))
-//     .toBe(expectedWidth);
-// });
+  const expectedWidth = await getRootVariable(page, '--narrow-container-width');
+  await expect
+    .poll(async () => getInheritedBlockWidth(imageBlock))
+    .toBe(expectedWidth);
+});
