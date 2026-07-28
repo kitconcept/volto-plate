@@ -361,6 +361,10 @@ export const useResolveSuggestion = (
           if (ElementApi.isElement(node)) {
             return api.suggestion.nodeId(node);
           }
+
+          // === START CUSTOMIZATION ===
+          return undefined;
+          // === END CUSTOMIZATION ===
         })
         .filter(Boolean),
     );

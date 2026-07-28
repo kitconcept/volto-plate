@@ -622,7 +622,13 @@ export const CommentCreateForm = React.forwardRef<
               }}
               placeholder={discussionId ? 'Reply to thread...' : 'Reply...'}
               autoComplete="off"
+              // === START CUSTOMIZATION ===
+              // eslint-disable-next-line jsx-a11y/no-autofocus -- opt-in via
+              // the `autoFocus` prop, only set when explicitly requested by
+              // the caller (e.g. right after clicking "Reply"), not on
+              // page load.
               autoFocus={autoFocus}
+              // === END CUSTOMIZATION ===
             />
 
             <Button
