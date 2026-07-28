@@ -1705,6 +1705,9 @@ importers:
 
   packages/volto-plate:
     dependencies:
+      '@internationalized/date':
+        specifier: ^3.12.1
+        version: 3.12.1
       '@platejs/ai':
         specifier: ^50.3.7
         version: 50.3.7(platejs@49.2.21(@types/react@18.3.26)(immer@10.1.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(scheduler@0.23.2)(use-sync-external-store@1.6.0(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.9.3)
@@ -1721,6 +1724,9 @@ importers:
         specifier: ^49.0.0
         version: 49.1.1(platejs@49.2.21(@types/react@18.3.26)(immer@10.1.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(scheduler@0.23.2)(use-sync-external-store@1.6.0(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@platejs/mention':
+        specifier: ^49.0.0
+        version: 49.0.0(platejs@49.2.21(@types/react@18.3.26)(immer@10.1.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(scheduler@0.23.2)(use-sync-external-store@1.6.0(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@platejs/slash-command':
         specifier: ^49.0.0
         version: 49.0.0(platejs@49.2.21(@types/react@18.3.26)(immer@10.1.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(scheduler@0.23.2)(use-sync-external-store@1.6.0(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@plone/components':
@@ -1756,6 +1762,9 @@ importers:
       react:
         specifier: 18.2.0
         version: 18.2.0
+      react-aria-components:
+        specifier: 'catalog:'
+        version: 1.17.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
