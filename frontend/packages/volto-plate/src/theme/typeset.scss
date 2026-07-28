@@ -1,0 +1,668 @@
+/*
+ * shadcn/typeset
+ * https://ui.shadcn.com/docs/typeset.
+ */
+
+// Originally it was layered with `@layer components` but then the ones in VLT take precedence.
+// It might be doing too much, but there is a lot of "knowhow" in this CSS,
+// so for now I kept it as it is. If some sections gives problems, let's comment them.
+// eg. the images in the mentions are borked out and need a `not-typeset` class to be applied to them,
+// or remove the img, video where necessary from the definitions.
+
+.typeset {
+  --typeset-font-body: inherit;
+  --typeset-font-heading: var(--font-heading);
+  /* The design sets code in Courier. */
+  --typeset-font-mono: Courier, var(--font-mono);
+  /* Body text is 16/24 in the design. The root font size is 18px here, so this
+     has to be pinned: `1em` would inherit 18px and scale every heading with it. */
+  --typeset-size: 16px;
+  --typeset-leading: 1.5;
+  /* Spacing is absolute in the design, and neither em (scales with the
+     element's own font size) nor rem (18px root) gives the right value.
+     16px is the gap between body blocks in the Intranet 3.0 reference. */
+  --typeset-flow: 16px;
+  /* Palette from the Intranet 3.0 reference: text is a soft near-black, not
+     pure black, and captions/muted text are a cool grey. */
+  --typeset-foreground: #252525;
+  /* VLT resolves content links through this token and falls back to the
+     foreground colour when it is unset, which is why links render black.
+     Supplying it here fixes VLT's own rule too, so neither has to
+     out-specify the other. */
+  --link-foreground-color: #007eb1;
+  --radius: 0;
+}
+
+.typeset {
+  color: var(--typeset-foreground);
+  font-family: var(--typeset-font-body);
+  font-size: calc(var(--typeset-size) * 1.125);
+  /* Body text is Inter Light in the design. */
+  font-weight: 300;
+  line-height: var(--typeset-leading);
+  margin-trim: block-start;
+  overflow-wrap: break-word;
+
+  @media (min-width: 48rem), print {
+    font-size: var(--typeset-size);
+  }
+
+  /* Caption / muted grey from the reference. */
+  --typeset-muted: #878f93;
+  --typeset-rule: var(
+    --color-border,
+    color-mix(in oklab, currentColor 20%, transparent)
+  );
+}
+
+.contenttype-workspace,
+.contenttype-wikipage {
+  --default-container-width: 780px;
+  .documentFirstHeading {
+    .block-inner-container {
+      padding-top: 40px;
+      padding-bottom: 20px;
+    }
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .typeset
+    *:not(
+      :where(
+          .not-typeset,
+          [data-not-typeset],
+          .not-typeset *,
+          [data-not-typeset] *
+        )
+    ) {
+    margin-top: 0;
+    margin-bottom: 0;
+    /* Flow spacing is owned by the margins below. The block inner container
+       used to add another `--typeset-flow` on top of them, which doubled
+       every gap. */
+
+    /* Every top-level block owns the flow space above it; the rules below
+       specialise it (34px before a heading, 12px after one, 40px after an
+       image). Enumerating element types instead left the Plone blocks —
+       images, TOC, callouts — at 0. */
+    &:where(.typeset > *) {
+      margin-block-start: var(--typeset-flow);
+    }
+
+    /* Paragraphs. Plate renders them as `div.slate-p`, not `p`, so the bare
+       element selector never matches in the editor or the renderer.
+       Plate also puts `py-1` on the element in both modes; the flow margins
+       own the vertical rhythm, so it is cleared here rather than in a
+       shadowed component — one rule covers the editor and the renderer. */
+    &:where(p, .slate-p) {
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+      padding-block: 0;
+
+      &:has(ul > li, ol > li) {
+        &::before {
+          margin-left: 30px;
+        }
+      }
+    }
+
+    /* Headings. Sizes are em against the 16px body, so the ratios hold if
+       `--typeset-size` changes. The reference puts 34px above a heading and
+       12px below it (the rule after the scale). */
+    &:where(h1, h2, h3, h4, h5, h6) {
+      color: var(--typeset-foreground);
+      font-family: var(--typeset-font-heading);
+      font-weight: 700;
+      margin-block-end: 0;
+      margin-block-start: 34px;
+    }
+    /* 36/42 */
+    &:where(h1) {
+      font-size: 2.25em;
+      line-height: 1.1667;
+    }
+    /* 30/36 */
+    &:where(h2) {
+      font-size: 1.875em;
+      line-height: 1.2;
+    }
+    /* 24/30 */
+    &:where(h3) {
+      font-size: 1.5em;
+      line-height: 1.25;
+    }
+    /* 21/27 */
+    &:where(h4) {
+      font-size: 1.3125em;
+      line-height: 1.2857;
+    }
+    /* 18/24 */
+    &:where(h5) {
+      font-size: 1.125em;
+      line-height: 1.3333;
+    }
+    /* 16/24 */
+    &:where(h6) {
+      font-size: 1em;
+      line-height: 1.5;
+    }
+    /* Anchors. */
+    &:where([id]) {
+      scroll-margin-block-start: var(--typeset-flow);
+    }
+
+    /* Headings own the space below them: 12px in the reference, tighter than
+       the 16px between body blocks. Set on the following element rather than
+       as the heading's `margin-block-end` so it doesn't collapse against it. */
+    &:where(:is(h1, h2, h3, h4, h5, h6):not(.documentFirstHeading) + *) {
+      margin-block-start: 20px;
+    }
+
+    &:where(h1 + h2),
+    &:where(h1 + h3) {
+      margin-block-start: 60px;
+    }
+    &:where(:is(h1, h2, h3, h4) :is(code)) {
+      font-size: 0.9em;
+    }
+
+    /* Links. */
+    /* Links keep the body size and weight in the design. `font-size` has to be
+       restated: VLT sets a blanket `body, h1..h6, p, a, li { font-size: 18px }`,
+       and a matching rule beats inheritance no matter how low its specificity. */
+    &:where(a) {
+      color: var(--link-foreground-color, #007eb1);
+      font-size: inherit;
+      font-weight: inherit;
+      text-decoration-color: currentColor;
+      /* The reference leaves body links un-underlined. */
+      text-decoration-line: none;
+    }
+    &:where(a:hover) {
+      text-decoration-color: currentColor;
+      text-decoration-line: underline;
+    }
+    &:where(a:focus-visible) {
+      border-radius: 0.125em;
+      outline: 2px solid var(--color-ring, currentColor);
+      outline-offset: 2px;
+    }
+    &:where(:is(h1, h2, h3, h4, h5, h6) :is(a)) {
+      font-weight: inherit;
+    }
+
+    /* Inline semantics. */
+    &:where(strong, b) {
+      font-weight: 700;
+    }
+    &:where(:is(h1, h2, h3, h4) :is(strong, b)) {
+      font-weight: 700;
+    }
+    &:where(mark) {
+      padding: 0.05em 0.15em;
+      border-radius: 0.2em;
+      background-color: color-mix(
+        in oklab,
+        oklch(0.86 0.17 95) 40%,
+        transparent
+      );
+      color: inherit;
+    }
+    &:where(abbr[title]) {
+      cursor: help;
+      text-decoration-line: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 0.2em;
+    }
+    /* Strikethrough keeps the body colour in the design. */
+    &:where(del, s) {
+      text-decoration-line: line-through;
+    }
+    /* 10.32px against the 16px body. */
+    &:where(sup, sub) {
+      position: relative;
+      font-size: 0.645em;
+      line-height: 0;
+      vertical-align: baseline;
+    }
+    &:where(sup) {
+      top: -0.5em;
+    }
+    &:where(sub) {
+      bottom: -0.25em;
+    }
+    &:where(sup a) {
+      font-weight: 500;
+      text-decoration-line: none;
+    }
+
+    /* Lists. */
+    &:where(ul) {
+      list-style-type: disc;
+    }
+    &:where(ol) {
+      list-style-type: decimal;
+    }
+    &:where(ul ul) {
+      list-style-type: circle;
+    }
+    &:where(ul ul ul) {
+      list-style-type: square;
+    }
+    &:where(ol[type='a' i]) {
+      list-style-type: lower-alpha;
+    }
+    &:where(ol[type='i' i]) {
+      list-style-type: lower-roman;
+    }
+    &:where(ol[type='A' s]) {
+      list-style-type: upper-alpha;
+    }
+    &:where(ol[type='I' s]) {
+      list-style-type: upper-roman;
+    }
+    /* 22px indent in the reference. */
+    &:where(ul, ol) {
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+      padding-inline-start: 22px;
+    }
+    /* Plate emits one `div.slate-p` block per list item, each wrapping its own
+       `ol`/`ul`, so the space between items belongs on adjacent list blocks —
+       `li` margins never apply (every `li` is a first child) and neither do
+       adjacent-list ones. A list opening after other content keeps the full
+       flow margin. 9px, per the Intranet 3.0 reference. */
+    &:where(.slate-p:has(:is(ol, ul)) + .slate-p:has(:is(ol, ul))) {
+      margin-block-start: 5px;
+    }
+    /* `font-size` for the same reason as links above. */
+    &:where(li) {
+      font-size: inherit;
+      margin-block-start: 5px;
+      padding-inline-start: 0.4em;
+    }
+    &:where(li > p, li > ul, li > ol) {
+      margin-block-start: 0.5em;
+    }
+    /* Markers are the body colour in the design, not muted.
+       `line-height` has to be restated: an upstream `li::marker` rule leaves it
+       at 32px while the item itself is 24px, and the taller marker line box
+       inflates every bulleted/numbered item to 28px. To-do items escape it only
+       because `list-none` suppresses the marker — which is why the three list
+       types did not line up. */
+    &:where(ul > li)::marker {
+      color: currentColor;
+      line-height: var(--typeset-leading);
+    }
+    &:where(ol > li)::marker {
+      color: currentColor;
+      line-height: var(--typeset-leading);
+    }
+
+    /* Images get 40px below them rather than the usual 20px. Headings keep
+       their own larger rhythm, so they are excluded. */
+    &:where(.block-plateimage + *:not(:is(h1, h2, h3, h4, h5, h6))) {
+      margin-block-start: 40px;
+    }
+
+    /* To-do markers. Plate renders them as a `button` absolutely positioned at
+       `-1.5rem`, which lands well outside the list and misaligns to-do items
+       with every other list. Pull it back into the 24px indent the `ol`/`ul`
+       markers use, and square it off per the design. Written here rather than
+       on the component because Plate has two of them — one for the editor and
+       one for the static renderer — and both carry the same offset. */
+    &:where(:is(ol, ul) > [contenteditable='false'] > button) {
+      left: 0;
+      width: 18px;
+      height: 18px;
+      border-color: #b1b1b1;
+      border-radius: 0;
+      /* Checked keeps the white box and draws the tick in the body colour.
+         Plate otherwise floods the box with the primary colour and inverts the
+         tick to `primary-foreground`; both states are set here so neither the
+         editor's Radix checkbox nor the static button can diverge. */
+      background-color: #fff;
+      color: var(--typeset-foreground);
+    }
+    /* Checked items keep normal body text — no strike-through. */
+    &:where(:is(ol, ul) > li) {
+      text-decoration-line: none;
+    }
+
+    /* GFM task lists. Plate emits neither of these; kept for pasted markdown. */
+    &:where(ul.contains-task-list) {
+      list-style-type: none;
+      padding-inline-start: 0.25em;
+    }
+    &:where(li.task-list-item > input[type='checkbox']) {
+      accent-color: var(--color-primary, currentColor);
+      margin-inline-end: 0.5em;
+      vertical-align: -0.1em;
+    }
+
+    /* Disclosures. */
+    &:where(details) {
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+    }
+    &:where(summary) {
+      cursor: pointer;
+      font-weight: 500;
+    }
+    &:where(summary)::marker {
+      color: var(--typeset-muted);
+    }
+
+    /* Keyboard keys. */
+    &:where(kbd) {
+      padding: 0.0625em 0.35em;
+      border: 1px solid var(--typeset-rule);
+      border-radius: min(calc(var(--radius, 0.5em) * 0.6), 0.35em);
+      border-block-end-width: 2px;
+      font-family: inherit;
+      font-size: 0.85em;
+      font-weight: 500;
+    }
+
+    /* Definition lists. */
+    &:where(dl) {
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+    }
+    &:where(dt) {
+      font-weight: 500;
+      margin-block-start: 1em;
+    }
+    &:where(dt + dt) {
+      margin-block-start: 0.25em;
+    }
+    &:where(dd) {
+      color: var(--typeset-muted);
+      margin-block-start: 0.25em;
+      margin-inline-start: 0;
+      padding-inline-start: 1em;
+    }
+
+    /* Inline code. The design draws it as plain mono text at the body size —
+       no chip — so the padding and background are cleared rather than themed.
+       Plate's own `bg-muted px-[0.3em] py-[0.2em] text-sm` utilities are in a
+       layer, so these unlayered declarations win. */
+    &:where(:not(pre) > code) {
+      padding: 0;
+      background-color: transparent;
+      font-family: var(--typeset-font-mono);
+      font-size: 1em;
+    }
+
+    /* Code blocks. */
+    &:where(pre) {
+      padding: 0.75em 1em;
+      border-radius: var(--radius, 0.5em);
+      background-color: var(
+        --color-muted,
+        color-mix(in oklab, currentColor 8%, transparent)
+      );
+      direction: ltr;
+      font-family: var(--typeset-font-mono);
+      font-size: 0.875em;
+      line-height: 1.5;
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+      overflow-x: auto;
+      tab-size: 2;
+    }
+    &:where(pre code) {
+      padding: 0;
+      border-radius: 0;
+      background-color: transparent;
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    /* Blockquote: 1px rule, 20px inline / 10px block padding, italic. */
+    &:where(blockquote) {
+      font-style: italic;
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+      margin-inline: 0;
+      padding-block: 10px;
+      padding-inline-start: 20px;
+
+      .block-inner-container {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-inline-start: 1px solid currentColor;
+      }
+    }
+
+    /* Dividers. */
+    &:where(hr) {
+      border: 0;
+      border-block-start: 1px solid currentColor;
+      margin-block-end: 0;
+      margin-block-start: calc(var(--typeset-flow) * 3);
+    }
+    /* GFM footnotes. */
+    &:where(.footnotes, [data-footnotes]) {
+      border-block-start: 1px solid var(--typeset-rule);
+      color: var(--typeset-muted);
+      font-size: 0.875em;
+      margin-block-start: calc(var(--typeset-flow) * 2);
+      padding-block-start: var(--typeset-flow);
+    }
+
+    /* Math. */
+    &:where(math[display='block']) {
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-block: 0.25em;
+    }
+
+    /* Media. */
+    &:where(img, video) {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius, 0.5em);
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+    }
+    &:where(p img) {
+      margin-block-start: 0;
+    }
+    &:where(figure) {
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+      margin-inline: 0;
+    }
+    &:where(figcaption, caption) {
+      color: var(--typeset-muted);
+      font-size: 0.875em;
+      line-height: 1.2857;
+      margin-block-start: var(--typeset-flow);
+      text-align: start;
+
+      strong {
+        font-weight: 400;
+      }
+    }
+    &:where(caption) {
+      caption-side: bottom;
+    }
+
+    /* Tables. Separators sit on cells, not tr:last-child: append-safe.
+       Bare tables stay real tables (keep their semantics) and wrap to fit. */
+    &:where(table) {
+      max-width: 100%;
+      border-block-end: 1px solid var(--typeset-rule);
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 1em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.5;
+      margin-block-end: 0;
+      margin-block-start: var(--typeset-flow);
+    }
+
+    /* Horizontal scroll for any wide block. Wrap it and the wrapper owns the
+       flow margin. Tables shrink to fit, so widen the table to make it scroll
+       instead of compress. */
+    &:where(.typeset-scroll) {
+      margin-block-start: var(--typeset-flow);
+      overflow-x: auto;
+    }
+    &:where(.typeset-scroll > *) {
+      margin-block-start: 0;
+    }
+    &:where(.typeset-scroll table) {
+      width: max-content;
+      max-width: none;
+    }
+    &:where(thead th) {
+      padding: 0.65em 1em;
+      font-weight: 500;
+      text-align: start;
+      white-space: nowrap;
+    }
+    &:where(:is(tbody, tfoot) :is(td, th)) {
+      padding: 0.75em 1em;
+      border-block-start: 1px solid var(--typeset-rule);
+      text-align: start;
+      vertical-align: top;
+    }
+    &:where(tbody th, tfoot th) {
+      font-weight: 500;
+    }
+    &:where(th:first-child, td:first-child) {
+      padding-inline-start: 0;
+    }
+    &:where(th[align='center'], td[align='center']) {
+      text-align: center;
+    }
+    &:where(th[align='right'], td[align='right']) {
+      text-align: end;
+    }
+
+    /* Blocks inside list items keep the list's tighter rhythm. */
+    &:where(li > blockquote, li > table, li > figure) {
+      margin-block-start: 0.5em;
+    }
+    &:where(li > pre) {
+      margin-block-start: calc(0.5em / 0.875);
+    }
+
+    /* First child adds no space above. The rule at the end of this file is a
+       single class, so it loses to these two-class rules; this repeats it at
+       matching specificity, last so it wins the tie. */
+    &:where(:first-child) {
+      margin-block-start: 0;
+    }
+
+    @media print {
+      &:where(pre, table, blockquote, figure) {
+        break-inside: avoid;
+      }
+      &:where(h1, h2, h3, h4) {
+        break-after: avoid;
+      }
+    }
+
+    /* Forced colors strips the code background, so give it a border. */
+    @media (forced-colors: active) {
+      &:where(:not(pre) > code) {
+        border: 1px solid;
+      }
+    }
+  }
+
+  /* Pagetitle: 39/45, bold. It is an `h1` inside `.typeset`, so this needs to
+     outrank both the `text-4xl font-bold` utilities on the title block and the
+     generic h1 rule above. */
+  .typeset h1.documentFirstHeading {
+    font-size: 2.4375em;
+    font-weight: 700;
+    line-height: 1.1538;
+    .block-inner-container > [aria-hidden='true'] {
+      top: unset;
+    }
+    span {
+      font: inherit !important;
+    }
+  }
+
+  /* VLT pads every `.block` inner container (25px by default, more before
+     headings). Inside the typeset the flow margins above own the rhythm, so
+     that padding would be added on top of them. */
+  .typeset .block .block-inner-container {
+    padding-bottom: 0;
+  }
+
+  /* VLT styles blockquotes from `#page-document blockquote` (18px/40px). That
+     is an ID, so no class-only rule in this file can outrank it; matching the
+     ID does. The editor has no `#page-document`, where the rule above applies. */
+  #page-document .typeset blockquote {
+    padding-block: 10px;
+    padding-inline-start: 20px;
+  }
+
+  /* Callout: #ECEBEB, 10px padding, box hugging its content.
+     Plate paints the box on `.block-inner-container`, but that element is the
+     width-constrained one (780px, centred with `margin-inline: auto`), so
+     shrinking it to fit would centre the box instead of leaving it on the text
+     margin. Strip it there and paint the child instead, which already starts at
+     the content edge. */
+  .typeset .slate-callout .block-inner-container {
+    padding: 0;
+    background-color: transparent;
+  }
+  .typeset .slate-callout .block-inner-container > div {
+    width: fit-content;
+    max-width: 100%;
+    padding: 10px;
+    border-radius: var(--radius, 0);
+    border-bottom: 1px solid var(--typeset-rule);
+    background-color: #ecebeb;
+  }
+}
+
+/* First child adds no space above. Last so it wins ties. */
+.typeset
+  > :where(:first-child):not(
+    :where(
+        .not-typeset,
+        [data-not-typeset],
+        .not-typeset *,
+        [data-not-typeset] *
+      )
+  ),
+.typeset
+  > :where(:first-child)
+  > :where(:first-child):not(
+    :where(
+        .not-typeset,
+        [data-not-typeset],
+        .not-typeset *,
+        [data-not-typeset] *
+      )
+  ),
+.typeset
+  :where(
+    li > :first-child,
+    blockquote > :first-child,
+    td > :first-child,
+    th > :first-child,
+    dd > :first-child,
+    figure > :first-child,
+    figure > picture > img
+  ):not(
+    :where(
+        .not-typeset,
+        [data-not-typeset],
+        .not-typeset *,
+        [data-not-typeset] *
+      )
+  ) {
+  margin-block-start: 0;
+}
