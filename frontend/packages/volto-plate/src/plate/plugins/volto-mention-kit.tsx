@@ -31,6 +31,8 @@ import {
 } from '@plone/plate/components/ui/inline-combobox';
 import { cn } from '@plone/plate/lib/utils';
 
+import PersonPill from '../../components/PersonPill/PersonPill';
+
 type Mentionable = {
   id: string;
   fullname: string;
@@ -142,21 +144,12 @@ function MentionPill({
 
   return (
     <>
-      {currentPortrait ? (
-        <img
-          alt=""
-          className="size-5 shrink-0 rounded-full object-cover"
-          src={currentPortrait}
-        />
-      ) : (
-        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[10px] text-primary">
-          {value.slice(0, 1)}
-        </span>
-      )}
-      <span>
-        {prefix}
-        {value}
-      </span>
+      <PersonPill
+        compact
+        fullname={`${prefix ?? ''}${value}`}
+        id={userId ?? ''}
+        portrait={currentPortrait ?? undefined}
+      />
       {children}
     </>
   );
