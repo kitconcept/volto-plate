@@ -1,1 +1,0 @@
-Image zoom feature @Tishasoumya-02

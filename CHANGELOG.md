@@ -7,6 +7,38 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a22 (2026-07-28)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Feature
+
+- Added a `//` slash command in the wiki editor that opens a date picker to insert dates. @iFlameing 
+- Added a `belowContentTitle` slot below the document title block so custom components can be rendered there. @iFlameing 
+- Added the PersonPill component, ported from kitconcept.intranet, and used it for the @mention chip and the comments/suggestions avatars instead of first-letter initials. @iFlameing 
+- Image zoom feature @Tishasoumya-02 
+- Typography using shadcn/typography approach. Continue the typography implementation: heading scale, colour palette, links, lists and block flow spacing. Further iterations to follow. @sneridagh @danalvrz 
+
+#### Bugfix
+
+- Fix Cursor position in add/edit mode @iRohitSingh [#50](https://github.com/collective/volto-plate/issue/50)
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a21 (2026-07-22)
 
 ### Backend

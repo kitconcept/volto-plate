@@ -1,1 +1,0 @@
-Typography using shadcn/typography approach. Continue the typography implementation: heading scale, colour palette, links, lists and block flow spacing. Further iterations to follow. @sneridagh @danalvrz
