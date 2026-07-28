@@ -1,10 +1,12 @@
 import type {
   SlashMenuConfig,
   SlashMenuGroup,
+  SlashMenuItem,
 } from '@plone/plate/components/editor/plugins/slash-menu';
+import { insertBlock } from '@plone/plate/components/editor/transforms';
 import { PLONE_BLOCK_TYPE } from '@plone/helpers';
-import { ImageIcon } from 'lucide-react';
-import { PathApi } from 'platejs';
+import { Heading5Icon, Heading6Icon, ImageIcon } from 'lucide-react';
+import { KEYS, PathApi } from 'platejs';
 import type { PlateEditor } from 'platejs/react';
 
 const insertPloneBlock = (editor: PlateEditor, blockType: string) => {
@@ -39,6 +41,26 @@ const IMAGE_SLASH_ITEM = {
   },
 };
 
+const HEADING_SLASH_ITEMS: SlashMenuItem[] = [
+  {
+    icon: <Heading5Icon />,
+    keywords: ['subtitle', 'h5'],
+    label: 'Heading 5',
+    value: KEYS.h5,
+  },
+  {
+    icon: <Heading6Icon />,
+    keywords: ['subtitle', 'h6'],
+    label: 'Heading 6',
+    value: KEYS.h6,
+  },
+].map((item) => ({
+  ...item,
+  onSelect: (editor: PlateEditor, value: string) => {
+    insertBlock(editor, value);
+  },
+}));
+
 export const slashMenu: SlashMenuConfig = {
   extendGroups: (groups) =>
     groups
@@ -65,16 +87,26 @@ export const slashMenu: SlashMenuConfig = {
             (item) => item.value === 'p',
           );
 
+          const items =
+            paragraphIndex === -1
+              ? [...group.items, IMAGE_SLASH_ITEM]
+              : [
+                  ...group.items.slice(0, paragraphIndex + 1),
+                  IMAGE_SLASH_ITEM,
+                  ...group.items.slice(paragraphIndex + 1),
+                ];
+
+          const lastHeadingIndex = items.findIndex(
+            (item) => item.value === KEYS.h4,
+          );
+
           return {
             ...group,
-            items:
-              paragraphIndex === -1
-                ? [...group.items, IMAGE_SLASH_ITEM]
-                : [
-                    ...group.items.slice(0, paragraphIndex + 1),
-                    IMAGE_SLASH_ITEM,
-                    ...group.items.slice(paragraphIndex + 1),
-                  ],
+            items: [
+              ...items.slice(0, lastHeadingIndex + 1),
+              ...HEADING_SLASH_ITEMS,
+              ...items.slice(lastHeadingIndex + 1),
+            ],
           };
         }
 
