@@ -4,6 +4,7 @@ import type { SlateElementProps } from 'platejs';
 
 import { CalendarIcon } from 'lucide-react';
 import { SlateElement } from 'platejs';
+import { useIntl } from 'react-intl';
 
 import { cn } from '@plone/plate/lib/utils';
 
@@ -11,6 +12,7 @@ import { formatDatePillLabel, type TDateElement } from './date-node';
 
 export function DateElementStatic(props: SlateElementProps<TDateElement>) {
   const { element } = props;
+  const { locale } = useIntl();
 
   return (
     <SlateElement
@@ -24,7 +26,7 @@ export function DateElementStatic(props: SlateElementProps<TDateElement>) {
       )}
     >
       <CalendarIcon className="size-3.5" />
-      {formatDatePillLabel(element.value)}
+      {formatDatePillLabel(element.value, locale)}
       {props.children}
     </SlateElement>
   );
