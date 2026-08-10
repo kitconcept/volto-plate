@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2026-06-25T12:03:16.080Z\n"
+"POT-Creation-Date: 2026-08-07T11:22:58.695Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -12,6 +12,16 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8\n"
 "Domain: volto\n"
+
+#. Default: "Accept all"
+#: index
+msgid "Accept all"
+msgstr ""
+
+#. Default: "Reject all"
+#: index
+msgid "Reject all"
+msgstr ""
 
 #. Default: "The {type} block with the id {block} has encountered an error.{lineBreak}You can try to undo your changes (via the undo toolbar or pressing {shortcut}), or try to delete the block and recreate it again."
 #: components/Blocks/ErrorBoundaryMessage
@@ -28,62 +38,7 @@ msgstr ""
 msgid "blockErrorBoundaryViewDescription"
 msgstr ""
 
-#. Default: "Clear search"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_clear_search"
-msgstr ""
-
-#. Default: "Close navigation tree"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_close_panel"
-msgstr ""
-
-#. Default: "Loading…"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_loading"
-msgstr ""
-
-#. Default: "NAVIGATION"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_navigation_label"
-msgstr ""
-
-#. Default: "No results found"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_no_results"
-msgstr ""
-
-#. Default: "Open navigation"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_open_navigation"
-msgstr ""
-
-#. Default: "Resize navigation panel"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_resize_panel"
-msgstr ""
-
-#. Default: "Search navigation by title"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_search_aria_label"
-msgstr ""
-
-#. Default: "Search by title..."
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_search_placeholder"
-msgstr ""
-
-#. Default: "Search results"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_search_results"
-msgstr ""
-
-#. Default: "SITE"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_site_label"
-msgstr ""
-
-#. Default: "Site navigation"
-#: components/NavigationTree/NavigationTree
-msgid "navigation_tree_site_navigation"
+#. Default: "{count} open suggestions"
+#: index
+msgid "openSuggestionsCount"
 msgstr ""
