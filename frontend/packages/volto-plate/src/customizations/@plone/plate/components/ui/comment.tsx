@@ -239,8 +239,10 @@ export function Comment(props: {
               onClick={() => onEditorClick?.()}
             />
 
+            {/* === START CUSTOMIZATION === */}
             {isEditing && (
-              <div className="ml-auto flex shrink-0 gap-1">
+              <div className="ml-auto flex shrink-0 items-center gap-1">
+                {/* === END CUSTOMIZATION === */}
                 <Button
                   size="icon"
                   variant="ghost"
@@ -390,8 +392,10 @@ function CommentMoreDropdown(props: {
           <MoreHorizontalIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
+      {/* === START CUSTOMIZATION === */}
       <DropdownMenuContent
         className="w-48"
+        align="end"
         onCloseAutoFocus={(e) => {
           if (selectedEditCommentRef.current) {
             onCloseAutoFocus?.();
@@ -412,6 +416,7 @@ function CommentMoreDropdown(props: {
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
+      {/* === END CUSTOMIZATION === */}
     </DropdownMenu>
   );
 }
@@ -604,16 +609,17 @@ export const CommentCreateForm = React.forwardRef<
           }}
           editor={commentEditor}
         >
+          {/* === START CUSTOMIZATION === */}
           <EditorContainer
             className={`
-              min-h-11 items-center rounded-full border border-border bg-muted py-1.5 pr-2 pl-4
-              shadow-inner shadow-slate-200/40
+              min-h-[45px] items-center rounded-[4px] border border-[#edf1f2] bg-[#f2f5f6]
+              py-[6px] pr-[6px] pl-[14px] shadow-none
             `}
             variant="comment"
           >
             <Editor
               variant="comment"
-              className=""
+              className="pr-9 text-sm leading-[21px] font-light text-[#252525]"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -635,8 +641,9 @@ export const CommentCreateForm = React.forwardRef<
               size="icon"
               variant="ghost"
               className={`
-                absolute right-2 bottom-1.5 ml-auto size-8 shrink-0 text-muted-foreground
-                hover:text-brand
+                absolute right-2 bottom-[2px] ml-auto size-8 shrink-0 cursor-pointer text-[#2563eb]!
+                hover:bg-transparent! hover:text-[#2563eb]!
+                disabled:cursor-default disabled:text-[#b8c6c8]!
               `}
               disabled={commentContent.trim().length === 0}
               onClick={(e) => {
@@ -649,6 +656,7 @@ export const CommentCreateForm = React.forwardRef<
               </div>
             </Button>
           </EditorContainer>
+          {/* === END CUSTOMIZATION === */}
         </Plate>
       </div>
     </div>
