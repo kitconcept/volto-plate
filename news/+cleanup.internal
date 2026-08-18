@@ -1,0 +1,1 @@
+Removed the Read the Docs configuration, which referenced a `docs/` directory that does not exist in this repository, and the Visual Studio Code TypeScript SDK setting pointing into `node_modules`. @ericof
