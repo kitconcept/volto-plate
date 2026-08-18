@@ -1,1 +1,0 @@
-Fixed the changelog issue link format, which pointed at a non-existent `/issue/` path and returned a 404 for every linked entry, and added a `Tests` fragment type. @ericof

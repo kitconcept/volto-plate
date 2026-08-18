@@ -1,1 +1,0 @@
-Dropped the `artifact-release` script and the checked-in package tarball, now that the package is published to npm. @ericof

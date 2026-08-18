@@ -1,1 +1,0 @@
-Prepared the repository for the first public release: `repoplone` now publishes both packages to PyPI and npm, and the custom pipeline that built and committed a frontend artifact was removed. @ericof
