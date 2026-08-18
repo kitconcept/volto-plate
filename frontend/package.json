@@ -28,7 +28,6 @@
     "stylelint:fix": "stylelint 'packages/**/src/**/*.{css,scss,less}' --fix --allow-empty-input",
     "dry-release": "pnpm --filter @kitconcept/volto-plate dry-release",
     "release": "pnpm --filter @kitconcept/volto-plate release",
-    "artifact-release": "pnpm --filter @kitconcept/volto-plate artifact-release",
     "release-major-alpha": "pnpm --filter @kitconcept/volto-plate release-major-alpha",
     "release-alpha": "pnpm --filter @kitconcept/volto-plate release-alpha",
     "storybook": "VOLTOCONFIG=$(pwd)/volto.config.js pnpm --filter @plone/volto storybook dev -p 6006 -c $(pwd)/.storybook",

@@ -1,10 +1,54 @@
-# kitconcept.plate
+<picture>
+  <source align="right" width="200" media="(prefers-color-scheme: dark)" srcset="https://kitconcept.com/kitconcept-white.svg">
+  <img align="right" width="200" alt="kitconcept, GmbH" src="https://kitconcept.com/kitconcept-black.svg">
+</picture>
 
-A new add-on for Plone that includes both backend and Volto frontend
+# Volto Plate.js support <br/>(kitconcept.plate)
+
+<div align="center">
+
+The Plone backend support for [`@kitconcept/volto-plate`](https://www.npmjs.com/package/@kitconcept/volto-plate), the [Plate.js](https://www.platejs.org/) editor add-on for Volto.
+
+[![Built with Cookieplone](https://img.shields.io/badge/built%20with-Cookieplone-0083be.svg?logo=cookiecutter)](https://github.com/plone/cookieplone-templates/)
+
+[![PyPI](https://img.shields.io/pypi/v/kitconcept.plate)](https://pypi.org/project/kitconcept.plate/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/kitconcept.plate)](https://pypi.org/project/kitconcept.plate/)
+[![PyPI - Plone Versions](https://img.shields.io/pypi/frameworkversions/plone/kitconcept.plate)](https://pypi.org/project/kitconcept.plate/)
+
+[![GitHub contributors](https://img.shields.io/github/contributors/kitconcept/volto-plate)](https://github.com/kitconcept/volto-plate)
+[![GitHub Repo stars](https://img.shields.io/github/stars/kitconcept/volto-plate?style=social)](https://github.com/kitconcept/volto-plate)
+
+[![Code analysis checks](https://github.com/kitconcept/volto-plate/actions/workflows/main.yml/badge.svg)](https://github.com/kitconcept/volto-plate/actions/workflows/main.yml)
+
+</div>
+
+> [!WARNING]
+> If you reached here and you are not part of the kitconcept team, please refrain from using this package in production.
+> This package is in early and heavy development and should be used with caution in production environments.
+> We are in the "make it work" phase and we are still figuring out the best way to implement the features we want to provide.
+> Therefore, we can't guarantee that the package will be stable or that it will work as expected in all scenarios, and might contain technical debt, bugs, and incomplete features.
+> It is subject to breaking changes and incomplete features and we won't support any upgrade step nor breaking change support whatsoever.
 
 ## Features
 
-TODO: List our awesome features
+### Content types
+
+- `Workspace`: a folderish container for wiki content, images, and files, marked by the `IWorkspaceMarker` behavior
+- `WikiPage`: a Plate-powered page type storing Volto blocks
+
+### Discussions
+
+- serializers and deserializers for Plate discussions persisted as Plone comments
+- the `kitconcept.plate: Discuss content` permission, allowing users to add and edit their own comments in Plate editor discussions
+
+### Mentions
+
+- a `@mentions` REST API endpoint backing the editor's user mentions
+
+### Other
+
+- an install profile depending on `plone.volto`, plus an uninstall profile
+- translations for English, German, Spanish, Italian, and Brazilian Portuguese
 
 ## Installation
 
@@ -48,35 +92,6 @@ make create-site
     make install
     ```
 
-
-### Add features using `plonecli` or `bobtemplates.plone`
-
-This package provides markers as strings (`<!-- extra stuff goes here -->`) that are compatible with [`plonecli`](https://github.com/plone/plonecli) and [`bobtemplates.plone`](https://github.com/plone/bobtemplates.plone).
-These markers act as hooks to add all kinds of features through subtemplates, including behaviors, control panels, upgrade steps, or other subtemplates from `bobtemplates.plone`.
-`plonecli` is a command line client for `bobtemplates.plone`, adding autocompletion and other features.
-
-To add a feature as a subtemplate to your package, use the following command pattern.
-
-```shell
-make add <template_name>
-```
-
-For example, you can add a content type to your package with the following command.
-
-```shell
-make add content_type
-```
-
-You can add a behavior with the following command.
-
-```shell
-make add behavior
-```
-
-```{seealso}
-You can check the list of available subtemplates in the [`bobtemplates.plone` `README.md` file](https://github.com/plone/bobtemplates.plone/?tab=readme-ov-file#provided-subtemplates).
-See also the documentation of [Mockup and Patternslib](https://6.docs.plone.org/classic-ui/mockup.html) for how to build the UI toolkit for Classic UI.
-```
 
 ## License
 

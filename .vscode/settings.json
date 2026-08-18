@@ -1,5 +1,4 @@
 {
-  "typescript.tsdk": "frontend/packages/volto-plate/node_modules/typescript/lib",
   "search.exclude": {
     "**/core": false
   },
