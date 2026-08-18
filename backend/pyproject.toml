@@ -1,7 +1,7 @@
 [project]
 name = "kitconcept.plate"
 dynamic = ["version"]
-description = "A new add-on for Plone that includes both backend and Volto frontend"
+description = "Plone backend support for the Plate.js editor add-on for Volto"
 readme = "README.md"
 license = "GPL-2.0-only"
 requires-python = ">=3.12"

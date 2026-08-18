@@ -15,9 +15,11 @@ An add-on that adds a [Plate.js](https://www.platejs.org/) support in Volto.
 </div>
 
 > [!WARNING]
-> This package is in early development and should be used with caution in production environments.
-> It is subject to breaking changes and incomplete features.
-> Please test thoroughly and report any issues you encounter.
+> If you reached here and you are not part of the kitconcept team, please refrain from using this package in production.
+> This package is in early and heavy development and should be used with caution in production environments.
+> We are in the "make it work" phase and we are still figuring out the best way to implement the features we want to provide.
+> Therefore, we can't guarantee that the package will be stable or that it will work as expected in all scenarios, and might contain technical debt, bugs, and incomplete features.
+> It is subject to breaking changes and incomplete features and we won't support any upgrade step nor breaking change support whatsoever.
 
 ## Features
 
