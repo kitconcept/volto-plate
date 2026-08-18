@@ -1,0 +1,1 @@
+Reworked the changelog workflow to compute the package paths from the repository settings and run all three towncrier checks in a single job, and moved the Dependabot configuration to `.github/dependabot.yml`, where it is actually read. @ericof
