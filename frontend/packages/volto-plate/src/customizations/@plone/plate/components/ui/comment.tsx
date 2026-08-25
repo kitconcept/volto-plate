@@ -1,3 +1,13 @@
+/**
+ * OVERRIDE comment.tsx
+ * REASON: Use PersonPill for authors and match the claude inline-comments UI,
+ * including reply-field styling, action alignment, and dropdown positioning.
+ * FILE: https://github.com/plone/aurora/blob/343759b2535b8d79ecf05bfce54633bb580dd815/packages/plate/components/ui/comment.tsx
+ * FILE VERSION: @plone/plate 1.0.0-alpha.13
+ * DATE: 2026-08-25
+ * DEVELOPER: @iRohitSingh
+ */
+
 import * as React from 'react';
 
 import type { CreatePlateEditorOptions } from 'platejs/react';
@@ -239,7 +249,7 @@ export function Comment(props: {
               onClick={() => onEditorClick?.()}
             />
 
-            {/* === START CUSTOMIZATION === */}
+            {/* === START CUSTOMIZATION === Align edit action buttons. */}
             {isEditing && (
               <div className="ml-auto flex shrink-0 items-center gap-1">
                 {/* === END CUSTOMIZATION === */}
@@ -392,7 +402,7 @@ function CommentMoreDropdown(props: {
           <MoreHorizontalIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
-      {/* === START CUSTOMIZATION === */}
+      {/* === START CUSTOMIZATION === Keep the actions menu inside the panel. */}
       <DropdownMenuContent
         className="w-48"
         align="end"
@@ -609,7 +619,7 @@ export const CommentCreateForm = React.forwardRef<
           }}
           editor={commentEditor}
         >
-          {/* === START CUSTOMIZATION === */}
+          {/* === START CUSTOMIZATION === Match the flat reply field design. */}
           <EditorContainer
             className={`
               min-h-[45px] items-center rounded-[4px] border border-[#edf1f2] bg-[#f2f5f6]
@@ -617,6 +627,7 @@ export const CommentCreateForm = React.forwardRef<
             `}
             variant="comment"
           >
+            {/* === START CUSTOMIZATION === Keep text clear of the send icon. */}
             <Editor
               variant="comment"
               className="pr-9 text-sm leading-[21px] font-light text-[#252525]"
@@ -636,7 +647,9 @@ export const CommentCreateForm = React.forwardRef<
               autoFocus={autoFocus}
               // === END CUSTOMIZATION ===
             />
+            {/* === END CUSTOMIZATION === */}
 
+            {/* === START CUSTOMIZATION === Show enabled and disabled states. */}
             <Button
               size="icon"
               variant="ghost"
@@ -655,6 +668,7 @@ export const CommentCreateForm = React.forwardRef<
                 <SendIcon />
               </div>
             </Button>
+            {/* === END CUSTOMIZATION === */}
           </EditorContainer>
           {/* === END CUSTOMIZATION === */}
         </Plate>
