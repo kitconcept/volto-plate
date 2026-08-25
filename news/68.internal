@@ -1,0 +1,1 @@
+Bump GitHub Actions versions in CI workflows (checkout/setup-node/upload-artifact to v7, cache to v6, background-action to v2). @sneridagh
