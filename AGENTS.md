@@ -148,3 +148,8 @@ Use the fragment type that matches the change, such as:
 - For Playwright acceptance validation, request unsandboxed execution immediately instead of retrying after a sandbox failure
 - For all changes made, run the full repo `make check` to ensure all formatting and linting is satisfied
 - If a command fails because dependencies are not installed yet, bootstrap with the corresponding Make target instead of working around the environment manually
+
+## PR Guidance
+
+- Create a PR only when you are told to
+- After creating a PR, make sure that a Towncrier fragment is present for the change, and that it is in the correct location. Create it/them if needed following the Changelog Fragments guidance section.
