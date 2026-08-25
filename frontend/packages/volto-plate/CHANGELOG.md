@@ -8,6 +8,19 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.23 (2026-08-18)
+
+
+### Feature
+
+- Added Accept all and Reject all buttons in the suggestions popover when there is more than one open suggestion. @iFlameing 
+
+
+### Internal
+
+- Dropped the `artifact-release` script and the checked-in package tarball, now that the package is published to npm. @ericof 
+- Switched the release hooks from `pipx` to `uvx`, vendored the changelog template instead of reading it from `node_modules`, and fixed the changelog issue link format, which pointed at the wrong repository and returned a 404 for every linked entry. @ericof 
+
 ## 1.0.0-alpha.22 (2026-07-28)
 
 ### Feature

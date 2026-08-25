@@ -5,7 +5,7 @@ import cx from 'classnames';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { expandToBackendURL } from '@plone/volto/helpers/Url/Url';
-import personSVG from '@plone/volto/icons/user.svg';
+import AvatarFallback from '../../icons/avatar-fallback-silhouette.svg';
 
 type PersonPillProps = {
   id: string;
@@ -42,28 +42,34 @@ const PersonPill = ({
   const portraitSrc =
     portrait ?? (id ? expandToBackendURL(`@portrait/${id}`) : undefined);
 
-  const [imageFailed, setImageFailed] = useState(false);
-  const showImage = Boolean(portraitSrc) && !imageFailed;
+  const [loadedPortraitSrc, setLoadedPortraitSrc] = useState<string>();
+  const showImage = Boolean(portraitSrc) && portraitSrc === loadedPortraitSrc;
 
-  const avatar = showImage ? (
-    <img
-      className="person-pill-portrait"
-      src={portraitSrc}
-      alt={fullname || name}
-      loading="lazy"
-      onError={() => setImageFailed(true)}
-    />
-  ) : (
-    <Icon
-      className="person-pill-avatar"
-      name={personSVG}
-      size={compact ? '24px' : '40px'}
-      style={{
-        width: compact ? '24px' : '40px',
-        height: compact ? '24px' : '40px',
-      }}
-      ariaHidden
-    />
+  const avatar = (
+    <>
+      {!showImage && (
+        <Icon
+          className="person-pill-avatar"
+          name={AvatarFallback}
+          size={compact ? '24px' : '40px'}
+          style={{
+            width: compact ? '24px' : '40px',
+            height: compact ? '24px' : '40px',
+          }}
+          ariaHidden
+        />
+      )}
+      {portraitSrc && (
+        <img
+          className="person-pill-portrait"
+          src={portraitSrc}
+          alt={fullname || name}
+          onLoad={() => setLoadedPortraitSrc(portraitSrc)}
+          onError={() => setLoadedPortraitSrc(undefined)}
+          hidden={!showImage}
+        />
+      )}
+    </>
   );
 
   const label =

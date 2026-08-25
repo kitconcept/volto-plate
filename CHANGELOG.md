@@ -7,6 +7,44 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a23 (2026-08-18)
+
+### Backend
+
+
+#### Documentation:
+
+- Rewrote the package README and summary for publication on PyPI, replacing the generated placeholders with the actual feature set. @ericof 
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Added Accept all and Reject all buttons in the suggestions popover when there is more than one open suggestion. @iFlameing 
+
+
+#### Internal
+
+- Dropped the `artifact-release` script and the checked-in package tarball, now that the package is published to npm. @ericof 
+- Switched the release hooks from `pipx` to `uvx`, vendored the changelog template instead of reading it from `node_modules`, and fixed the changelog issue link format, which pointed at the wrong repository and returned a 404 for every linked entry. @ericof 
+
+
+
+### Project
+
+
+#### Internal
+
+- Fixed the changelog issue link format, which pointed at a non-existent `/issue/` path and returned a 404 for every linked entry, and added a `Tests` fragment type. @ericof 
+- Prepared the repository for the first public release: `repoplone` now publishes both packages to PyPI and npm, and the custom pipeline that built and committed a frontend artifact was removed. @ericof 
+- Removed the Read the Docs configuration, which referenced a `docs/` directory that does not exist in this repository, and the Visual Studio Code TypeScript SDK setting pointing into `node_modules`. @ericof 
+- Reworked the changelog workflow to compute the package paths from the repository settings and run all three towncrier checks in a single job, and moved the Dependabot configuration to `.github/dependabot.yml`, where it is actually read. @ericof 
+
+
+
 ## 1.0.0a22 (2026-07-28)
 
 ### Backend
