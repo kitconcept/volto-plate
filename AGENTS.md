@@ -116,6 +116,33 @@ Frontend formatting/linting is driven by:
 - Preserve existing Makefile-driven workflows instead of introducing one-off local command conventions
 - Follow existing naming and test placement patterns already present in the touched package
 
+## Component Shadowing
+
+Every file placed under `frontend/packages/volto-plate/src/customizations/` (a shadowed Volto/add-on component) MUST start with the mandatory OVERRIDE documentation header. This is enforced in CI by the `shadow-headers` job in `.github/workflows/frontend.yml` (script: `.github/scripts/check-shadow-headers.mjs`), which fails the build if the header or any required label is missing.
+
+Required labels in the leading block comment: `OVERRIDE`, `REASON`, `FILE`, `FILE VERSION`, `DATE`. Optional: `PULL REQUEST`, `TICKET`, `CHANGELOG`.
+
+Template:
+
+```jsx
+/**
+ * OVERRIDE ComponentName.jsx
+ * REASON: Short explanation of why this component is shadowed.
+ * FILE: https://github.com/plone/volto/blob/<sha>/src/.../ComponentName.jsx
+ * FILE VERSION: Volto 18.0.0
+ * DATE: 2026-08-25
+ * DEVELOPER: @your-handle
+ * CHANGELOG:
+ *  - What changed and why (#ticket) @your-handle
+ *
+ * Mark the actual changes inline with `START CUSTOMIZATION` / `END CUSTOMIZATION`.
+ */
+```
+
+Run the check locally with `pnpm --filter @kitconcept/volto-plate check:shadow` (or, from the repo root, `node .github/scripts/check-shadow-headers.mjs frontend/packages`).
+
+The script is repo-agnostic and auto-discovers add-ons: point it at a packages root (e.g. `frontend/packages`) and it checks every `<addon>/src/customizations` it finds — no need to enumerate packages. It can be copied into any other Volto/Aurora repo unchanged.
+
 ## Changelog Fragments
 
 This repo checks for towncrier fragments in CI.
