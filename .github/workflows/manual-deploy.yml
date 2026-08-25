@@ -25,7 +25,7 @@ jobs:
       image-tag: ${{ steps.vars.outputs.image-tag }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Annotate deployment
         id: vars
