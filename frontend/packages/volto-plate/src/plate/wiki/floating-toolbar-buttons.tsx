@@ -24,6 +24,7 @@ import {
   TodoListToolbarButton,
 } from '@plone/plate/components/ui/list-toolbar-button';
 import { ToggleToolbarButton } from '@plone/plate/components/ui/toggle-toolbar-button';
+import { ClearFormattingToolbarButton } from './clear-formatting-toolbar-button';
 
 export function FloatingToolbarButtons() {
   const readOnly = useEditorReadOnly();
@@ -67,6 +68,8 @@ export function FloatingToolbarButtons() {
             <MarkToolbarButton nodeType={KEYS.code} tooltip="Code (⌘+E)">
               <Code2Icon />
             </MarkToolbarButton>
+
+            <ClearFormattingToolbarButton />
 
             <TurnIntoToolbarButton />
           </ToolbarGroup>
