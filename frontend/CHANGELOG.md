@@ -8,6 +8,18 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.24 (2026-08-27)
+
+
+### Feature
+
+- Added a clear formatting button to the wiki page toolbar. @iFlameing 
+
+
+### Bugfix
+
+- Avatar Fallback for personPill @iRohitSingh [#AvatarFallback](https://github.com/kitconcept/volto-plate/issues/AvatarFallback)
+
 ## 1.0.0-alpha.23 (2026-08-18)
 
 
