@@ -1,3 +1,16 @@
+/**
+ * OVERRIDE comment.tsx
+ * REASON: PersonPill component to render the comment author instead of the Avatar/AvatarFallback initial-letter avatar.
+ * FILE: https://github.com/plone/aurora/blob/plone-plate-1.0.0-alpha.13/packages/plate/components/ui/comment.tsx
+ * FILE VERSION: @plone/plate 1.0.0-alpha.13
+ * DATE: 2026-08-25
+ * DEVELOPER: @iFlameing
+ * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/55
+ * CHANGELOG:
+ *  - Render comment author with PersonPill instead of initials avatar (#55) @iFlameing
+ *  - Gate reply-box autoFocus behind an explicit prop @iFlameing
+ *
+ */
 import * as React from 'react';
 
 import type { CreatePlateEditorOptions } from 'platejs/react';

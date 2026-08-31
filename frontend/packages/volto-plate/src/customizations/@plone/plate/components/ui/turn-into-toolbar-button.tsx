@@ -1,3 +1,17 @@
+/**
+ * OVERRIDE turn-into-toolbar-button.tsx
+ * REASON: Companion to the basic-blocks-kit.tsx override — Aurora's typography
+ *   uses the full H1-H6 scale and the H5/H6 plugins are registered, but the
+ *   upstream "Turn into" menu only lists Text through Heading 4, so editors
+ *   had no way to turn a block into an H5/H6 from the toolbar.
+ * FILE: https://github.com/plone/aurora/blob/plone-plate-1.0.0-alpha.13/packages/plate/components/ui/turn-into-toolbar-button.tsx
+ * FILE VERSION: @plone/plate 1.0.0-alpha.13
+ * DATE: 2026-08-25
+ * DEVELOPER: @sneridagh
+ * CHANGELOG:
+ *  - Add Heading 5 / Heading 6 entries to the turn-into menu @sneridagh
+ *
+ */
 import * as React from 'react';
 
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
@@ -64,8 +78,8 @@ export const turnIntoItems = [
     label: 'Heading 4',
     value: 'h4',
   },
-  // Added here: the upstream list stops at Heading 4, but the design uses the
-  // full scale and the plugins for h5/h6 are registered.
+  // === START CUSTOMIZATION ===
+  // Upstream list stops at Heading 4; add H5/H6 to match Aurora's full scale.
   {
     icon: <Heading5Icon />,
     keywords: ['subtitle', 'h5'],
@@ -78,6 +92,7 @@ export const turnIntoItems = [
     label: 'Heading 6',
     value: KEYS.h6,
   },
+  // === END CUSTOMIZATION ===
   {
     icon: <ListIcon />,
     keywords: ['unordered', 'ul', '-'],
