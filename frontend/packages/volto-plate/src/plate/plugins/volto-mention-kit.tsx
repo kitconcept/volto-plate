@@ -167,7 +167,7 @@ export function VoltoMentionElement(
     <PlateElement
       {...props}
       className={cn(
-        'inline-flex items-center gap-1 rounded-full bg-muted py-0.5 pr-2 pl-0.5 align-baseline text-sm font-medium',
+        'mr-1 inline-flex items-center gap-1 rounded-full bg-muted py-0.5 pr-2 pl-0.5 align-baseline text-sm font-medium',
         !readOnly && 'cursor-pointer',
         selected && focused && 'ring-2 ring-ring',
       )}
