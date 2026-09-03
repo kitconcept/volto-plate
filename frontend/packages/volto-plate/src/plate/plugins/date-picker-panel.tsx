@@ -75,12 +75,12 @@ export function DatePickerPanel({
           {t('Insert date')}
         </div>
 
-        <div className="mb-[20px] flex gap-1.5">
+        <div className="mb-[20px] flex justify-center gap-1.5">
           {quickOptions.map((option) => (
             <button
               key={option.label}
               className={cn(
-                'flex flex-col items-start justify-center gap-[5px] rounded-full bg-muted px-[10px] text-xs font-medium',
+                'flex flex-col items-center justify-center gap-[5px] rounded-full bg-muted px-[10px] text-xs font-medium',
                 'hover:bg-accent hover:text-accent-foreground',
               )}
               onClick={() => onSelect(option.date.toString())}
