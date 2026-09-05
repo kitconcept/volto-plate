@@ -22,6 +22,7 @@
   },
   "scripts": {
     "check:ts": "tsc --project tsconfig.json",
+    "check:shadow": "node ../../../.github/scripts/check-shadow-headers.mjs .",
     "i18n": "rm -rf build/messages && NODE_ENV=production i18n --addon",
     "dry-release": "release-it --dry-run",
     "release": "release-it",
