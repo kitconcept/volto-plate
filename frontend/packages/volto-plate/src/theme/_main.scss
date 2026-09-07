@@ -99,3 +99,8 @@ body {
 .post-footer .colophon a img {
   display: inline;
 }
+
+// ### Missing save button ##
+.ui.modal > .actions svg.icon.contents {
+  display: block;
+}
