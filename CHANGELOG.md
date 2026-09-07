@@ -7,6 +7,38 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a24 (2026-08-27)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Added a clear formatting button to the wiki page toolbar. @iFlameing 
+
+
+#### Bugfix
+
+- Avatar Fallback for personPill @iRohitSingh [#AvatarFallback](https://github.com/kitconcept/volto-plate/issues/AvatarFallback)
+
+
+
+### Project
+
+
+#### Internal
+
+- Bump GitHub Actions versions in CI workflows (checkout/setup-node/upload-artifact to v7, cache to v6, background-action to v2). @sneridagh [#68](https://github.com/kitconcept/volto-plate/issues/68)
+
+
+
 ## 1.0.0a23 (2026-08-18)
 
 ### Backend
