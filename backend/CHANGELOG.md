@@ -9,6 +9,23 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a24 (2026-08-27)
+
+No significant changes.
+
+
+## 1.0.0a23 (2026-08-18)
+
+
+### Documentation:
+
+- Rewrote the package README and summary for publication on PyPI, replacing the generated placeholders with the actual feature set. @ericof 
+
+## 1.0.0a22 (2026-07-28)
+
+No significant changes.
+
+
 ## 1.0.0a21 (2026-07-22)
 
 

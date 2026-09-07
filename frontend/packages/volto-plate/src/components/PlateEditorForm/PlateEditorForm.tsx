@@ -160,6 +160,7 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
             editorConfig={wikiEditorPreset}
             value={stableInitialValueRef.current}
             intl={intl}
+            className="typeset"
             onChange={(options) => {
               latestValueRef.current = options.value as Value;
               persistSomersaultBlock({

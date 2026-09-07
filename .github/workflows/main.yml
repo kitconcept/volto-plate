@@ -45,6 +45,7 @@ jobs:
         image-name-suffix: frontend
         node-version: ${{ needs.config.outputs.node-version }}
         volto-version: ${{ needs.config.outputs.volto-version }}
+        storybook-deploy: ${{ needs.config.outputs.storybook-deploy == 'true' }}
     if: ${{ needs.config.outputs.frontend == 'true' }}
     permissions:
       contents: read
@@ -77,7 +78,7 @@ jobs:
     environment: ${{ needs.config.outputs.environment }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Annotate deployment
         id: vars

@@ -44,6 +44,7 @@ const PlateEditorRenderer = ({ content }: PlateEditorRendererProps) => {
         <PlateRenderer
           editorConfig={wikiEditorRenderer}
           value={somersaultBlock.value as Value}
+          className="typeset"
         />
       </PlatePluginsProvider>
     </PlateController>
