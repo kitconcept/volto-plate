@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import type { PlateElementProps, RenderNodeWrapper } from 'platejs/react';
 
-import { getDraftCommentKey } from '@platejs/comment';
+import { getCommentCount, getDraftCommentKey } from '@platejs/comment';
 import { CommentPlugin } from '@platejs/comment/react';
 import { getTransientSuggestionKey } from '@platejs/suggestion';
 import { MessageSquareTextIcon, MessagesSquareIcon, XIcon } from 'lucide-react';
@@ -13,6 +13,7 @@ import {
   type TCommentText,
   type TElement,
   type TSuggestionText,
+  KEYS,
   PathApi,
   TextApi,
 } from 'platejs';
@@ -432,17 +433,25 @@ const BlockCommentContent = ({
     selected ||
     (isCommenting && !!draftCommentNode && commentingCurrent);
 
+  // === START CUSTOMIZATION ===
+  // Upstream only unsets the draft key when a draft comment is abandoned, and
+  // @platejs/comment's normalizer — which is meant to drop the leftover base
+  // `comment` mark — does not run in this editor. The text kept a comment
+  // underline belonging to no discussion, with no way to remove it. Unset the
+  // base mark here too, unless the leaf still carries a real comment.
   const closePopover = React.useCallback(() => {
     if (isCommenting && draftCommentNode) {
-      editor.tf.unsetNodes(getDraftCommentKey(), {
-        at: [],
-        mode: 'lowest',
-        match: (n) => n[getDraftCommentKey()],
-      });
+      editor.tf.unsetNodes(
+        getCommentCount(draftCommentNode[0]) > 0
+          ? [getDraftCommentKey()]
+          : [getDraftCommentKey(), KEYS.comment],
+        { at: [], mode: 'lowest', match: (n) => n[getDraftCommentKey()] },
+      );
     }
 
     setOpen(false);
   }, [draftCommentNode, editor.tf, isCommenting]);
+  // === END CUSTOMIZATION ===
 
   // === START CUSTOMIZATION ===
   const acceptAllSuggestions = () => {
