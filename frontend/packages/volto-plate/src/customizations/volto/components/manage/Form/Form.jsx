@@ -1,6 +1,22 @@
 /**
  * Form component.
  * @module components/manage/Form/Form
+ *
+ * OVERRIDE Form.jsx
+ * REASON: The visual (blocks) form needs to render the Plate.js editor
+ *   instead of the standard BlocksForm/BlocksToolbar for content types that
+ *   opt into `config.settings.PlateEditorContentTypes` (Wiki/Workspace), and
+ *   the old `withSaveAsDraft` local-storage draft-recovery HOC was disabled
+ *   for this project rather than adapted, so its call sites are commented
+ *   out instead of removed outright.
+ * FILE: https://github.com/plone/volto/blob/19.3.0/packages/volto/src/components/manage/Form/Form.jsx
+ * FILE VERSION: @plone/volto 19.3.0
+ * DATE: 2026-08-25
+ * DEVELOPER: @sneridagh
+ * CHANGELOG:
+ *  - Render PlateEditorForm for PlateEditorContentTypes instead of BlocksForm @sneridagh
+ *  - Disable withSaveAsDraft wiring (commented out, not removed) @sneridagh
+ *
  */
 
 import Icon from '@plone/volto/components/theme/Icon/Icon';

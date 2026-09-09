@@ -1,3 +1,15 @@
+/**
+ * OVERRIDE block-suggestion.tsx
+ * REASON: Add Person Pill component to render the suggestion author instead of the Avatar/AvatarFallback initial-letter avatar.
+ * FILE: https://github.com/plone/aurora/blob/plone-plate-1.0.0-alpha.13/packages/plate/components/ui/block-suggestion.tsx
+ * FILE VERSION: @plone/plate 1.0.0-alpha.13
+ * DATE: 2026-08-25
+ * DEVELOPER: @iFlameing
+ * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/55
+ * CHANGELOG:
+ *  - Render suggestion author with PersonPill instead of initials avatar (#55) @iFlameing
+ *
+ */
 import * as React from 'react';
 
 import type { TResolvedSuggestion } from '@platejs/suggestion';
