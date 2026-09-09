@@ -59,7 +59,7 @@ export function DateElement(props: PlateElementProps<TDateElement>) {
         'data-slate-value': element.value,
       }}
       className={cn(
-        'inline-flex cursor-pointer items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 align-baseline text-sm font-medium',
+        'mr-1 inline-flex cursor-pointer items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 align-baseline text-sm font-medium',
         selected && focused && 'ring-2 ring-ring',
       )}
     >
