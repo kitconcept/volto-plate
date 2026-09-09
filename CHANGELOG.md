@@ -7,6 +7,33 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a25 (2026-09-09)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Bugfix
+
+- Fix spacing after mention and calendar date pills @iRohitSingh [#spacing](https://github.com/kitconcept/volto-plate/issues/spacing)
+- Fix missing save button in users controlpanel @iRohitSingh [#54](https://github.com/kitconcept/volto-plate/issues/54)
+- Fix inline comments css @iRohitSingh [#59](https://github.com/kitconcept/volto-plate/issues/59)
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a24 (2026-08-27)
 
 ### Backend
