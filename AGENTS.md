@@ -143,6 +143,8 @@ Run the check locally with `pnpm --filter @kitconcept/volto-plate check:shadow` 
 
 The script is repo-agnostic and auto-discovers add-ons: point it at a packages root (e.g. `frontend/packages`) and it checks every `<addon>/src/customizations` it finds — no need to enumerate packages. It can be copied into any other Volto/Aurora repo unchanged.
 
+Asset files that cannot carry a leading JS block comment (`.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.ico`) are skipped automatically, so shadowing an icon or image does not require a header.
+
 ## Changelog Fragments
 
 This repo checks for towncrier fragments in CI.

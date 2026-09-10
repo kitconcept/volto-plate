@@ -31,7 +31,7 @@
  */
 
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
-import { join, relative, resolve, sep } from 'node:path';
+import { join, relative, resolve, sep, extname } from 'node:path';
 
 const repoRoot = process.cwd();
 
@@ -76,6 +76,19 @@ const targets = roots.flatMap(discoverCustomizationsDirs);
 // therefore need no header (extend as needed).
 const IGNORE_BASENAMES = new Set(['.gitkeep', '.DS_Store']);
 
+// Asset file types that cannot carry a leading JS block comment without
+// breaking their parser (e.g. SVGs consumed by SVGR/XML). Shadowing these is
+// valid, but the header convention does not apply to them.
+const IGNORE_EXTENSIONS = new Set([
+  '.svg',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.webp',
+  '.ico',
+]);
+
 // Labels that must be present inside the leading comment block.
 const REQUIRED_LABELS = [
   { name: 'OVERRIDE', re: /\bOVERRIDE\b/ },
@@ -99,7 +112,11 @@ function walk(dir) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
       files = files.concat(walk(full));
-    } else if (entry.isFile() && !IGNORE_BASENAMES.has(entry.name)) {
+    } else if (
+      entry.isFile() &&
+      !IGNORE_BASENAMES.has(entry.name) &&
+      !IGNORE_EXTENSIONS.has(extname(entry.name).toLowerCase())
+    ) {
       files.push(full);
     }
   }
