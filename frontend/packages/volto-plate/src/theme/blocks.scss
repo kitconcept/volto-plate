@@ -27,6 +27,14 @@
   }
 }
 
+.block-plateimage[data-style-align='left'] figure {
+  margin-right: 20px;
+}
+
+.block-plateimage[data-style-align='right'] figure {
+  margin-left: 20px;
+}
+
 .image-zoom-wrapper {
   position: relative;
   display: inline-block;
@@ -62,5 +70,26 @@
   &:hover .image-zoom-button,
   .image-zoom-button:focus-visible {
     opacity: 1;
+  }
+}
+
+.block-plateimage[data-style-align='left'] ~ *,
+.block-plateimage[data-style-align='right'] ~ * {
+  &:is(
+      .slate-code_block,
+      .slate-callout,
+      .slate-blockquote,
+      .slate-toggle,
+      .slate-table
+    ),
+  &:has(> .block-inner-container :is(ul, ol)) {
+    max-width: var(--block-width);
+    margin-inline: auto !important; // Outranks the indent margin on list blocks.
+
+    > .block-inner-container {
+      display: flow-root !important;
+      width: auto;
+      min-width: 12rem;
+    }
   }
 }
