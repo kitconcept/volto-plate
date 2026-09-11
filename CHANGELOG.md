@@ -7,6 +7,31 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a27 (2026-09-11)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Internal
+
+- Use @plone/plate@1.0.0-alpha.15 @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a26 (2026-09-11)
 
 ### Backend
