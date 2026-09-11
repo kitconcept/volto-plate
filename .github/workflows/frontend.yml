@@ -42,6 +42,21 @@ jobs:
       node-version: ${{ inputs.node-version }}
       working-directory: ${{ inputs.working-directory }}
 
+  shadow-headers:
+    name: "Frontend: Shadow customization headers"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Check OVERRIDE headers on shadowed components
+        run: node .github/scripts/check-shadow-headers.mjs ${{ inputs.working-directory }}/packages
+
   unit:
     name: "Frontend: Unit tests"
     uses: plone/meta/.github/workflows/frontend-unit.yml@2.x
@@ -68,6 +83,7 @@ jobs:
       - code-analysis
       - i18n
       - unit
+      - shadow-headers
       # - storybook
     permissions:
       contents: read
@@ -92,6 +108,7 @@ jobs:
       - code-analysis
       - i18n
       - unit
+      - shadow-headers
       # - storybook
       - release
     steps:
@@ -103,4 +120,5 @@ jobs:
           echo '| code-analysis | ${{ needs.code-analysis.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| i18n | ${{ needs.i18n.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| unit | ${{ needs.unit.result }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| shadow-headers | ${{ needs.shadow-headers.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| release | ${{ needs.release.result }} |' >> $GITHUB_STEP_SUMMARY

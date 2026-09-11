@@ -1,0 +1,1 @@
+check-shadow-headers now skips asset files (.svg, images) that cannot carry a JS block comment.
