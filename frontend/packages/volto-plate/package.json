@@ -42,6 +42,7 @@
     "@platejs/slash-command": "^49.0.0",
     "@platejs/mention": "^49.0.0",
     "@platejs/suggestion": "^50.3.3",
+    "@platejs/toggle": "^49.0.0",
     "@plone/plate": "workspace:*",
     "@plone/components": "workspace:^",
     "@plone/helpers": "workspace:*",

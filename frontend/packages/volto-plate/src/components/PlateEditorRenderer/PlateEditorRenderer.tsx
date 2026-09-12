@@ -11,6 +11,7 @@ import {
   normalizeUsers,
 } from '../../plate/discussion-data';
 import { PlatePluginsProvider } from '../../plate/context/PlatePluginsProvider';
+import { ToggleVisibilityProvider } from '../../plate/context/ToggleVisibilityContext';
 import MentionLinkTarget from './MentionLinkTarget';
 
 type PlateEditorRendererProps = {
@@ -41,11 +42,13 @@ const PlateEditorRenderer = ({ content }: PlateEditorRendererProps) => {
         readOnly
       >
         <MentionLinkTarget />
-        <PlateRenderer
-          editorConfig={wikiEditorRenderer}
-          value={somersaultBlock.value as Value}
-          className="typeset"
-        />
+        <ToggleVisibilityProvider value={somersaultBlock.value as Value}>
+          <PlateRenderer
+            editorConfig={wikiEditorRenderer}
+            value={somersaultBlock.value as Value}
+            className="typeset"
+          />
+        </ToggleVisibilityProvider>
       </PlatePluginsProvider>
     </PlateController>
   );
