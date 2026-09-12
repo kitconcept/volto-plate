@@ -1,6 +1,6 @@
 {
   "name": "@kitconcept/volto-plate-dev",
-  "version": "1.0.0-alpha.25",
+  "version": "1.0.0-alpha.27",
   "description": "An add-on that adds a Plate.js block for Volto",
   "author": "kitconcept, GmbH",
   "homepage": "https://github.com/kitconcept/volto-plate",
@@ -37,7 +37,7 @@
     "@plone/registry": "workspace:*",
     "@plone/volto": "workspace:*",
     "@kitconcept/volto-plate": "workspace:*",
-    "@kitconcept/volto-light-theme": "^8.0.0-alpha.25"
+    "@kitconcept/volto-light-theme": "^8.0.0-alpha.32"
   },
   "devDependencies": {
     "mrs-developer": "^2.2.0",

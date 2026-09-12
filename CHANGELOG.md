@@ -7,6 +7,61 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a27 (2026-09-11)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Internal
+
+- Use @plone/plate@1.0.0-alpha.15 @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a26 (2026-09-11)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Internal
+
+- Add CI check enforcing the mandatory OVERRIDE documentation header on every shadowed component under `src/customizations` @sneridagh [#shadow-headers](https://github.com/kitconcept/volto-plate/issues/shadow-headers)
+- Added OVERRIDE header comments (reason, upstream file link, developer, changelog) to the shadowed/customized files under `src/customizations`. @iFlameing 
+- check-shadow-headers now skips asset files (.svg, images) that cannot carry a JS block comment. 
+
+
+
+### Project
+
+
+#### Internal
+
+- Add CI check enforcing the mandatory OVERRIDE documentation header on every shadowed component under `src/customizations` @sneridagh [#shadow-headers](https://github.com/kitconcept/volto-plate/issues/shadow-headers)
+- check-shadow-headers now skips asset files (.svg, images) that cannot carry a JS block comment. 
+
+
+
 ## 1.0.0a25 (2026-09-09)
 
 ### Backend
