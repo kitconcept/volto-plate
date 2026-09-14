@@ -23,10 +23,17 @@ import { BaseCommentKit } from '../plugins/comment-base-kit';
 import { BaseDateKit } from '../plugins/date-base-kit';
 import { VoltoLinkElementStatic } from '../plugins/volto-link-node-static';
 import { VoltoMentionBaseKit } from '../plugins/volto-mention-kit';
+import { VoltoToggleElementStatic } from '../plugins/volto-toggle-node-static';
+import { VoltoToggleVisibilityKit } from '../plugins/volto-toggle-visibility-kit';
 
 const wikiBaseLinkKit = overrideKitPlugin(BaseLinkKit, KEYS.link, {
   node: {
     component: VoltoLinkElementStatic,
+  },
+});
+const wikiBaseToggleKit = overrideKitPlugin(BaseToggleKit, KEYS.toggle, {
+  node: {
+    component: VoltoToggleElementStatic,
   },
 });
 
@@ -34,7 +41,8 @@ export const wikiBaseEditorKit = [
   ...BaseBasicBlocksKit,
   ...BaseCodeBlockKit,
   ...BaseTableKit,
-  ...BaseToggleKit,
+  ...wikiBaseToggleKit,
+  ...VoltoToggleVisibilityKit,
   ...BaseTocKit,
   ...BaseMediaKit,
   ...BaseCalloutKit,
