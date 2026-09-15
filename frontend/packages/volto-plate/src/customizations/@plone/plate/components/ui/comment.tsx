@@ -9,6 +9,7 @@
  * CHANGELOG:
  *  - Render comment author with PersonPill instead of initials avatar (#55) @iFlameing
  *  - Gate reply-box autoFocus behind an explicit prop @iFlameing
+ *  - Wrap long unbroken words in comment text/input instead of overflowing the container @iFlameing
  */
 import * as React from 'react';
 
@@ -245,11 +246,13 @@ export function Comment(props: {
         )}
         <Plate readOnly={!isEditing} editor={commentEditor}>
           <EditorContainer variant="comment">
+            {/* === START CUSTOMIZATION === Wrap long unbroken words instead of overflowing. */}
             <Editor
               variant="comment"
-              className="w-auto grow text-sm leading-normal font-light text-foreground"
+              className="w-auto grow wrap-anywhere hyphens-auto text-sm leading-normal font-light text-foreground"
               onClick={() => onEditorClick?.()}
             />
+            {/* === END CUSTOMIZATION === */}
 
             {/* === START CUSTOMIZATION === Align edit action buttons. */}
             {isEditing && (
@@ -629,10 +632,10 @@ export const CommentCreateForm = React.forwardRef<
             `}
             variant="comment"
           >
-            {/* === START CUSTOMIZATION === Keep text clear of the send icon. */}
+            {/* === START CUSTOMIZATION === Keep text clear of the send icon, and wrap long unbroken words instead of overflowing. */}
             <Editor
               variant="comment"
-              className="pr-9 text-sm leading-[21px] font-light text-[#252525]"
+              className="wrap-anywhere hyphens-auto pr-9 text-sm leading-[21px] font-light text-[#252525]"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
