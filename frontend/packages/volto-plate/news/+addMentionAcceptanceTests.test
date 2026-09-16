@@ -1,0 +1,1 @@
+Added acceptance tests for selecting @mentions with a click and with arrow keys + Enter, both in the document editor and in a new comment, using two test users. @iFlameing

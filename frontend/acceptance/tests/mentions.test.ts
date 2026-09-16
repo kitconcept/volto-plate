@@ -14,12 +14,15 @@ const apiURL =
 
 const adminAuth = `Basic ${Buffer.from('admin:secret').toString('base64')}`;
 
-async function createMentionableUser(request: APIRequestContext) {
+async function createMentionableUser(
+  request: APIRequestContext,
+  { username, fullname }: { username: string; fullname: string },
+) {
   const response = await request.post(`${apiURL}/@users`, {
     data: {
-      email: 'mention-target@example.com',
+      email: `${username}@example.com`,
       password: 'secret123',
-      username: 'mention-target',
+      username,
     },
     headers: {
       Accept: 'application/json',
@@ -31,12 +34,12 @@ async function createMentionableUser(request: APIRequestContext) {
 
   if (!response.ok()) {
     throw new Error(
-      `Unable to create mention target: ${response.status()} ${await response.text()}`,
+      `Unable to create user ${username}: ${response.status()} ${await response.text()}`,
     );
   }
 
-  const update = await request.patch(`${apiURL}/@users/mention-target`, {
-    data: { fullname: 'Mention Target' },
+  const update = await request.patch(`${apiURL}/@users/${username}`, {
+    data: { fullname },
     headers: {
       Accept: 'application/json',
       Authorization: adminAuth,
@@ -44,9 +47,14 @@ async function createMentionableUser(request: APIRequestContext) {
     },
   });
   if (!update.ok()) {
-    throw new Error(`Unable to update mention target: ${update.status()}`);
+    throw new Error(`Unable to update user ${username}: ${update.status()}`);
   }
 }
+
+const USER_KEYS_BY_FULLNAME: Record<string, string> = {
+  'Mention Second': 'mention-second',
+  'Mention Target': 'mention-target',
+};
 
 function withSomersaultBody(text: string) {
   return (body: Record<string, unknown>) => {
@@ -127,7 +135,14 @@ function withCommentMention(body: Record<string, unknown>) {
 test.describe('Plate mentions', () => {
   test.beforeEach(async ({ page, request }) => {
     await login(page);
-    await createMentionableUser(request);
+    await createMentionableUser(request, {
+      fullname: 'Mention Target',
+      username: 'mention-target',
+    });
+    await createMentionableUser(request, {
+      fullname: 'Mention Second',
+      username: 'mention-second',
+    });
   });
 
   test('queries @mentions and inserts the selected user in document text', async ({
@@ -235,6 +250,178 @@ test.describe('Plate mentions', () => {
     await expect(
       page.getByRole('option', { name: 'Mention Target' }),
     ).toBeVisible();
+  });
+
+  test('selects a mention while composing a new comment', async ({ page }) => {
+    const { contentPath } = await createWikiPage(page, {
+      bodyModifier: withSomersaultBody('Some paragraph text'),
+      contentId: 'new-comment-mention',
+      contentTitle: 'New comment mention',
+      transition: 'publish',
+      wikiId: 'wiki-new-comment-mention',
+    });
+
+    await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
+    await waitForPlateEditorReady(page);
+
+    const editor = page.locator('.slate-editor[data-slate-editor]');
+    const editorHandle = await getEditorHandle(page, editor);
+    await setSelection(page, editorHandle, {
+      anchor: { offset: 0, path: [1, 0] },
+      focus: { offset: 4, path: [1, 0] },
+    });
+
+    const toolbar = page.getByRole('toolbar', { name: 'Editor toolbar' });
+    await expect(toolbar).toBeVisible();
+    const finalGroup = toolbar.locator(':scope > div').nth(2);
+    await finalGroup.locator('button').nth(0).click();
+
+    const commentDialog = page.getByRole('dialog');
+    const commentInput = commentDialog.getByRole('textbox');
+    await commentInput.click();
+
+    await page.keyboard.type('@');
+    await expect(
+      page.getByText('Type to search people', { exact: true }),
+    ).toBeVisible();
+
+    const searchRequest = page.waitForRequest(
+      (value) =>
+        value.url().includes('/@mentions') &&
+        value.url().includes('search=Mention'),
+    );
+    await page.keyboard.type('Mention');
+    await searchRequest;
+
+    await page.getByRole('option', { name: 'Mention Target' }).click();
+    await expect(
+      commentInput.getByText('Mention Target', { exact: true }),
+    ).toBeVisible();
+
+    await page.keyboard.press('Enter');
+
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+  });
+
+  test('selects the second match with arrow keys and Enter in the document editor', async ({
+    page,
+  }) => {
+    const { contentPath } = await createWikiPage(page, {
+      bodyModifier: withSomersaultBody(''),
+      contentId: 'keyboard-mention',
+      contentTitle: 'Keyboard mention',
+      transition: 'publish',
+      wikiId: 'wiki-keyboard-mention',
+    });
+
+    await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
+    await waitForPlateEditorReady(page);
+
+    const editor = page.locator('.slate-editor[data-slate-editor]');
+    const editorHandle = await getEditorHandle(page, editor);
+    await setSelection(page, editorHandle, {
+      anchor: { offset: 0, path: [1, 0] },
+      focus: { offset: 0, path: [1, 0] },
+    });
+
+    await page.keyboard.type('@');
+    const searchRequest = page.waitForRequest(
+      (value) =>
+        value.url().includes('/@mentions') &&
+        value.url().includes('search=Mention'),
+    );
+    await page.keyboard.type('Mention');
+    await searchRequest;
+
+    const options = page.getByRole('option');
+    await expect(options).toHaveCount(2);
+
+    const optionTexts = await options.allTextContents();
+    const secondFullname = optionTexts[1];
+    const expectedKey = USER_KEYS_BY_FULLNAME[secondFullname];
+    expect(expectedKey).toBeDefined();
+
+    // Arrow down from the first match to the second, then confirm with
+    // Enter instead of clicking.
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+
+    await expect
+      .poll(async () =>
+        editorHandle.evaluate((editor: any) => {
+          const findMention = (node: any): any => {
+            if (node?.type === 'mention') return node;
+            if (!Array.isArray(node?.children)) return null;
+            return node.children.map(findMention).find(Boolean) ?? null;
+          };
+
+          return findMention({ children: editor.children });
+        }),
+      )
+      .toMatchObject({
+        key: expectedKey,
+        type: 'mention',
+        value: secondFullname,
+      });
+  });
+
+  test('selects the second match with arrow keys and Enter while composing a new comment', async ({
+    page,
+  }) => {
+    const { contentPath } = await createWikiPage(page, {
+      bodyModifier: withSomersaultBody('Some paragraph text'),
+      contentId: 'keyboard-comment-mention',
+      contentTitle: 'Keyboard comment mention',
+      transition: 'publish',
+      wikiId: 'wiki-keyboard-comment-mention',
+    });
+
+    await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
+    await waitForPlateEditorReady(page);
+
+    const editor = page.locator('.slate-editor[data-slate-editor]');
+    const editorHandle = await getEditorHandle(page, editor);
+    await setSelection(page, editorHandle, {
+      anchor: { offset: 0, path: [1, 0] },
+      focus: { offset: 4, path: [1, 0] },
+    });
+
+    const toolbar = page.getByRole('toolbar', { name: 'Editor toolbar' });
+    await expect(toolbar).toBeVisible();
+    const finalGroup = toolbar.locator(':scope > div').nth(2);
+    await finalGroup.locator('button').nth(0).click();
+
+    const commentDialog = page.getByRole('dialog');
+    const commentInput = commentDialog.getByRole('textbox');
+    await commentInput.click();
+
+    await page.keyboard.type('@');
+    const searchRequest = page.waitForRequest(
+      (value) =>
+        value.url().includes('/@mentions') &&
+        value.url().includes('search=Mention'),
+    );
+    await page.keyboard.type('Mention');
+    await searchRequest;
+
+    const options = page.getByRole('option');
+    await expect(options).toHaveCount(2);
+    const optionTexts = await options.allTextContents();
+    const secondFullname = optionTexts[1];
+
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+
+    await expect(
+      commentInput.getByText(secondFullname, { exact: true }),
+    ).toBeVisible();
+    // Wait for the mention combobox to fully close before submitting, so the
+    // Enter below is not swallowed by the still-closing combobox.
+    await expect(page.getByRole('listbox')).toBeHidden();
+
+    await page.keyboard.press('Enter');
+
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
   });
 
   test('renders mentions inside persisted discussion comments', async ({
