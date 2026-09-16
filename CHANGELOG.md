@@ -7,6 +7,38 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a28 (2026-09-16)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Bugfix
+
+- Fix toggle blocks in view mode @iRohitSingh [#77](https://github.com/kitconcept/volto-plate/issues/77)
+- Fixed long unbroken words (e.g. a URL or a string with no spaces) overflowing the comment box instead of wrapping inside it. @iFlameing 
+- Fixed the @mention popover so arrow key navigation actually highlights the selected person, instead of looking like it does nothing. @iFlameing 
+
+
+#### Internal
+
+- Added acceptance tests for selecting @mentions with a click and with arrow keys + Enter, both in the document editor and in a new comment, using two test users. @iFlameing 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a27 (2026-09-11)
 
 ### Backend

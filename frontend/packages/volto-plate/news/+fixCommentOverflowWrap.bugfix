@@ -1,1 +1,0 @@
-Fixed long unbroken words (e.g. a URL or a string with no spaces) overflowing the comment box instead of wrapping inside it. @iFlameing
