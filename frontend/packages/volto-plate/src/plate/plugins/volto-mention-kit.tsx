@@ -319,13 +319,13 @@ export function VoltoMentionInputElement(
             </InlineComboboxGroupLabel>
             {items.map((item) => (
               <InlineComboboxItem
-                className="h-auto min-h-9 rounded-full p-0 hover:bg-transparent data-[active-item=true]:bg-transparent"
+                className="group h-auto min-h-9 rounded-full p-0 hover:bg-transparent data-[active-item=true]:bg-transparent"
                 key={item.id}
                 keywords={[item.id]}
                 onClick={() => selectItem(item)}
                 value={item.fullname}
               >
-                <span className="mention-option flex w-full items-center gap-2 rounded-full bg-muted py-1 pr-3 pl-1 text-sm font-medium data-[active-item=true]:bg-accent">
+                <span className="mention-option flex w-full items-center gap-2 rounded-full bg-muted py-1 pr-3 pl-1 text-sm font-medium group-data-[active-item=true]:bg-primary group-data-[active-item=true]:text-primary-foreground">
                   <MentionPill
                     portrait={item.portrait}
                     resolvePortrait={false}
