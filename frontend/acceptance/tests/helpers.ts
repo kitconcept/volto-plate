@@ -1,6 +1,26 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { getEditorHandle, setSelection } from '@platejs/playwright';
 
+
+export async function insertViaSlashMenu(page: Page, typeBlock: string, optionLabel?: string) {
+  const editor = page.locator('.slate-editor[data-slate-editor]');
+
+  await editor.click();
+  await page.keyboard.press('End');
+  await page.keyboard.press('ControlOrMeta+Enter');
+
+  await page.keyboard.type('/');
+
+  await expect(page.getByRole('listbox')).toBeVisible();
+
+  await page.keyboard.type(typeBlock);
+
+  await page.getByRole('option', { name: optionLabel ?? typeBlock }).first().click();
+
+  // Wait for menu to close (block inserted)
+  await expect(page.getByRole('listbox')).toBeHidden();
+
+}
 export async function selectParagraphText(
   page: Page,
   { start, end }: { start: number; end: number },
