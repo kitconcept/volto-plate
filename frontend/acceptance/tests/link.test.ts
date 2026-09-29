@@ -285,6 +285,68 @@ test.describe('Plate link features', () => {
     ).not.toBeVisible();
   });
 
+  test('editing an existing link via Browse updates its target and keeps its text', async ({
+    page,
+  }) => {
+    const { contentPath: firstTargetPath } = await createWikiPage(page, {
+      contentId: 'link-edit-first-target',
+      contentTitle: 'LinkEditFirstTarget',
+      transition: 'publish',
+      bodyModifier: withSomersaultBody('Target body'),
+    });
+    const { contentPath: secondTargetPath } = await createWikiPage(page, {
+      contentId: 'link-edit-second-target',
+      contentTitle: 'LinkEditSecondTarget',
+      transition: 'publish',
+      bodyModifier: withSomersaultBody('Target body'),
+    });
+    const { contentPath: sourcePath } = await createWikiPage(page, {
+      contentId: 'link-edit-source',
+      contentTitle: 'Link edit source',
+      transition: 'publish',
+      bodyModifier: withSomersaultLinkedBody({
+        bodyText: 'Link this text',
+        href: firstTargetPath,
+        linkText: 'Link this',
+      }),
+    });
+
+    await page.goto(`${sourcePath}/edit`, { waitUntil: 'networkidle' });
+    await waitForPlateEditorReady(page);
+
+    // The link edit popover only opens with a collapsed cursor inside the link.
+    await page
+      .locator('.slate-editor[data-slate-editor]')
+      .getByRole('link', { name: 'Link this' })
+      .first()
+      .click();
+    const browseButton = page.getByRole('button', {
+      name: 'Browse',
+      exact: true,
+    });
+    await expect(browseButton).toBeVisible();
+    await browseButton.click();
+
+    const objectBrowser = page.locator('.object-browser');
+    await expect(objectBrowser).toBeVisible();
+    await objectBrowser.getByRole('button', { name: 'Search SVG' }).click();
+    await objectBrowser
+      .getByPlaceholder('Search content')
+      .fill('LinkEditSecondTarget');
+    await expect(objectBrowser.getByText('LinkEditSecondTarget')).toBeVisible();
+    await objectBrowser.getByText('LinkEditSecondTarget').click();
+
+    await expectEditorLink(page, {
+      href: secondTargetPath,
+      text: 'Link this',
+    });
+    await expect(
+      page.locator(
+        `.slate-editor[data-slate-editor] a[href="${firstTargetPath}"]`,
+      ),
+    ).toHaveCount(0);
+  });
+
   test('an internal absolute URL is flattened to an app path', async ({
     page,
   }) => {

@@ -1,0 +1,1 @@
+Fixed editing an existing link via Browse or a search result replacing the link text; only the link target is updated now. @sneridagh

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BlockInnerContainer } from '@plone/plate/components/ui/block-inner-container';
 import { setFormData } from '@plone/volto/actions/form/form';
+import { TitleRules } from '@plone/plate/components/editor/plugins/title';
 import { createSlatePlugin, ElementApi, PathApi } from 'platejs';
 import {
   PlateElement,
@@ -154,6 +155,11 @@ function TitleMetadataSync() {
           return;
         }
 
+        const selectionWasInTitle =
+          !!editor.selection &&
+          editor.selection.anchor.path[0] === titlePath[0] &&
+          editor.selection.focus.path[0] === titlePath[0];
+
         runWithoutSuggestions(editor, () => {
           editor.tf.replaceNodes(
             {
@@ -163,6 +169,12 @@ function TitleMetadataSync() {
             { at: titlePath },
           );
         });
+
+        // Replacing the node moves the caret out of it. Keep it in the title,
+        // e.g. when a removed title is restored (slash menu or `# `).
+        if (selectionWasInTitle) {
+          editor.tf.select(editor.api.end(titlePath));
+        }
       }
     }
 
@@ -332,9 +344,12 @@ export const BaseVoltoTitleBlockPlugin = createSlatePlugin({
   },
 });
 
+// `# ` restores the title block when the document has none, like the
+// "Title" slash menu item (see `TitleRules` in @plone/plate).
 export const VoltoTitleBlock = toPlatePlugin(
   BaseVoltoTitleBlockPlugin,
 ).configure({
+  inputRules: [TitleRules.markdown()],
   render: {
     afterEditable: TitleMetadataSync,
   },

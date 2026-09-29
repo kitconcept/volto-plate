@@ -1,17 +1,14 @@
 import * as React from 'react';
 
-import type {
-  SlateElementProps,
-  TComboboxInputElement,
-  TMentionElement,
-} from 'platejs';
+import type { TComboboxInputElement, TMentionElement } from 'platejs';
 import type { PlateElementProps } from 'platejs/react';
+import type { SlateElementProps } from 'platejs/static';
 
 import { BaseMentionPlugin } from '@platejs/mention';
 import { MentionInputPlugin, MentionPlugin } from '@platejs/mention/react';
 import Api from '@plone/volto/helpers/Api/Api';
 import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
-import { SlateElement } from 'platejs';
+import { SlateElement } from 'platejs/static';
 import {
   PlateElement,
   useFocused,
