@@ -1,7 +1,8 @@
-import type { SlateElementProps, TLinkElement } from 'platejs';
+import type { TLinkElement } from 'platejs';
+import type { SlateElementProps } from 'platejs/static';
 
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
-import { SlateElement } from 'platejs';
+import { SlateElement } from 'platejs/static';
 
 export function VoltoLinkElementStatic(props: SlateElementProps<TLinkElement>) {
   return (

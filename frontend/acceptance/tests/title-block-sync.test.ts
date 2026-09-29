@@ -2,7 +2,11 @@ import { expect, test } from './test';
 import { login } from './login';
 import { createWikiPage } from './content';
 import { waitForPlateEditorReady } from './plate';
-import { getEditorHandle, getSelection, setSelection } from '@platejs/playwright';
+import {
+  getEditorHandle,
+  getSelection,
+  setSelection,
+} from '@platejs/playwright';
 
 function withSomersaultBody(body: Record<string, unknown>) {
   const title = typeof body.title === 'string' ? body.title : '';
@@ -205,4 +209,58 @@ test('Title placeholder is rendered inside the width-constrained inner container
       ),
       placeholderPosition: 'absolute',
     });
+});
+
+test('A removed title block can be restored from the slash menu', async ({
+  page,
+}) => {
+  await login(page);
+  const { contentPath } = await createWikiPage(page, {
+    contentId: 'title-slash-restore',
+    contentTitle: 'Removed title',
+    transition: 'publish',
+    bodyModifier: (body) => ({
+      ...body,
+      blocks: {
+        __somersault__: {
+          '@type': '__somersault__',
+          value: [{ type: 'p', children: [{ text: '' }] }],
+        },
+      },
+    }),
+  });
+
+  await page.goto(`${contentPath}/edit`);
+  await waitForPlateEditorReady(page);
+  const editorHandle = await getEditorHandle(
+    page,
+    page.locator('.slate-editor[data-slate-editor]'),
+  );
+  await setSelection(page, editorHandle, {
+    anchor: { path: [0, 0], offset: 0 },
+    focus: { path: [0, 0], offset: 0 },
+  });
+
+  await page.keyboard.type('/title');
+  await expect(page.getByRole('option', { name: 'Title' })).toBeVisible();
+  await page.keyboard.press('Enter');
+
+  // The page keeps its title, so the restored block shows it and keeps the
+  // caret.
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (editor) =>
+          JSON.parse(
+            JSON.stringify(
+              editor.children.find((node) => node.type === 'title') ?? null,
+            ),
+          ),
+        editorHandle,
+      ),
+    )
+    .toMatchObject({ type: 'title', children: [{ text: 'Removed title' }] });
+  await expect
+    .poll(async () => (await getSelection(page, editorHandle))?.focus)
+    .toEqual({ path: [0, 0], offset: 'Removed title'.length });
 });
