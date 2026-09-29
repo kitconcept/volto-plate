@@ -81,6 +81,13 @@ If you only need the standard interactive wrapper:
 
 - `make acceptance-test`
 
+Acceptance tests live under `frontend/acceptance/`:
+
+- `fixtures/`: Plate values for each native block of the wiki presets (`native-blocks.ts`), a page factory that creates one small wiki page per test through the REST API (`pages.ts`), editor helpers (`editor.ts`) and clipboard payloads for paste tests (`clipboard.ts`).
+- `tests/`: behaviour tests, covering the `wiki-editor` preset (editor) and the `wiki-renderer` preset (public view).
+
+Only cover features reachable through the wiki presets. Prefer `createNativeBlocksPage` and the fixture sections over building page values by hand.
+
 ## Formatting and Linting
 
 Prefer Make targets before direct tool calls.
