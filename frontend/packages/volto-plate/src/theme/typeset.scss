@@ -599,6 +599,15 @@
     padding-bottom: 0;
   }
 
+  /* VLT animates the block padding in edit mode (for background colour
+     blocks). The last paragraph keeps VLT's 80px last-block padding, so
+     pressing Enter on it animated that padding from the old last paragraph to
+     the new one, and the caret slid into place. Keep the padding, drop the
+     animation. */
+  #page-edit .typeset .block .block-inner-container {
+    transition: none;
+  }
+
   /* VLT styles blockquotes from `#page-document blockquote` (18px/40px). That
      is an ID, so no class-only rule in this file can outrank it; matching the
      ID does. The editor has no `#page-document`, where the rule above applies. */
