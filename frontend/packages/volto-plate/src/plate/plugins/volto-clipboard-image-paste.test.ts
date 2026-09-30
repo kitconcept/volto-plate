@@ -113,6 +113,37 @@ describe('volto clipboard image paste helpers', () => {
     });
   });
 
+  it('stores the image field of the created content as catalog image scales', () => {
+    const file = new File(['fake'], 'clipboard.png', { type: 'image/png' });
+    const image = {
+      'content-type': 'image/png',
+      download:
+        'http://localhost:8080/Plone/folder/pasted-image/@@images/image-1-abc.png',
+      filename: 'clipboard.png',
+      height: 1,
+      scales: {},
+      width: 1,
+    };
+
+    expect(
+      toPlateImageBlockData(
+        {
+          '@id': 'http://localhost:8080/Plone/folder/pasted-image',
+          image,
+          title: 'Pasted image',
+        },
+        file,
+      ),
+    ).toEqual({
+      align: 'center',
+      alt: 'Pasted image',
+      image_field: 'image',
+      image_scales: { image: [image] },
+      size: 'l',
+      url: '/Plone/folder/pasted-image',
+    });
+  });
+
   it('detects pure clipboard image pastes and ignores html pastes', () => {
     expect(
       isClipboardImagePaste({

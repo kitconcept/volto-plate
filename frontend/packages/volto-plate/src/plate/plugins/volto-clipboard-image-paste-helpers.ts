@@ -15,6 +15,7 @@ export type PlateImageBlockData = {
 
 export type CreateContentResponse = {
   '@id'?: string;
+  image?: Record<string, unknown>;
   image_field?: string;
   image_scales?: Record<string, unknown>;
   title?: string;
@@ -102,18 +103,32 @@ export function toPlateImageBlockData(
     throw new Error('Image creation did not return a content URL');
   }
 
+  const hasImageScales =
+    createdItem.image_scales &&
+    typeof createdItem.image_scales === 'object' &&
+    !Array.isArray(createdItem.image_scales);
+  // `@createContent` returns the created content, whose image field holds
+  // the scales. Store them the catalog way, as Volto's image widget does, so
+  // the editor renders the image before the server enhances the block data
+  // on save.
+  const hasImage =
+    !hasImageScales &&
+    createdItem.image &&
+    typeof createdItem.image === 'object' &&
+    !Array.isArray(createdItem.image);
+
   return {
     align: 'center',
     alt: createdItem.title || file.name || 'Pasted image',
-    image_field:
-      typeof createdItem.image_field === 'string'
+    image_field: hasImage
+      ? 'image'
+      : typeof createdItem.image_field === 'string'
         ? createdItem.image_field
         : undefined,
-    image_scales:
-      createdItem.image_scales &&
-      typeof createdItem.image_scales === 'object' &&
-      !Array.isArray(createdItem.image_scales)
-        ? createdItem.image_scales
+    image_scales: hasImageScales
+      ? createdItem.image_scales
+      : hasImage
+        ? { image: [createdItem.image] }
         : undefined,
     size: 'l',
     url: flattenToAppURL(rawId),

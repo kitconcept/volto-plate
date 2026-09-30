@@ -107,6 +107,16 @@ async function pasteIntoFirstParagraph(
       url: uploadedPath,
     });
 
+  // The image renders in the editor straight away, before the server
+  // enhances the block data on save.
+  const image = page.locator(
+    `.slate-editor[data-slate-editor] img[alt="${uploadPayload.title ?? 'clipboard-image.png'}"]`,
+  );
+  await expect(image).toBeVisible();
+  await expect
+    .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+
   return uploadResponse;
 }
 
