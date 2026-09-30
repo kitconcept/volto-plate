@@ -64,17 +64,24 @@ test.describe('Plate markdown shortcuts', () => {
     await login(page);
   });
 
-  test('typing "## " turns the paragraph into an h2', async ({ page }) => {
-    const editorHandle = await openEmptyParagraph(page, 'md-heading');
-    await page.keyboard.type('## Heading 2');
+  for (const level of [2, 3, 4, 5, 6]) {
+    test(`typing "${'#'.repeat(level)} " turns the paragraph into an h${level}`, async ({
+      page,
+    }) => {
+      const editorHandle = await openEmptyParagraph(
+        page,
+        `md-heading-${level}`,
+      );
+      await page.keyboard.type(`${'#'.repeat(level)} Heading ${level}`);
 
-    await expect
-      .poll(async () => (await getBlock(page, editorHandle)).type)
-      .toBe('h2');
-    expect((await getBlock(page, editorHandle)).children?.[0]?.text).toBe(
-      'Heading 2',
-    );
-  });
+      await expect
+        .poll(async () => (await getBlock(page, editorHandle)).type)
+        .toBe(`h${level}`);
+      expect((await getBlock(page, editorHandle)).children?.[0]?.text).toBe(
+        `Heading ${level}`,
+      );
+    });
+  }
 
   test('typing "# " does not create an h1 while the title block exists', async ({
     page,

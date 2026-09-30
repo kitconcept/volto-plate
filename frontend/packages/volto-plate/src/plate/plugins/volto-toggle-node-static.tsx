@@ -17,6 +17,7 @@ export function VoltoToggleElementStatic(props: SlateElementProps) {
         <div
           role="button"
           tabIndex={0}
+          aria-label="Toggle content"
           aria-expanded={open}
           className={`
             absolute top-0 -left-0.5 size-6 cursor-pointer items-center justify-center rounded-md
