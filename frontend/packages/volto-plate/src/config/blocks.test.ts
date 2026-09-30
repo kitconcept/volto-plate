@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import install from './blocks';
+import install, { NATIVE_BLOCK_TYPES } from './blocks';
 
 vi.mock('../components/Blocks/Image/Edit', () => ({
   default: vi.fn(),
@@ -113,6 +113,31 @@ describe('config/blocks', () => {
         style: { '--block-size': '220px' },
       },
     ]);
+  });
+
+  it('registers the default width for every native top-level block', () => {
+    const config = {
+      blocks: {
+        widths: [],
+        blocksConfig: {
+          image: {},
+        },
+        plateBlocksConfig: {
+          code_block: { category: 'text' },
+        },
+      },
+      registerUtility: vi.fn(),
+    } as any;
+
+    install(config);
+
+    for (const type of NATIVE_BLOCK_TYPES) {
+      expect(config.blocks.plateBlocksConfig[type]).toMatchObject({
+        blockWidth: { defaultWidth: 'default', widths: ['default'] },
+      });
+    }
+    // Existing settings of a block are kept.
+    expect(config.blocks.plateBlocksConfig.code_block.category).toBe('text');
   });
 
   it('registers a dedicated plateimage block config', () => {

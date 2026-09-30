@@ -41,7 +41,10 @@ export async function createNativeBlocksPage(
     transition: 'publish',
     bodyModifier: (body) => ({
       ...body,
+      // Keep the type's default blocks: `blocks_layout` refers to them and
+      // the edit form fails to save without them.
       blocks: {
+        ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
         __somersault__: {
           '@type': '__somersault__',
           value: [
@@ -86,4 +89,26 @@ export async function openInView(page: Page, contentPath: string) {
   await expect(content).toBeVisible();
 
   return content;
+}
+
+/** Saves the open edit form and waits for the view it redirects to. */
+export async function savePage(page: Page, contentPath: string) {
+  await page.locator('#toolbar-save').click();
+  await page.waitForURL(contentPath, { waitUntil: 'load' });
+}
+
+/** Reads the somersault value of a page straight from the REST API. */
+export async function getStoredValue(page: Page, contentPath: string) {
+  const hostname = process.env.BACKEND_HOST || '127.0.0.1';
+  const siteId = process.env.SITE_ID || 'plone';
+  const apiURL = process.env.API_PATH || `http://${hostname}:55001/${siteId}`;
+  const response = await page.request.get(`${apiURL}${contentPath}`, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Basic ${Buffer.from('admin:secret').toString('base64')}`,
+    },
+  });
+  const content = await response.json();
+
+  return content.blocks.__somersault__.value as Record<string, unknown>[];
 }
