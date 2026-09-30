@@ -94,7 +94,7 @@ jobs:
           echo "image-tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
 
       - name: Deploy to cluster
-        uses: kitconcept/docker-stack-deploy@v1.4.0
+        uses: kitconcept/docker-stack-deploy@v1.5.0
         with:
           registry: "ghcr.io"
           username: ${{ github.actor }}
