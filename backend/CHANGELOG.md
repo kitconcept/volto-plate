@@ -9,6 +9,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a29 (2026-09-30)
+
+
+### Internal:
+
+- Update Plone 6.2.2 @sneridagh 
+
 ## 1.0.0a28 (2026-09-16)
 
 No significant changes.

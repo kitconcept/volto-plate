@@ -1,1 +1,0 @@
-Added acceptance tests for the native blocks of the wiki presets, in the editor and the public view: block interactions, slash menu, floating toolbar, block context menu and Word, HTML and markdown paste, with programmatic test page fixtures. @sneridagh

@@ -7,6 +7,58 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a29 (2026-09-30)
+
+### Backend
+
+
+#### Internal:
+
+- Update Plone 6.2.2 @sneridagh 
+
+
+
+### Frontend
+
+
+#### Breaking
+
+- Upgraded to `@plone/plate` 1.0.0-alpha.18 (Aurora 1.0.0-alpha.12) and Plate.js 53.x. Static rendering helpers (`SlateElement`, `SlateElementProps`) are now imported from `platejs/static`. Markdown shortcuts are configured as `inputRules` on each kit, including links (markdown links and autolink on paste, space and enter). Blockquotes are now containers of blocks: legacy flat blockquotes are normalized when loaded in the editor. The `basic-blocks-kit.tsx` shadow was removed in favor of upstream's kit, so the editor no longer offers H1, which is reserved for the title. @sneridagh 
+
+
+#### Feature
+
+- Added the `# ` markdown shortcut from `@plone/plate` to the title block: it restores the title block when the document has none, like the "Title" slash menu item. @sneridagh 
+
+
+#### Bugfix
+
+- Added an accessible name to the toggle button in the public view, like the one in the editor. @sneridagh 
+- Fixed editing an existing link via Browse or a search result replacing the link text; only the link target is updated now. @sneridagh 
+- Fixed the caret jumping out of a restored title block when it is filled with the page title. @sneridagh 
+
+
+#### Internal
+
+- Pin Aurora to 1.0.0-alpha.10 @sneridagh 
+- Removed the `turn-into-toolbar-button.tsx` shadow and the Heading 5/6 slash menu items, now that `@plone/plate` offers Heading 5 and Heading 6 in its menus. @sneridagh 
+
+
+#### Tests
+
+- Added acceptance tests for the native blocks of the wiki presets, in the editor and the public view: block interactions, slash menu, floating toolbar, block context menu and Word, HTML and markdown paste, with programmatic test page fixtures. @sneridagh 
+
+
+
+### Project
+
+
+#### Documentation
+
+- Documented the acceptance test fixtures for the wiki presets in `AGENTS.md`. @sneridagh 
+
+
+
 ## 1.0.0a28 (2026-09-16)
 
 ### Backend
