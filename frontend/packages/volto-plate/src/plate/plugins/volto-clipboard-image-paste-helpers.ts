@@ -43,16 +43,33 @@ function getAddViewParentUrl(url = '') {
   return path.startsWith('/') ? path : `/${path}`;
 }
 
+/**
+ * Whether the HTML holds images and no text, like the fragment a browser puts
+ * next to the image file on "Copy image".
+ */
+function isImageOnlyHtml(html: string) {
+  const text = html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<(style|script)[\s\S]*?<\/\1>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .trim();
+
+  return text === '' && /<img\b/i.test(html);
+}
+
 export function isClipboardImagePaste(dataTransfer?: DataTransfer | null) {
   if (!dataTransfer) return false;
 
   const TEXT_HTML = 'text/html';
   const files = Array.from(dataTransfer.files ?? []);
 
-  return (
-    files.some((file) => file.type.startsWith('image/')) &&
-    !Array.from(dataTransfer.types ?? []).includes(TEXT_HTML)
-  );
+  if (!files.some((file) => file.type.startsWith('image/'))) return false;
+  if (!Array.from(dataTransfer.types ?? []).includes(TEXT_HTML)) return true;
+
+  // Pasted HTML with content goes through the HTML paste; a lone image copied
+  // from a web page is uploaded like any other clipboard image.
+  return isImageOnlyHtml(dataTransfer.getData(TEXT_HTML));
 }
 
 export function buildImageCreateContentPayload(file: File, dataUrl: string) {

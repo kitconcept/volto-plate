@@ -156,7 +156,20 @@ describe('volto clipboard image paste helpers', () => {
       isClipboardImagePaste({
         files: [new File(['fake'], 'clipboard.png', { type: 'image/png' })],
         types: ['text/html'],
+        getData: () => '<p>Some text</p><img src="https://example.com/a.png">',
       } as unknown as DataTransfer),
     ).toBe(false);
+  });
+
+  it('detects an image copied from a web page', () => {
+    // Chrome's "Copy image" puts this HTML next to the image file.
+    expect(
+      isClipboardImagePaste({
+        files: [new File(['fake'], 'image.png', { type: 'image/png' })],
+        types: ['text/html', 'Files'],
+        getData: () =>
+          '<meta charset="utf-8"><img src="https://example.com/a.png" alt="A">',
+      } as unknown as DataTransfer),
+    ).toBe(true);
   });
 });

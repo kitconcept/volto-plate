@@ -25,15 +25,20 @@ function withEmptySomersaultBody(body: Record<string, unknown>) {
   };
 }
 
+/**
+ * Pastes the clipboard image. With `html`, the clipboard also carries that
+ * HTML, as when an image is copied from a web page.
+ */
 async function pasteClipboardImage(
   page: Parameters<typeof test>[0]['page'],
-  editableSelector = '.slate-editor[data-slate-editor]',
+  html?: string,
 ) {
-  await page.locator(editableSelector).evaluate(
-    (element, { base64, mimeType, name }) => {
+  await page.locator('.slate-editor[data-slate-editor]').evaluate(
+    (element, { base64, html, mimeType, name }) => {
       const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
       const file = new File([bytes], name, { type: mimeType });
       const dataTransfer = new DataTransfer();
+      if (html) dataTransfer.setData('text/html', html);
       dataTransfer.items.add(file);
 
       const event = new Event('paste', { bubbles: true, cancelable: true });
@@ -47,6 +52,7 @@ async function pasteClipboardImage(
     },
     {
       base64: CLIPBOARD_IMAGE_BASE64,
+      html,
       mimeType: 'image/png',
       name: 'clipboard-image.png',
     },
@@ -55,6 +61,7 @@ async function pasteClipboardImage(
 
 async function pasteIntoFirstParagraph(
   page: Parameters<typeof test>[0]['page'],
+  html?: string,
 ) {
   const editor = page.locator('.slate-editor[data-slate-editor]');
   const editorHandle = await getEditorHandle(page, editor);
@@ -72,7 +79,7 @@ async function pasteIntoFirstParagraph(
     );
   });
 
-  await pasteClipboardImage(page);
+  await pasteClipboardImage(page, html);
 
   const uploadResponse = await uploadResponsePromise;
   const uploadPayload = (await uploadResponse.json()) as {
@@ -168,4 +175,27 @@ test('Clipboard image paste uploads to the parent folder in add view', async ({
 
   expect(uploadResponse.url()).toContain(`/++api++/${workspaceId}`);
   expect(uploadResponse.url()).not.toContain('/add?type=WikiPage');
+});
+
+test('Pasting an image copied from a web page uploads it', async ({ page }) => {
+  await login(page);
+
+  const { contentPath } = await createWikiPage(page, {
+    contentId: 'clipboard-web-image-page',
+    contentTitle: 'Clipboard web image page',
+    wikiId: 'wiki-clipboard-web-image',
+    transition: 'publish',
+    bodyModifier: withEmptySomersaultBody,
+  });
+
+  await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
+  await waitForPlateEditorReady(page);
+
+  // Chrome's "Copy image" puts this HTML next to the image file.
+  const uploadResponse = await pasteIntoFirstParagraph(
+    page,
+    '<meta charset="utf-8"><img src="https://example.com/photo.png" alt="Photo">',
+  );
+
+  expect(uploadResponse.url()).toContain(`/++api++${contentPath}`);
 });
