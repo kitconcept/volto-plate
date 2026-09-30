@@ -15,6 +15,7 @@ export type PlateImageBlockData = {
 
 export type CreateContentResponse = {
   '@id'?: string;
+  image?: Record<string, unknown>;
   image_field?: string;
   image_scales?: Record<string, unknown>;
   title?: string;
@@ -42,16 +43,33 @@ function getAddViewParentUrl(url = '') {
   return path.startsWith('/') ? path : `/${path}`;
 }
 
+/**
+ * Whether the HTML holds images and no text, like the fragment a browser puts
+ * next to the image file on "Copy image".
+ */
+function isImageOnlyHtml(html: string) {
+  const text = html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<(style|script)[\s\S]*?<\/\1>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .trim();
+
+  return text === '' && /<img\b/i.test(html);
+}
+
 export function isClipboardImagePaste(dataTransfer?: DataTransfer | null) {
   if (!dataTransfer) return false;
 
   const TEXT_HTML = 'text/html';
   const files = Array.from(dataTransfer.files ?? []);
 
-  return (
-    files.some((file) => file.type.startsWith('image/')) &&
-    !Array.from(dataTransfer.types ?? []).includes(TEXT_HTML)
-  );
+  if (!files.some((file) => file.type.startsWith('image/'))) return false;
+  if (!Array.from(dataTransfer.types ?? []).includes(TEXT_HTML)) return true;
+
+  // Pasted HTML with content goes through the HTML paste; a lone image copied
+  // from a web page is uploaded like any other clipboard image.
+  return isImageOnlyHtml(dataTransfer.getData(TEXT_HTML));
 }
 
 export function buildImageCreateContentPayload(file: File, dataUrl: string) {
@@ -102,18 +120,32 @@ export function toPlateImageBlockData(
     throw new Error('Image creation did not return a content URL');
   }
 
+  const hasImageScales =
+    createdItem.image_scales &&
+    typeof createdItem.image_scales === 'object' &&
+    !Array.isArray(createdItem.image_scales);
+  // `@createContent` returns the created content, whose image field holds
+  // the scales. Store them the catalog way, as Volto's image widget does, so
+  // the editor renders the image before the server enhances the block data
+  // on save.
+  const hasImage =
+    !hasImageScales &&
+    createdItem.image &&
+    typeof createdItem.image === 'object' &&
+    !Array.isArray(createdItem.image);
+
   return {
     align: 'center',
     alt: createdItem.title || file.name || 'Pasted image',
-    image_field:
-      typeof createdItem.image_field === 'string'
+    image_field: hasImage
+      ? 'image'
+      : typeof createdItem.image_field === 'string'
         ? createdItem.image_field
         : undefined,
-    image_scales:
-      createdItem.image_scales &&
-      typeof createdItem.image_scales === 'object' &&
-      !Array.isArray(createdItem.image_scales)
-        ? createdItem.image_scales
+    image_scales: hasImageScales
+      ? createdItem.image_scales
+      : hasImage
+        ? { image: [createdItem.image] }
         : undefined,
     size: 'l',
     url: flattenToAppURL(rawId),
