@@ -109,7 +109,10 @@ function fillPoFiles() {
       (found, candidate) => found ?? readPlateCatalog(candidate),
       undefined,
     );
-    if (!catalog) continue;
+    if (!catalog) {
+      console.log(`No Plate catalog for ${language}, nothing to fill`);
+      continue;
+    }
 
     let filled = 0;
     const po = fs
@@ -123,6 +126,13 @@ function fillPoFiles() {
           return `msgid "${msgid}"\nmsgstr "${escapePo(toIcu(translation))}"`;
         },
       );
+
+    if (!filled) {
+      console.log(
+        `Plate translations in ${language} are up to date, nothing to fill`,
+      );
+      continue;
+    }
 
     fs.writeFileSync(poFile, po);
     console.log(`Filled ${filled} Plate translations in ${language}`);
