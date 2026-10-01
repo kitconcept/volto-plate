@@ -29,7 +29,6 @@ import { SuggestionKit } from '@plone/plate/components/editor/plugins/suggestion
 import { TableKit } from '@plone/plate/components/editor/plugins/table-kit';
 import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
 import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
-import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-hotkey';
 
 import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
 import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image-paste';
@@ -93,7 +92,6 @@ export const WikiEditorKit = [
   VoltoClipboardImagePastePlugin,
   VoltoImageDropPlugin,
   SidebarPlugin,
-  SplitHotkeyPlugin,
   TrailingBlockPlugin,
 
   // Parsers
