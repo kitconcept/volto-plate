@@ -1,3 +1,16 @@
+/**
+ * OVERRIDE block-discussion.tsx
+ * REASON: Bulk "Accept all" / "Reject all" actions below the
+ *   suggestion list when a block has more than one open suggestion.
+ * FILE: https://github.com/plone/aurora/blob/plone-plate-1.0.0-alpha.13/packages/plate/components/ui/block-discussion.tsx
+ * FILE VERSION: @plone/plate 1.0.0-alpha.13
+ * DATE: 2026-08-25
+ * DEVELOPER: @iFlameing
+ * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/58
+ * CHANGELOG:
+ *  - Add bulk accept/reject suggestion actions (#58) @iFlameing
+ *
+ */
 import * as React from 'react';
 
 import type { PlateElementProps, RenderNodeWrapper } from 'platejs/react';

@@ -26,6 +26,31 @@ declare module '@plone/types' {
   }
 }
 
+/** Native Plate block types that can be top-level blocks in a wiki page. */
+export const NATIVE_BLOCK_TYPES = [
+  'title',
+  'p',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'blockquote',
+  'hr',
+  'code_block',
+  'table',
+  'toggle',
+  'toc',
+  'callout',
+  'column_group',
+  'img',
+  'video',
+  'audio',
+  'file',
+  'media_embed',
+] as const;
+
 export default function install(config: ConfigType) {
   if (!config.blocks.plateBlocksConfig) {
     config.blocks.plateBlocksConfig = {};
@@ -86,21 +111,19 @@ export default function install(config: ConfigType) {
     schemaEnhancer: undefined,
   };
 
-  config.blocks.plateBlocksConfig.title = {
-    ...config.blocks.plateBlocksConfig.title,
-    blockWidth: {
-      defaultWidth: 'default',
-      widths: ['default'],
-    },
-  };
-
-  config.blocks.plateBlocksConfig.p = {
-    ...config.blocks.plateBlocksConfig.p,
-    blockWidth: {
-      defaultWidth: 'default',
-      widths: ['default'],
-    },
-  };
+  // Every top-level native block of the wiki editor is registered, so the
+  // editor stores its width as soon as the block is created. An unregistered
+  // block only gets its width when the page is loaded again, which the
+  // history diff then shows as a change nobody made.
+  for (const type of NATIVE_BLOCK_TYPES) {
+    config.blocks.plateBlocksConfig[type] = {
+      ...config.blocks.plateBlocksConfig[type],
+      blockWidth: {
+        defaultWidth: 'default',
+        widths: ['default'],
+      },
+    };
+  }
 
   return config;
 }

@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import type { SlateElementProps } from 'platejs';
+import type { SlateElementProps } from 'platejs/static';
 
 import { CalendarIcon } from 'lucide-react';
-import { SlateElement } from 'platejs';
+import { SlateElement } from 'platejs/static';
 import { useIntl } from 'react-intl';
 
 import { cn } from '@plone/plate/lib/utils';

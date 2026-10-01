@@ -113,6 +113,37 @@ describe('volto clipboard image paste helpers', () => {
     });
   });
 
+  it('stores the image field of the created content as catalog image scales', () => {
+    const file = new File(['fake'], 'clipboard.png', { type: 'image/png' });
+    const image = {
+      'content-type': 'image/png',
+      download:
+        'http://localhost:8080/Plone/folder/pasted-image/@@images/image-1-abc.png',
+      filename: 'clipboard.png',
+      height: 1,
+      scales: {},
+      width: 1,
+    };
+
+    expect(
+      toPlateImageBlockData(
+        {
+          '@id': 'http://localhost:8080/Plone/folder/pasted-image',
+          image,
+          title: 'Pasted image',
+        },
+        file,
+      ),
+    ).toEqual({
+      align: 'center',
+      alt: 'Pasted image',
+      image_field: 'image',
+      image_scales: { image: [image] },
+      size: 'l',
+      url: '/Plone/folder/pasted-image',
+    });
+  });
+
   it('detects pure clipboard image pastes and ignores html pastes', () => {
     expect(
       isClipboardImagePaste({
@@ -125,7 +156,20 @@ describe('volto clipboard image paste helpers', () => {
       isClipboardImagePaste({
         files: [new File(['fake'], 'clipboard.png', { type: 'image/png' })],
         types: ['text/html'],
+        getData: () => '<p>Some text</p><img src="https://example.com/a.png">',
       } as unknown as DataTransfer),
     ).toBe(false);
+  });
+
+  it('detects an image copied from a web page', () => {
+    // Chrome's "Copy image" puts this HTML next to the image file.
+    expect(
+      isClipboardImagePaste({
+        files: [new File(['fake'], 'image.png', { type: 'image/png' })],
+        types: ['text/html', 'Files'],
+        getData: () =>
+          '<meta charset="utf-8"><img src="https://example.com/a.png" alt="A">',
+      } as unknown as DataTransfer),
+    ).toBe(true);
   });
 });

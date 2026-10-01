@@ -7,6 +7,211 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a30 (2026-10-01)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Added Cut, Copy and Paste to the block context menu, by upgrading to `@plone/plate` 1.0.0-alpha.20 (Aurora 1.0.0-alpha.14). @sneridagh 
+- Pasting an image copied from a web page (for example with "Copy image") now uploads it and inserts an image block, like pasting an image file. @sneridagh 
+
+
+#### Bugfix
+
+- Fixed dragging an image block in the editor deleting it instead of moving it, by upgrading to `@plone/plate` 1.0.0-alpha.19 (Aurora 1.0.0-alpha.13). @sneridagh 
+- Fixed pasted or dropped images showing broken in the editor until the page was saved: the image block now stores the image scales returned by the upload, as Volto's image widget does. @sneridagh 
+- Fixed the caret sliding into place with an animation after pressing Enter on the last paragraph in edit mode, caused by the Volto Light Theme padding transition. @sneridagh 
+- Fixed the default block width not being stored for code blocks, tables, callouts, tables of contents, columns and other native blocks, which made the history diff show a width change nobody made. @sneridagh 
+
+
+#### Internal
+
+- Use VLT 8 final. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a29 (2026-09-30)
+
+### Backend
+
+
+#### Internal:
+
+- Update Plone 6.2.2 @sneridagh 
+
+
+
+### Frontend
+
+
+#### Breaking
+
+- Upgraded to `@plone/plate` 1.0.0-alpha.18 (Aurora 1.0.0-alpha.12) and Plate.js 53.x. Static rendering helpers (`SlateElement`, `SlateElementProps`) are now imported from `platejs/static`. Markdown shortcuts are configured as `inputRules` on each kit, including links (markdown links and autolink on paste, space and enter). Blockquotes are now containers of blocks: legacy flat blockquotes are normalized when loaded in the editor. The `basic-blocks-kit.tsx` shadow was removed in favor of upstream's kit, so the editor no longer offers H1, which is reserved for the title. @sneridagh 
+
+
+#### Feature
+
+- Added the `# ` markdown shortcut from `@plone/plate` to the title block: it restores the title block when the document has none, like the "Title" slash menu item. @sneridagh 
+
+
+#### Bugfix
+
+- Added an accessible name to the toggle button in the public view, like the one in the editor. @sneridagh 
+- Fixed editing an existing link via Browse or a search result replacing the link text; only the link target is updated now. @sneridagh 
+- Fixed the caret jumping out of a restored title block when it is filled with the page title. @sneridagh 
+
+
+#### Internal
+
+- Pin Aurora to 1.0.0-alpha.10 @sneridagh 
+- Removed the `turn-into-toolbar-button.tsx` shadow and the Heading 5/6 slash menu items, now that `@plone/plate` offers Heading 5 and Heading 6 in its menus. @sneridagh 
+
+
+#### Tests
+
+- Added acceptance tests for the native blocks of the wiki presets, in the editor and the public view: block interactions, slash menu, floating toolbar, block context menu and Word, HTML and markdown paste, with programmatic test page fixtures. @sneridagh 
+
+
+
+### Project
+
+
+#### Documentation
+
+- Documented the acceptance test fixtures for the wiki presets in `AGENTS.md`. @sneridagh 
+
+
+
+## 1.0.0a28 (2026-09-16)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Bugfix
+
+- Fix toggle blocks in view mode @iRohitSingh [#77](https://github.com/kitconcept/volto-plate/issues/77)
+- Fixed long unbroken words (e.g. a URL or a string with no spaces) overflowing the comment box instead of wrapping inside it. @iFlameing 
+- Fixed the @mention popover so arrow key navigation actually highlights the selected person, instead of looking like it does nothing. @iFlameing 
+
+
+#### Internal
+
+- Added acceptance tests for selecting @mentions with a click and with arrow keys + Enter, both in the document editor and in a new comment, using two test users. @iFlameing 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a27 (2026-09-11)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Internal
+
+- Use @plone/plate@1.0.0-alpha.15 @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a26 (2026-09-11)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Internal
+
+- Add CI check enforcing the mandatory OVERRIDE documentation header on every shadowed component under `src/customizations` @sneridagh [#shadow-headers](https://github.com/kitconcept/volto-plate/issues/shadow-headers)
+- Added OVERRIDE header comments (reason, upstream file link, developer, changelog) to the shadowed/customized files under `src/customizations`. @iFlameing 
+- check-shadow-headers now skips asset files (.svg, images) that cannot carry a JS block comment. 
+
+
+
+### Project
+
+
+#### Internal
+
+- Add CI check enforcing the mandatory OVERRIDE documentation header on every shadowed component under `src/customizations` @sneridagh [#shadow-headers](https://github.com/kitconcept/volto-plate/issues/shadow-headers)
+- check-shadow-headers now skips asset files (.svg, images) that cannot carry a JS block comment. 
+
+
+
+## 1.0.0a25 (2026-09-09)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Bugfix
+
+- Fix spacing after mention and calendar date pills @iRohitSingh [#spacing](https://github.com/kitconcept/volto-plate/issues/spacing)
+- Fix missing save button in users controlpanel @iRohitSingh [#54](https://github.com/kitconcept/volto-plate/issues/54)
+- Fix inline comments css @iRohitSingh [#59](https://github.com/kitconcept/volto-plate/issues/59)
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a24 (2026-08-27)
 
 ### Backend
