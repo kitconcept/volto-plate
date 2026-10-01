@@ -8,6 +8,27 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.30 (2026-10-01)
+
+
+### Feature
+
+- Added Cut, Copy and Paste to the block context menu, by upgrading to `@plone/plate` 1.0.0-alpha.20 (Aurora 1.0.0-alpha.14). @sneridagh 
+- Pasting an image copied from a web page (for example with "Copy image") now uploads it and inserts an image block, like pasting an image file. @sneridagh 
+
+
+### Bugfix
+
+- Fixed dragging an image block in the editor deleting it instead of moving it, by upgrading to `@plone/plate` 1.0.0-alpha.19 (Aurora 1.0.0-alpha.13). @sneridagh 
+- Fixed pasted or dropped images showing broken in the editor until the page was saved: the image block now stores the image scales returned by the upload, as Volto's image widget does. @sneridagh 
+- Fixed the caret sliding into place with an animation after pressing Enter on the last paragraph in edit mode, caused by the Volto Light Theme padding transition. @sneridagh 
+- Fixed the default block width not being stored for code blocks, tables, callouts, tables of contents, columns and other native blocks, which made the history diff show a width change nobody made. @sneridagh 
+
+
+### Internal
+
+- Use VLT 8 final. @sneridagh 
+
 ## 1.0.0-alpha.29 (2026-09-30)
 
 
