@@ -1,0 +1,1 @@
+Added `scripts/plate-i18n.mjs` to the `i18n` script, which brings `@plone/plate`'s translation keys into the add-on's gettext catalogs and fills them from Plate's translations, and made the date picker strings translatable. @sneridagh
