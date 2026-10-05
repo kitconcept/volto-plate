@@ -31,6 +31,7 @@ import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
 import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-hotkey';
 
+import { CodeDrawingKit } from '../plugins/code-drawing-kit';
 import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
 import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image-paste';
 import { VoltoHtmlImagePastePlugin } from '../plugins/volto-html-image-paste';
@@ -61,6 +62,7 @@ export const WikiEditorKit = [
   // Elements
   ...BasicBlocksKit,
   ...CodeBlockKit,
+  ...CodeDrawingKit,
   ...TableKit,
   ...ToggleKit,
   ...TocKit,
