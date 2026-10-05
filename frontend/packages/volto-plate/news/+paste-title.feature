@@ -1,0 +1,1 @@
+The title of pasted content becomes the title of the wiki page: the paragraph in the Title style of a Word or LibreOffice document, or else the first H1, from HTML or markdown. The H1s left become H2s. @sneridagh

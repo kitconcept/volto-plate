@@ -16,11 +16,15 @@ import {
   DOCX_HTML,
   DOCX_IMAGE_HTML,
   DOCX_IMAGE_RTF,
+  H1_HTML,
   LIBREOFFICE_IMAGE_HTML,
   LIBREOFFICE_IMAGE_RTF,
+  LIBREOFFICE_TITLE_HTML,
+  LIBREOFFICE_TITLE_RTF,
   MARKDOWN_TEXT,
   PNG_BASE64,
   REMOTE_IMAGE_URL,
+  STYLED_HTML,
   TABLE_IMAGE_HTML,
   WEB_HTML,
   WEB_IMAGE_HTML,
@@ -236,6 +240,40 @@ test('Pasting from LibreOffice uploads its images as image blocks', async ({
   );
 });
 
+test('Undoing and redoing an image paste keeps the uploaded image', async ({
+  page,
+}) => {
+  await pasteIntoEmptyParagraph(page, {
+    'text/html': LIBREOFFICE_IMAGE_HTML,
+    'text/rtf': LIBREOFFICE_IMAGE_RTF,
+    'text/plain': 'LibreOffice content',
+  });
+  const editorHandle = await getEditorHandle(page, editable(page));
+  const [uploaded] = await uploadedImages(page, editorHandle, 1);
+  const history = (action: 'undo' | 'redo') =>
+    page.evaluate(
+      ([editor, action]: [any, 'undo' | 'redo']) => editor[action](),
+      [editorHandle, action] as [any, 'undo' | 'redo'],
+    );
+
+  // One undo removes the whole paste: the upload is no step of its own.
+  await history('undo');
+  expect(imageOutline((await getValue(page, editorHandle)).slice(1))).toEqual(
+    [],
+  );
+
+  await history('redo');
+  const images = (await getValue(page, editorHandle)).filter(
+    (node) => node['@type'] === 'plateimage',
+  );
+  expect(images).toEqual([
+    expect.objectContaining({
+      url: uploaded.url,
+      image_scales: uploaded.image_scales,
+    }),
+  ]);
+});
+
 test('Pasting HTML from a web page uploads its images as image blocks', async ({
   page,
 }) => {
@@ -316,6 +354,101 @@ test('Pasting a table keeps its images in their cells', async ({ page }) => {
   await expect(
     editable(page).locator('td img[alt="Cell image"]'),
   ).toBeVisible();
+});
+
+test('Pasted content takes the styles of the wiki page', async ({ page }) => {
+  const value = await pasteIntoEmptyParagraph(page, {
+    'text/html': STYLED_HTML,
+    'text/plain': 'Styled content',
+  });
+
+  expect(outline(value)).toEqual([
+    'h2 Styled heading',
+    'p Styled bold and link',
+    'decimal/1 Styled item',
+    'table 1x2',
+  ]);
+  expect(inlineFormatting(value)).toEqual({
+    bold: 'bold',
+    italic: undefined,
+    link: 'https://plone.org',
+  });
+  // Fonts, sizes, colors, alignment, spacing and cell backgrounds are gone.
+  expect(JSON.stringify(value)).not.toMatch(
+    /"(color|backgroundColor|fontFamily|fontSize|align|lineHeight|textIndent|background|borders|colSizes)"/,
+  );
+  expect(
+    value.find((node) => nodeText(node) === 'Styled bold and link'),
+  ).not.toHaveProperty('indent');
+});
+
+for (const [source, data] of [
+  ['HTML', { 'text/html': H1_HTML, 'text/plain': 'H1 content' }],
+  [
+    'markdown',
+    {
+      'text/plain':
+        'Text before the title\n\n# Pasted **document** title\n\nText after the title\n\n# Second H1\n',
+    },
+  ],
+] as const) {
+  test(`The first H1 pasted from ${source} becomes the page title`, async ({
+    page,
+  }) => {
+    const path = await createNativeBlocksPage(page, [], {
+      title: 'Old title',
+      extra: [{ type: 'p', children: [{ text: '' }] }],
+    });
+    const editorHandle = await openInEditor(page, path);
+    await focusBlockStart(page, editorHandle, 1);
+
+    await pasteData(page, editorHandle, data);
+
+    await expect
+      .poll(async () => (await getValue(page, editorHandle))[0])
+      .toMatchObject({
+        type: 'title',
+        children: [{ text: 'Pasted document title' }],
+      });
+    expect(outline((await getValue(page, editorHandle)).slice(1))).toEqual([
+      'p Text before the title',
+      'p Text after the title',
+      'h2 Second H1',
+    ]);
+    // The title field of the form follows the title block.
+    await expect(page.locator('h1.documentFirstHeading')).toHaveText(
+      'Pasted document title',
+    );
+  });
+}
+
+test('The Title paragraph pasted from LibreOffice becomes the page title', async ({
+  page,
+}) => {
+  const path = await createNativeBlocksPage(page, [], {
+    title: 'Old title',
+    extra: [{ type: 'p', children: [{ text: '' }] }],
+  });
+  const editorHandle = await openInEditor(page, path);
+  await focusBlockStart(page, editorHandle, 1);
+
+  await pasteData(page, editorHandle, {
+    'text/html': LIBREOFFICE_TITLE_HTML,
+    'text/rtf': LIBREOFFICE_TITLE_RTF,
+    'text/plain': 'LibreOffice content',
+  });
+
+  await expect
+    .poll(async () => (await getValue(page, editorHandle))[0])
+    .toMatchObject({
+      type: 'title',
+      children: [{ text: 'LibreOffice document title' }],
+    });
+  // The H1 is a section of the document: it stays a heading.
+  expect(outline((await getValue(page, editorHandle)).slice(1))).toEqual([
+    'p LibreOffice intro',
+    'h2 LibreOffice section',
+  ]);
 });
 
 test('Pasting markdown as plain text converts it to blocks', async ({

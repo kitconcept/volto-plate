@@ -35,6 +35,8 @@ import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
 import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image-paste';
 import { VoltoHtmlImagePastePlugin } from '../plugins/volto-html-image-paste';
 import { VoltoImageDropPlugin } from '../plugins/volto-image-drop';
+import { VoltoPasteFormattingPlugin } from '../plugins/volto-paste-formatting';
+import { VoltoPasteTitlePlugin } from '../plugins/volto-paste-title';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { VoltoMentionKit } from '../plugins/volto-mention-kit';
 import { SidebarPlugin } from '../plugins/volto-sidebar';
@@ -101,6 +103,8 @@ export const WikiEditorKit = [
   // Parsers
   ...DocxKit,
   ...MarkdownKit,
+  VoltoPasteFormattingPlugin,
+  VoltoPasteTitlePlugin,
 
   // UI
   ...BlockPlaceholderKit,

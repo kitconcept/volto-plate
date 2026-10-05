@@ -7,6 +7,8 @@ import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import {
   ElementApi,
   KEYS,
+  type Descendant,
+  type Operation,
   type Path,
   type PluginConfig,
   type TElement,
@@ -147,6 +149,61 @@ async function resolveImageSource(
   }
 }
 
+type HistoryBatch = { operations: Operation[] };
+
+const isPastedImageBlock = (node: unknown, url: string) =>
+  ElementApi.isElement(node) &&
+  node.type === PLONE_BLOCK_TYPE &&
+  node['@type'] === 'plateimage' &&
+  node.url === url;
+
+/**
+ * Gives the image blocks showing `url` their resolved data in the undo
+ * history too, so undoing and redoing the paste brings them back resolved.
+ */
+function patchImageHistory(
+  editor: PlateEditor,
+  url: string,
+  resolution: Partial<PlateImageBlockData>,
+) {
+  const history = (
+    editor as unknown as {
+      history?: { redos: HistoryBatch[]; undos: HistoryBatch[] };
+    }
+  ).history;
+  if (!history) return;
+
+  // Returns the node itself when nothing in it changes.
+  const patch = (node: Descendant): Descendant => {
+    if (!ElementApi.isElement(node)) return node;
+    if (isPastedImageBlock(node, url)) {
+      return {
+        ...node,
+        ...resolution,
+        alt: (node as ImageBlockElement).alt || resolution.alt || '',
+      };
+    }
+
+    const children = node.children.map(patch);
+    return children.some((child, index) => child !== node.children[index])
+      ? { ...node, children }
+      : node;
+  };
+
+  for (const batch of [...history.undos, ...history.redos]) {
+    batch.operations = batch.operations.map((operation) => {
+      if (
+        operation.type !== 'insert_node' &&
+        operation.type !== 'remove_node'
+      ) {
+        return operation;
+      }
+      const node = patch(operation.node);
+      return node === operation.node ? operation : { ...operation, node };
+    });
+  }
+}
+
 /** Applies the resolution to every pasted image block showing `url`. */
 function applyImageResolution(
   editor: PlateEditor,
@@ -158,30 +215,31 @@ function applyImageResolution(
   const entries = Array.from(
     editor.api.nodes<ImageBlockElement>({
       at: [],
-      match: (node) =>
-        ElementApi.isElement(node) &&
-        node.type === PLONE_BLOCK_TYPE &&
-        node['@type'] === 'plateimage' &&
-        node.url === url,
+      match: (node) => isPastedImageBlock(node, url),
     }),
-  );
+  ).reverse() as [ImageBlockElement, Path][];
 
-  editor.tf.withoutNormalizing(() => {
+  if (resolution === null) {
     // Last first, so removing a block doesn't move the next ones.
-    for (const [node, path] of entries.reverse() as [
-      ImageBlockElement,
-      Path,
-    ][]) {
-      if (resolution === null) {
-        editor.tf.removeNodes({ at: path });
-      } else {
+    editor.tf.withoutNormalizing(() => {
+      for (const [, path] of entries) editor.tf.removeNodes({ at: path });
+    });
+    return;
+  }
+
+  // The resolved data completes the paste: it isn't a step of its own to
+  // undo, which would bring the pasted image data back into the page.
+  editor.tf.withoutSaving(() => {
+    editor.tf.withoutNormalizing(() => {
+      for (const [node, path] of entries) {
         editor.tf.setNodes(
           { ...resolution, alt: node.alt || resolution.alt || '' },
           { at: path },
         );
       }
-    }
+    });
   });
+  patchImageHistory(editor, url, resolution);
 }
 
 async function resolvePastedImages(editor: PlateEditor, sources: string[]) {

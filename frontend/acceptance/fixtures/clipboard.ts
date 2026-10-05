@@ -184,3 +184,55 @@ export const TABLE_IMAGE_HTML = `<meta charset="utf-8">
 <tr><td>Table cell A1</td><td>Table cell B1</td></tr>
 <tr><td>Table cell A2</td><td><p><img src="data:image/png;base64,${PNG_BASE64}" alt="Cell image"></p></td></tr>
 </tbody></table>`;
+
+/**
+ * HTML of a styled LibreOffice selection: fonts, sizes, colors, line height,
+ * alignment, margins and cell backgrounds, around content with meaning.
+ */
+export const STYLED_HTML = `<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="LibreOffice 25.8.4.2 (MacOSX)"/></head>
+<body lang="en-US" dir="ltr">
+<h2 class="western" align="left" style="line-height: 108%"><font color="#1e3a5f"><font face="Calibri, serif"><font size="4" style="font-size: 15pt">Styled heading</font></font></font></h2>
+<p align="center" style="line-height: 100%; margin-left: 0.5in; text-indent: 0.25in"><font color="#000000"><font face="Arial, serif"><font size="2" style="font-size: 11pt"><span style="background: #fff1e6">Styled <b>bold</b> and <a href="https://plone.org">link</a></span></font></font></font></p>
+<ol><li><p style="line-height: 108%"><font face="Arial, serif"><font size="2" style="font-size: 11pt">Styled item</font></font></p></li></ol>
+<table width="642" cellpadding="7" cellspacing="0">
+<col width="300"/><col width="300"/>
+<tr><td bgcolor="#1e3a5f" style="background: #1e3a5f; border: 1.00pt solid #d9d9d9"><p><font color="#ffffff"><b>Styled header</b></font></p></td>
+<td style="background: #f1f5f9; border: 1.00pt solid #d9d9d9"><p>Styled cell</p></td></tr>
+</table>
+</body>
+</html>`;
+
+/** HTML with two H1s: the first one is the title of the document. */
+export const H1_HTML = `<meta charset="utf-8">
+<p>Text before the title</p>
+<h1>Pasted <b>document</b> title</h1>
+<p>Text after the title</p>
+<h1>Second H1</h1>`;
+
+/**
+ * HTML of a LibreOffice selection starting with the document title, a
+ * paragraph in the Title style, which the HTML turns into a big, bold
+ * paragraph. Only the RTF (`LIBREOFFICE_TITLE_RTF`) keeps the style.
+ */
+export const LIBREOFFICE_TITLE_HTML = `<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="LibreOffice 25.8.4.2 (MacOSX)"/></head>
+<body lang="en-US" dir="ltr"><p align="center" style="margin-bottom: 0.17in; line-height: 100%">
+<font face="Calibri, serif"><font size="6" style="font-size: 27pt"><b>LibreOffice
+document title</b></font></font></p>
+<p class="western">LibreOffice intro</p>
+<h1 class="western">LibreOffice section</h1>
+</body>
+</html>`;
+
+/** The RTF LibreOffice puts next to `LIBREOFFICE_TITLE_HTML`. */
+export const LIBREOFFICE_TITLE_RTF = String.raw`{\rtf1\ansi\deff4\adeflang1025
+{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f6\fswiss\fprq2\fcharset0 Calibri;}}
+{\stylesheet{\s0\snext0\ql\fs22 Normal;}{\s1\sbasedon87\snext0\b\fs38 heading 1;}{\s77\sbasedon87\snext0\i Subtitle;}{\s78\sbasedon87\snext0\b\fs54 Title;}}
+\pard\plain \s78\sl240\slmult1\sb0\sa240\b\qc{
+LibreOffice document title}
+\par \pard\plain \s0\ql LibreOffice intro
+\par \pard\plain \s1\ql\b LibreOffice section
+\par }`;
