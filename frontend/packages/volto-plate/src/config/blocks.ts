@@ -39,6 +39,7 @@ export const NATIVE_BLOCK_TYPES = [
   'blockquote',
   'hr',
   'code_block',
+  'code_drawing',
   'table',
   'toggle',
   'toc',
