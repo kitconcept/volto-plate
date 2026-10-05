@@ -7,6 +7,31 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a32 (2026-10-05)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Internal
+
+- Re-release because a stale core. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a31 (2026-10-05)
 
 ### Backend
