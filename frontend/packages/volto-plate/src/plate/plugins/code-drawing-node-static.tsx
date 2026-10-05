@@ -7,6 +7,8 @@ import { VIEW_MODE } from '@platejs/code-drawing';
 import { SlateElement } from 'platejs/static';
 import { useIntl } from 'react-intl';
 
+import { BlockInnerContainer } from '@plone/plate/components/ui/block-inner-container';
+
 import { getCodeDrawingData, useCodeDrawingImage } from './code-drawing-utils';
 
 /**
@@ -30,30 +32,32 @@ export function CodeDrawingElementStatic(
 
   return (
     <SlateElement {...props} className="my-4">
-      <div contentEditable={false} data-drawing-type={drawingType}>
-        {!codeOnly && image && (
-          <img
-            src={image}
-            alt={intl.formatMessage({
-              id: 'Diagram',
-              defaultMessage: 'Diagram',
-            })}
-            className="mx-auto h-auto max-h-[80vh] w-auto max-w-full object-contain"
-          />
-        )}
-        {showSource && code && (
-          <pre
-            className={
-              codeOnly || error
-                ? 'overflow-x-auto rounded-md bg-muted p-4 font-mono text-sm'
-                : 'sr-only'
-            }
-          >
-            <code>{code}</code>
-          </pre>
-        )}
-      </div>
-      {props.children}
+      <BlockInnerContainer>
+        <div contentEditable={false} data-drawing-type={drawingType}>
+          {!codeOnly && image && (
+            <img
+              src={image}
+              alt={intl.formatMessage({
+                id: 'Diagram',
+                defaultMessage: 'Diagram',
+              })}
+              className="mx-auto h-auto max-h-[80vh] w-auto max-w-full object-contain"
+            />
+          )}
+          {showSource && code && (
+            <pre
+              className={
+                codeOnly || error
+                  ? 'overflow-x-auto rounded-md bg-muted p-4 font-mono text-sm'
+                  : 'sr-only'
+              }
+            >
+              <code>{code}</code>
+            </pre>
+          )}
+        </div>
+        {props.children}
+      </BlockInnerContainer>
     </SlateElement>
   );
 }

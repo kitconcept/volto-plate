@@ -25,6 +25,7 @@ import {
 } from 'platejs/react';
 
 import { cn } from '@plone/plate/lib/utils';
+import { BlockInnerContainer } from '@plone/plate/components/ui/block-inner-container';
 import { Button } from '@plone/plate/components/ui/button';
 import { getIntl } from '@plone/plate/components/editor/plugins/split-utils';
 import {
@@ -130,56 +131,59 @@ export function CodeDrawingElement(
 
   const content = (
     <PlateElement {...props}>
-      <div contentEditable={false}>
-        <div
-          className={cn(
-            'group relative my-4 flex w-full flex-col items-stretch rounded-md border border-border bg-muted/50 md:flex-row',
-            selected && !readOnly && 'ring-2 ring-ring',
-          )}
-          style={{ minHeight: `${DEFAULT_MIN_HEIGHT}px` }}
-        >
-          {toolbar}
-          {showCode && (
-            <CodeDrawingTextarea
-              code={code}
-              readOnly={readOnly}
-              placeholder={t('Enter your diagram code here…')}
-              className={cn(
-                'min-w-0 flex-1',
-                showImage && 'border-b border-border md:border-r md:border-b-0',
-              )}
-              onChange={(nextCode) => setData({ code: nextCode })}
-            />
-          )}
-          {showImage && (
-            <div className="flex min-w-0 flex-1 items-center justify-center p-4 pt-12">
-              {loading && (
-                <div className="text-muted-foreground">{t('Loading…')}</div>
-              )}
-              {!loading && image && (
-                <img
-                  src={image}
-                  alt={t('Diagram')}
-                  className="h-auto max-h-[480px] w-auto max-w-full object-contain"
-                />
-              )}
-              {!loading && !image && (
-                <div
-                  className={cn(
-                    'text-sm',
-                    error ? 'text-destructive' : 'text-muted-foreground',
-                  )}
-                >
-                  {error
-                    ? t('The diagram could not be rendered.')
-                    : t('The diagram preview will appear here.')}
-                </div>
-              )}
-            </div>
-          )}
+      <BlockInnerContainer>
+        <div contentEditable={false}>
+          <div
+            className={cn(
+              'group relative my-4 flex w-full flex-col items-stretch rounded-md border border-border bg-muted/50 md:flex-row',
+              selected && !readOnly && 'ring-2 ring-ring',
+            )}
+            style={{ minHeight: `${DEFAULT_MIN_HEIGHT}px` }}
+          >
+            {toolbar}
+            {showCode && (
+              <CodeDrawingTextarea
+                code={code}
+                readOnly={readOnly}
+                placeholder={t('Enter your diagram code here…')}
+                className={cn(
+                  'min-w-0 flex-1',
+                  showImage &&
+                    'border-b border-border md:border-r md:border-b-0',
+                )}
+                onChange={(nextCode) => setData({ code: nextCode })}
+              />
+            )}
+            {showImage && (
+              <div className="flex min-w-0 flex-1 items-center justify-center p-4 pt-12">
+                {loading && (
+                  <div className="text-muted-foreground">{t('Loading…')}</div>
+                )}
+                {!loading && image && (
+                  <img
+                    src={image}
+                    alt={t('Diagram')}
+                    className="h-auto max-h-[480px] w-auto max-w-full object-contain"
+                  />
+                )}
+                {!loading && !image && (
+                  <div
+                    className={cn(
+                      'text-sm',
+                      error ? 'text-destructive' : 'text-muted-foreground',
+                    )}
+                  >
+                    {error
+                      ? t('The diagram could not be rendered.')
+                      : t('The diagram preview will appear here.')}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-      {children}
+        {children}
+      </BlockInnerContainer>
     </PlateElement>
   );
 
