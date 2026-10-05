@@ -1,1 +1,0 @@
-Add a Diagram element (Plate code drawing) to the wiki editor: write Mermaid, Graphviz or Flowchart code and see the rendered diagram. PlantUML is disabled, as it sends the diagram source to plantuml.com. @sneridagh

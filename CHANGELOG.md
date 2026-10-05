@@ -7,6 +7,31 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a33 (2026-10-05)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Add a Diagram element (Plate code drawing) to the wiki editor: write Mermaid, Graphviz or Flowchart code and see the rendered diagram. PlantUML is disabled, as it sends the diagram source to plantuml.com. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a32 (2026-10-05)
 
 ### Backend
