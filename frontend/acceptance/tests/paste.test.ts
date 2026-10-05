@@ -21,6 +21,7 @@ import {
   MARKDOWN_TEXT,
   PNG_BASE64,
   REMOTE_IMAGE_URL,
+  TABLE_IMAGE_HTML,
   WEB_HTML,
   WEB_IMAGE_HTML,
 } from '../fixtures/clipboard';
@@ -274,6 +275,47 @@ test('Pasting HTML from a web page uploads its images as image blocks', async ({
   expect(byAlt['Remote image'].url).toMatch(/remote-photo\.png$/);
   expect(byAlt['Blocked image']).toMatchObject({ url: BLOCKED_IMAGE_URL });
   expect(byAlt['Blocked image'].image_scales).toBeUndefined();
+});
+
+test('Pasting a table keeps its images in their cells', async ({ page }) => {
+  const path = await createNativeBlocksPage(page, [], {
+    extra: [{ type: 'p', children: [{ text: '' }] }],
+  });
+  const editorHandle = await openInEditor(page, path);
+  await focusBlockStart(page, editorHandle, 1);
+
+  await pasteData(page, editorHandle, {
+    'text/html': TABLE_IMAGE_HTML,
+    'text/plain': 'Table content',
+  });
+
+  const lastCell = async () => {
+    const table = (await getValue(page, editorHandle)).find(
+      (node) => node.type === 'table',
+    );
+    return table?.children?.at(-1)?.children?.at(-1);
+  };
+
+  await expect
+    .poll(async () => (await lastCell())?.children?.[0]?.image_scales)
+    .toBeTruthy();
+  expect((await lastCell())?.children).toEqual([
+    expect.objectContaining({
+      type: 'ploneBlock',
+      '@type': 'plateimage',
+      alt: 'Cell image',
+      url: expect.stringMatching(/^\/.+/),
+    }),
+  ]);
+  // Nothing was placed after the table.
+  expect(
+    imageOutline((await getValue(page, editorHandle)).slice(1)).filter((line) =>
+      line.startsWith('plateimage'),
+    ),
+  ).toEqual([]);
+  await expect(
+    editable(page).locator('td img[alt="Cell image"]'),
+  ).toBeVisible();
 });
 
 test('Pasting markdown as plain text converts it to blocks', async ({

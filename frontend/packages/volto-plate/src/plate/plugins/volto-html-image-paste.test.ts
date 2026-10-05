@@ -89,34 +89,33 @@ describe('liftPastedImages', () => {
     ]);
   });
 
-  it('places the images of a table after it', () => {
-    const cell = (children: Descendant[]) => ({
-      type: 'td',
-      children: [{ type: 'p', children }],
+  it('keeps the images of a table in their cells', () => {
+    const table = (cells: Descendant[][]) => ({
+      type: 'table',
+      children: [
+        {
+          type: 'tr',
+          children: cells.map((children) => ({ type: 'td', children })),
+        },
+      ],
     });
     const fragment: Descendant[] = [
-      {
-        type: 'table',
-        children: [
+      table([
+        [{ type: 'p', children: [{ text: 'A1' }] }],
+        [
           {
-            type: 'tr',
-            children: [cell([image('a.png')]), cell([{ text: 'B1' }])],
+            type: 'p',
+            children: [{ text: 'Caption ' }, image('a.png'), { text: ' ' }],
           },
         ],
-      },
+      ]),
     ];
 
     expect(helpers.liftPastedImages(fragment, isVoid)).toEqual([
-      {
-        type: 'table',
-        children: [
-          {
-            type: 'tr',
-            children: [cell([{ text: '' }]), cell([{ text: 'B1' }])],
-          },
-        ],
-      },
-      image('a.png'),
+      table([
+        [{ type: 'p', children: [{ text: 'A1' }] }],
+        [{ type: 'p', children: [{ text: 'Caption ' }] }, image('a.png')],
+      ]),
     ]);
   });
 
@@ -126,6 +125,31 @@ describe('liftPastedImages', () => {
     ];
 
     expect(helpers.liftPastedImages(fragment, isVoid)).toEqual(fragment);
+  });
+});
+
+describe('replacePastedImages', () => {
+  it('replaces the images at any depth, and drops the ones without a replacement', () => {
+    const fragment: Descendant[] = [
+      image('top.png'),
+      { type: 'td', children: [image('cell.png')] },
+      { type: 'td', children: [image('drop.png')] },
+    ];
+
+    expect(
+      helpers.replacePastedImages(fragment, (node) =>
+        node.src === 'drop.png'
+          ? null
+          : { type: 'img', url: node.src, children: [{ text: '' }] },
+      ),
+    ).toEqual([
+      { type: 'img', url: 'top.png', children: [{ text: '' }] },
+      {
+        type: 'td',
+        children: [{ type: 'img', url: 'cell.png', children: [{ text: '' }] }],
+      },
+      { type: 'td', children: [{ text: '' }] },
+    ]);
   });
 });
 

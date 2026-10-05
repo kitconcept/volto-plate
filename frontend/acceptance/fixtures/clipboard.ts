@@ -177,3 +177,10 @@ ${Buffer.from(PNG_BASE64, 'base64')
   .toString('hex')
   .replace(/(.{64})/g, '$1\n')}}}
 \\par \\pard\\plain \\s0\\ql LibreOffice text after the image\\par}`;
+
+/** HTML of a table with an image (embedded as a data URL) in its last cell. */
+export const TABLE_IMAGE_HTML = `<meta charset="utf-8">
+<table><tbody>
+<tr><td>Table cell A1</td><td>Table cell B1</td></tr>
+<tr><td>Table cell A2</td><td><p><img src="data:image/png;base64,${PNG_BASE64}" alt="Cell image"></p></td></tr>
+</tbody></table>`;

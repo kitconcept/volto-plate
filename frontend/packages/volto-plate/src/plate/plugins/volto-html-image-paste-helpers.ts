@@ -29,8 +29,11 @@ export type PastedImageSourceKind =
   | 'internal'
   | 'unsupported';
 
-/** Elements whose children can't be split around an image block. */
-const UNSPLITTABLE_TYPES = ['table', 'tr', 'td', 'th'];
+/**
+ * Elements that hold image blocks among their children: the images of a
+ * table stay in their cells.
+ */
+const IMAGE_HOLDER_TYPES = ['td', 'th'];
 
 const MIME_TYPE_EXTENSIONS: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -41,10 +44,10 @@ export const isPastedImage = (node: unknown): node is PastedImageElement =>
   ElementApi.isElement(node) && node.type === PASTED_IMAGE_TYPE;
 
 /**
- * Moves the pasted images of an HTML fragment out to its top level, where
- * they can become image blocks. Each element holding an image is split around
- * it, and its parts without content are dropped. The images of a table are
- * placed after it.
+ * Moves the pasted images of an HTML fragment out of their blocks, where they
+ * can become image blocks: to the top level, or to the table cell holding
+ * them. Each element holding an image is split around it, and its parts
+ * without content are dropped.
  */
 export function liftPastedImages(
   nodes: Descendant[],
@@ -55,34 +58,16 @@ export function liftPastedImages(
       ? node.text.trim() !== ''
       : isVoid(node) || node.children.some(hasContent);
 
-  const extractImages = (
-    node: Descendant,
-    images: PastedImageElement[],
-  ): Descendant => {
-    if (!ElementApi.isElement(node)) return node;
-
-    const children: Descendant[] = [];
-    for (const child of node.children) {
-      if (isPastedImage(child)) {
-        images.push(child);
-      } else {
-        children.push(extractImages(child, images));
-      }
-    }
-
-    return { ...node, children: children.length ? children : [{ text: '' }] };
-  };
-
   const split = (node: Descendant): Descendant[] => {
     if (!ElementApi.isElement(node) || isPastedImage(node)) return [node];
 
-    if (UNSPLITTABLE_TYPES.includes(node.type)) {
-      const images: PastedImageElement[] = [];
-      return [extractImages(node, images), ...images];
-    }
-
     const children = node.children.flatMap(split);
-    if (!children.some(isPastedImage)) return [{ ...node, children }];
+    if (
+      IMAGE_HOLDER_TYPES.includes(node.type) ||
+      !children.some(isPastedImage)
+    ) {
+      return [{ ...node, children }];
+    }
 
     const parts: Descendant[] = [];
     let group: Descendant[] = [];
@@ -105,6 +90,26 @@ export function liftPastedImages(
   };
 
   return nodes.flatMap(split);
+}
+
+/**
+ * Replaces the pasted images of a fragment, at any depth, with what
+ * `replace` returns for them: a node, or nothing to drop the image.
+ */
+export function replacePastedImages(
+  nodes: Descendant[],
+  replace: (image: PastedImageElement) => Descendant | null,
+): Descendant[] {
+  return nodes.flatMap((node): Descendant[] => {
+    if (isPastedImage(node)) {
+      const replacement = replace(node);
+      return replacement ? [replacement] : [];
+    }
+    if (!ElementApi.isElement(node)) return [node];
+
+    const children = replacePastedImages(node.children, replace);
+    return [{ ...node, children: children.length ? children : [{ text: '' }] }];
+  });
 }
 
 export function getPastedImageSourceKind(src: string): PastedImageSourceKind {

@@ -7,7 +7,6 @@ import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import {
   ElementApi,
   KEYS,
-  type Descendant,
   type Path,
   type PluginConfig,
   type TElement,
@@ -28,9 +27,9 @@ import {
   getPastedImageContentPath,
   getPastedImageFileName,
   getPastedImageSourceKind,
-  isPastedImage,
   liftPastedImages,
   PASTED_IMAGE_TYPE,
+  replacePastedImages,
 } from './volto-html-image-paste-helpers';
 import {
   VoltoImageUploadBridge,
@@ -197,8 +196,8 @@ async function resolvePastedImages(editor: PlateEditor, sources: string[]) {
 /**
  * Pasted HTML, from a web page, Word or LibreOffice, keeps its images as
  * image blocks. Each `<img>` becomes an inline element while the HTML is
- * deserialized, which is then moved out of its block and turned into an
- * image block. The images are then uploaded in the background.
+ * deserialized, which is then moved out of its block (to the top level, or
+ * to its table cell) and turned into an image block. The images are then uploaded in the background.
  */
 export const VoltoHtmlImagePastePlugin = createTPlatePlugin<
   PluginConfig<typeof PASTED_IMAGE_TYPE, VoltoHtmlImagePasteOptions>
@@ -230,30 +229,31 @@ export const VoltoHtmlImagePastePlugin = createTPlatePlugin<
             embedRtfPictures(data, dataTransfer.getData('text/rtf')),
           transformFragment: ({ editor, fragment }) => {
             const sources: string[] = [];
-            const lifted = liftPastedImages(fragment, (element) =>
-              editor.api.isVoid(element),
-            ).flatMap((node): Descendant[] => {
-              if (!isPastedImage(node)) return [node];
+            const lifted = replacePastedImages(
+              liftPastedImages(fragment, (element) =>
+                editor.api.isVoid(element),
+              ),
+              (image) => {
+                const src = image.src.startsWith('//')
+                  ? `${window.location.protocol}${image.src}`
+                  : image.src;
+                // Images the browser can't load, like Word's `file://` ones
+                // without image data on the clipboard, are dropped.
+                if (getPastedImageSourceKind(src) === 'unsupported') {
+                  return null;
+                }
+                sources.push(src);
 
-              const src = node.src.startsWith('//')
-                ? `${window.location.protocol}${node.src}`
-                : node.src;
-              // Images the browser can't load, like Word's `file://` ones
-              // without image data on the clipboard, are dropped.
-              if (getPastedImageSourceKind(src) === 'unsupported') return [];
-              sources.push(src);
-
-              return [
-                editor.api.create.block({
+                return editor.api.create.block({
                   type: PLONE_BLOCK_TYPE,
                   '@type': 'plateimage',
                   align: 'center',
-                  alt: node.alt,
+                  alt: image.alt,
                   size: 'l',
                   url: getInitialUrl(src),
-                }),
-              ];
-            });
+                });
+              },
+            );
 
             if (sources.length > 0) {
               // Runs once the fragment is inserted.
