@@ -33,6 +33,7 @@ import { SplitHotkeyPlugin } from '@plone/plate/components/editor/plugins/split-
 
 import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
 import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image-paste';
+import { VoltoHtmlImagePastePlugin } from '../plugins/volto-html-image-paste';
 import { VoltoImageDropPlugin } from '../plugins/volto-image-drop';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { VoltoMentionKit } from '../plugins/volto-mention-kit';
@@ -91,6 +92,7 @@ export const WikiEditorKit = [
   // ...DndKit,
   ...ExitBreakKit,
   VoltoClipboardImagePastePlugin,
+  VoltoHtmlImagePastePlugin,
   VoltoImageDropPlugin,
   SidebarPlugin,
   SplitHotkeyPlugin,

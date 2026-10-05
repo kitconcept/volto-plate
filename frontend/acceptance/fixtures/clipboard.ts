@@ -96,3 +96,55 @@ const markdown = true;
 | --- | --- |
 | Markdown cell A2 | Markdown cell B2 |
 `;
+
+/** A 1x1 PNG, the image of the image paste payloads. */
+export const PNG_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WnSUs8AAAAASUVORK5CYII=';
+
+/**
+ * HTML of a Word selection with an image between two paragraphs. Word points
+ * the image at a temporary `file://` copy and links it to its VML shape,
+ * whose image data comes with the RTF of the selection (`DOCX_IMAGE_RTF`).
+ */
+export const DOCX_IMAGE_HTML = `<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta name=ProgId content=Word.Document><meta name=Generator content="Microsoft Word 15"></head>
+<body lang=EN-US style='tab-interval:.5in;word-wrap:break-word'>
+<!--StartFragment-->
+<p class=MsoNormal>Word text before the image<o:p></o:p></p>
+
+<p class=MsoNormal><!--[if gte vml 1]><v:shape id="Picture_x0020_1"
+ o:spid="_x0000_i1025" type="#_x0000_t75" alt="Word image"
+ style='width:10pt;height:10pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="file:///C:/Users/test/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png"
+  o:title=""/>
+</v:shape><![endif]--><![if !vml]><img width=1 height=1
+src="file:///C:/Users/test/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png"
+alt="Word image" v:shapes="Picture_x0020_1"><![endif]><o:p></o:p></p>
+
+<p class=MsoNormal>Word text after the image<o:p></o:p></p>
+<!--EndFragment-->
+</body>
+</html>`;
+
+/** The RTF Word puts next to `DOCX_IMAGE_HTML`, with the image data. */
+export const DOCX_IMAGE_RTF = `{\\rtf1\\ansi\\ansicpg1252\\deff0
+{\\pard\\plain Word text before the image\\par}
+{\\pard\\plain {\\*\\shppict{\\pict{\\*\\picprop\\shplid1025{\\sp{\\sn shapeType}{\\sv 75}}{\\sp{\\sn fFlipH}{\\sv 0}}}\\picscalex100\\picscaley100\\picw26\\pich26\\picwgoal20\\pichgoal20\\pngblip\\bliptag-1288012592{\\*\\blipuid b33a6dd0a1b2c3d4e5f60718293a4b5c}${Buffer.from(PNG_BASE64, 'base64').toString('hex')}}}}\\par}
+{\\pard\\plain Word text after the image\\par}
+}`;
+
+/** Images of a site that allows fetching them (CORS) and of one that does not. */
+export const REMOTE_IMAGE_URL = 'https://images.example.test/remote-photo.png';
+export const BLOCKED_IMAGE_URL = 'https://blocked.example.test/photo.png';
+
+/**
+ * HTML of a web page with an image inside a paragraph (embedded as a data
+ * URL, as Google Docs does), and images of other sites.
+ */
+export const WEB_IMAGE_HTML = `<meta charset="utf-8">
+<p>Web text before <img src="data:image/png;base64,${PNG_BASE64}" alt="Embedded image"> web text after</p>
+<p><a href="https://plone.org"><img src="${REMOTE_IMAGE_URL}" alt="Remote image"></a></p>
+<p><img src="${BLOCKED_IMAGE_URL}" alt="Blocked image"></p>`;

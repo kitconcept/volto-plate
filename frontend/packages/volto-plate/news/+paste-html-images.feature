@@ -1,0 +1,1 @@
+Keep the images of content pasted from Word or a web page as image blocks. Images that come with the clipboard and images from other sites are uploaded as Image content, images of the site point at their Image content. @sneridagh

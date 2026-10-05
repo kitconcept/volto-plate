@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { getEditorHandle } from '@platejs/playwright';
 
 import { createNativeBlocksPage, openInEditor } from '../fixtures/pages';
 import {
@@ -7,9 +8,20 @@ import {
   getValue,
   nodeText,
   pasteData,
+  type EditorHandle,
   type EditorNode,
 } from '../fixtures/editor';
-import { DOCX_HTML, MARKDOWN_TEXT, WEB_HTML } from '../fixtures/clipboard';
+import {
+  BLOCKED_IMAGE_URL,
+  DOCX_HTML,
+  DOCX_IMAGE_HTML,
+  DOCX_IMAGE_RTF,
+  MARKDOWN_TEXT,
+  PNG_BASE64,
+  REMOTE_IMAGE_URL,
+  WEB_HTML,
+  WEB_IMAGE_HTML,
+} from '../fixtures/clipboard';
 import { login } from './login';
 import { expect, test } from './test';
 
@@ -119,6 +131,124 @@ test('Pasting HTML from a web page keeps its structure', async ({ page }) => {
   expect(value.find((n) => n.type === 'blockquote')?.children?.[0]?.type).toBe(
     'p',
   );
+});
+
+/**
+ * One line per top-level block of a paste with images: `p Text`, or
+ * `image <alt>` for an image block.
+ */
+const imageOutline = (nodes: EditorNode[]) =>
+  nodes
+    .filter((node) => !(node.type === 'p' && nodeText(node).trim() === ''))
+    .map((node) =>
+      node.type === 'ploneBlock'
+        ? `${node['@type']} ${node.alt}`
+        : `${node.type} ${nodeText(node).trim()}`,
+    );
+
+/** The image blocks of the editor, once `uploaded` of them are uploaded. */
+async function uploadedImages(
+  page: Page,
+  editorHandle: EditorHandle,
+  uploaded: number,
+) {
+  const images = async () =>
+    (await getValue(page, editorHandle)).filter(
+      (node) => node['@type'] === 'plateimage',
+    );
+
+  await expect
+    .poll(
+      async () => (await images()).filter((node) => node.image_scales).length,
+    )
+    .toBe(uploaded);
+  return await images();
+}
+
+test('Pasting from Word uploads its images as image blocks', async ({
+  page,
+}) => {
+  const path = await createNativeBlocksPage(page, [], {
+    extra: [{ type: 'p', children: [{ text: '' }] }],
+  });
+  const editorHandle = await openInEditor(page, path);
+  await focusBlockStart(page, editorHandle, 1);
+
+  const upload = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'POST' &&
+      response.request().postData()?.includes('"@type":"Image"') === true,
+  );
+  await pasteData(page, editorHandle, {
+    'text/html': DOCX_IMAGE_HTML,
+    'text/rtf': DOCX_IMAGE_RTF,
+    'text/plain': 'Word content',
+  });
+  const created = await (await upload).json();
+
+  const [image] = await uploadedImages(page, editorHandle, 1);
+  expect(imageOutline((await getValue(page, editorHandle)).slice(1))).toEqual([
+    'p Word text before the image',
+    'plateimage Word image',
+    'p Word text after the image',
+  ]);
+  expect(image).toMatchObject({
+    type: 'ploneBlock',
+    url: new URL(created['@id']).pathname,
+    image_field: 'image',
+  });
+  // The image renders in the editor straight away.
+  await expect
+    .poll(() =>
+      editable(page)
+        .locator('img[alt="Word image"]')
+        .evaluate((img: HTMLImageElement) => img.naturalWidth),
+    )
+    .toBeGreaterThan(0);
+  expect(JSON.stringify(await getValue(page, editorHandle))).not.toMatch(
+    /file:\/\/|data:image/,
+  );
+});
+
+test('Pasting HTML from a web page uploads its images as image blocks', async ({
+  page,
+}) => {
+  const png = Buffer.from(PNG_BASE64, 'base64');
+  await page.route(REMOTE_IMAGE_URL, (route) =>
+    route.fulfill({
+      body: png,
+      contentType: 'image/png',
+      headers: { 'Access-Control-Allow-Origin': '*' },
+    }),
+  );
+  // A site that doesn't allow fetching its images (CORS) fails the fetch
+  // like a network error does: the image block links to the image.
+  await page.route(BLOCKED_IMAGE_URL, (route) => route.abort());
+
+  const value = await pasteIntoEmptyParagraph(page, {
+    'text/html': WEB_IMAGE_HTML,
+    'text/plain': 'Web content',
+  });
+
+  expect(imageOutline(value)).toEqual([
+    'p Web text before',
+    'plateimage Embedded image',
+    'p web text after',
+    'plateimage Remote image',
+    'plateimage Blocked image',
+  ]);
+
+  const editorHandle = await getEditorHandle(page, editable(page));
+  const images = await uploadedImages(page, editorHandle, 2);
+  const byAlt = Object.fromEntries(images.map((node) => [node.alt, node]));
+
+  for (const alt of ['Embedded image', 'Remote image']) {
+    expect(byAlt[alt].url).toMatch(/^\/.+/);
+    expect(byAlt[alt].image_scales).toBeTruthy();
+  }
+  expect(byAlt['Remote image'].url).toMatch(/remote-photo\.png$/);
+  expect(byAlt['Blocked image']).toMatchObject({ url: BLOCKED_IMAGE_URL });
+  expect(byAlt['Blocked image'].image_scales).toBeUndefined();
 });
 
 test('Pasting markdown as plain text converts it to blocks', async ({
