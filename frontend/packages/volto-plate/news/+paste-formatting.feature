@@ -1,1 +1,0 @@
-Pasted content from Word, LibreOffice or a web page takes the styles of the wiki page: fonts, sizes, colors, alignment, spacing and table looks are dropped, while headings, lists, tables, links, images and marks like bold or italic stay. @sneridagh

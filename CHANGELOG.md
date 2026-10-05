@@ -7,6 +7,33 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a31 (2026-10-05)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Keep the images of content pasted from Word, LibreOffice or a web page as image blocks. Images that come with the clipboard and images from other sites are uploaded as Image content, images of the site point at their Image content. @sneridagh 
+- Pasted content from Word, LibreOffice or a web page takes the styles of the wiki page: fonts, sizes, colors, alignment, spacing and table looks are dropped, while headings, lists, tables, links, images and marks like bold or italic stay. @sneridagh 
+- The title of pasted content becomes the title of the wiki page: the paragraph in the Title style of a Word or LibreOffice document, or else the first H1, from HTML or markdown. The H1s left become H2s. @sneridagh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a30 (2026-10-01)
 
 ### Backend
