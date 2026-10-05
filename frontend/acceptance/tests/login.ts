@@ -24,9 +24,11 @@ function getDefaults(options: LoginOptions) {
       : process.env.API_PATH || `http://${hostname}:55001/${siteId}`);
 
   const username =
-    options.username || (api === 'guillotina' ? 'admin' : DEFAULT_PLONE_AUTH[0]);
+    options.username ||
+    (api === 'guillotina' ? 'admin' : DEFAULT_PLONE_AUTH[0]);
   const password =
-    options.password || (api === 'guillotina' ? 'admin' : DEFAULT_PLONE_AUTH[1]);
+    options.password ||
+    (api === 'guillotina' ? 'admin' : DEFAULT_PLONE_AUTH[1]);
 
   const frontendURL =
     options.frontendURL || process.env.FRONTEND_URL || 'http://localhost:3000';

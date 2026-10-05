@@ -148,3 +148,32 @@ export const WEB_IMAGE_HTML = `<meta charset="utf-8">
 <p>Web text before <img src="data:image/png;base64,${PNG_BASE64}" alt="Embedded image"> web text after</p>
 <p><a href="https://plone.org"><img src="${REMOTE_IMAGE_URL}" alt="Remote image"></a></p>
 <p><img src="${BLOCKED_IMAGE_URL}" alt="Blocked image"></p>`;
+
+/**
+ * HTML of a LibreOffice selection with an image between two paragraphs.
+ * LibreOffice points the image at a temporary file and puts its data in the
+ * RTF only (`LIBREOFFICE_IMAGE_RTF`), without Word's VML shapes.
+ */
+export const LIBREOFFICE_IMAGE_HTML = `<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta name="generator" content="LibreOffice 25.8.4.2 (MacOSX)"/>
+</head>
+<body lang="en-US" dir="ltr">
+<p class="western" style="margin-bottom: 0.1in"><font face="Arial, serif">LibreOffice text before the image</font></p>
+<p class="western" align="center" style="margin-bottom: 0.1in"><img src="file:///Users/test/Library/Application%20Support/LibreOffice/4/user/temp/lu1234.tmp/lu1234_tmp_2c9e135.png" name="Picture 1" alt="LibreOffice image" align="bottom" hspace="12" width="1" height="1" border="0"/>
+</p>
+<p class="western" style="margin-bottom: 0.1in"><font face="Arial, serif">LibreOffice text after the image</font></p>
+</body>
+</html>`;
+
+/** The RTF LibreOffice puts next to `LIBREOFFICE_IMAGE_HTML`. */
+export const LIBREOFFICE_IMAGE_RTF = `{\\rtf1\\ansi\\deff4\\adeflang1025
+{\\pard\\plain \\s0\\ql LibreOffice text before the image\\par}
+\\pard\\plain \\s0\\qc{
+{\\pict{\\*\\picprop{\\sp{\\sn wzDescription}{\\sv A one pixel image}}{\\sp{\\sn wzName}{\\sv LibreOffice image}}}\\picscalex100\\picscaley100\\piccropl0\\piccropr0\\piccropt0\\piccropb0\\picw1\\pich1\\picwgoal15\\pichgoal15\\pngblip
+${Buffer.from(PNG_BASE64, 'base64')
+  .toString('hex')
+  .replace(/(.{64})/g, '$1\n')}}}
+\\par \\pard\\plain \\s0\\ql LibreOffice text after the image\\par}`;

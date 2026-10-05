@@ -178,3 +178,65 @@ describe('getPastedImageFileName', () => {
     ).toBe('pasted-image.jpg');
   });
 });
+
+const PNG_HEX = '89504e470d0a1a0a';
+const PNG_DATA_URL = `data:image/png;base64,${btoa(
+  String.fromCharCode(...PNG_HEX.match(/../g)!.map((h) => parseInt(h, 16))),
+)}`;
+
+/** An RTF picture as LibreOffice writes it. */
+const libreOfficePicture = (name: string, hex = PNG_HEX) =>
+  `{\\pict{\\*\\picprop{\\sp{\\sn wzDescription}{\\sv About ${name}}}` +
+  `{\\sp{\\sn wzName}{\\sv ${name}}}}\\picscalex88\\picw1\\pich1\\pngblip\n` +
+  `${hex.slice(0, 8)}\n${hex.slice(8)}}`;
+
+const fileImage = (alt: string) =>
+  `<img src="file:///tmp/lu1.tmp/${alt}.png" name="Picture" alt="${alt}"/>`;
+
+describe('getRtfPictures', () => {
+  it('reads the PNG pictures of LibreOffice RTF', () => {
+    expect(
+      helpers.getRtfPictures(`{\\rtf1 ${libreOfficePicture('One')}\\par}`),
+    ).toEqual([{ dataUrl: PNG_DATA_URL, names: ['About One', 'One'] }]);
+  });
+
+  it("reads Word's pictures and skips its WMF fallbacks", () => {
+    const rtf =
+      `{\\rtf1{\\*\\shppict{\\pict{\\*\\picprop\\shplid1025{\\sp{\\sn shapeType}{\\sv 75}}}` +
+      `\\pngblip\\bliptag-1{\\*\\blipuid 0123}${PNG_HEX}}}` +
+      `{\\nonshppict{\\pict\\wmetafile8\\picw1 0102}}}`;
+
+    expect(helpers.getRtfPictures(rtf)).toEqual([
+      { dataUrl: PNG_DATA_URL, names: [] },
+    ]);
+  });
+});
+
+describe('embedRtfPictures', () => {
+  it('points file images at the RTF picture with their name', () => {
+    const rtf = libreOfficePicture('Two') + libreOfficePicture('One');
+    const html = `<p>${fileImage('One')}</p><p>${fileImage('Two')}</p>`;
+
+    expect(helpers.embedRtfPictures(html, rtf)).toBe(
+      html
+        .replace('file:///tmp/lu1.tmp/One.png', PNG_DATA_URL)
+        .replace('file:///tmp/lu1.tmp/Two.png', PNG_DATA_URL),
+    );
+  });
+
+  it('points unnamed file images at the RTF picture at their position', () => {
+    const html = '<img src="file:///a.png"><img src="https://x.org/b.png">';
+
+    expect(helpers.embedRtfPictures(html, libreOfficePicture('Other'))).toBe(
+      `<img src="${PNG_DATA_URL}"><img src="https://x.org/b.png">`,
+    );
+  });
+
+  it('leaves images without a matching picture alone', () => {
+    const rtf = libreOfficePicture('One');
+    const html = `${fileImage('Two')}${fileImage('Three')}`;
+
+    expect(helpers.embedRtfPictures(html, rtf)).toBe(html);
+    expect(helpers.embedRtfPictures(html, '')).toBe(html);
+  });
+});

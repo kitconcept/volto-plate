@@ -24,6 +24,7 @@ import {
   type PlateImageBlockData,
 } from './volto-clipboard-image-paste-helpers';
 import {
+  embedRtfPictures,
   getPastedImageContentPath,
   getPastedImageFileName,
   getPastedImageSourceKind,
@@ -194,8 +195,8 @@ async function resolvePastedImages(editor: PlateEditor, sources: string[]) {
 }
 
 /**
- * Pasted HTML, from a web page or from Word, keeps its images as image
- * blocks. Each `<img>` becomes an inline element while the HTML is
+ * Pasted HTML, from a web page, Word or LibreOffice, keeps its images as
+ * image blocks. Each `<img>` becomes an inline element while the HTML is
  * deserialized, which is then moved out of its block and turned into an
  * image block. The images are then uploaded in the background.
  */
@@ -225,6 +226,8 @@ export const VoltoHtmlImagePastePlugin = createTPlatePlugin<
     plugins: {
       [KEYS.html]: {
         parser: {
+          transformData: ({ data, dataTransfer }) =>
+            embedRtfPictures(data, dataTransfer.getData('text/rtf')),
           transformFragment: ({ editor, fragment }) => {
             const sources: string[] = [];
             const lifted = liftPastedImages(fragment, (element) =>

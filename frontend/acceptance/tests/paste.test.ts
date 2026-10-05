@@ -16,6 +16,8 @@ import {
   DOCX_HTML,
   DOCX_IMAGE_HTML,
   DOCX_IMAGE_RTF,
+  LIBREOFFICE_IMAGE_HTML,
+  LIBREOFFICE_IMAGE_RTF,
   MARKDOWN_TEXT,
   PNG_BASE64,
   REMOTE_IMAGE_URL,
@@ -205,6 +207,29 @@ test('Pasting from Word uploads its images as image blocks', async ({
         .evaluate((img: HTMLImageElement) => img.naturalWidth),
     )
     .toBeGreaterThan(0);
+  expect(JSON.stringify(await getValue(page, editorHandle))).not.toMatch(
+    /file:\/\/|data:image/,
+  );
+});
+
+test('Pasting from LibreOffice uploads its images as image blocks', async ({
+  page,
+}) => {
+  const value = await pasteIntoEmptyParagraph(page, {
+    'text/html': LIBREOFFICE_IMAGE_HTML,
+    'text/rtf': LIBREOFFICE_IMAGE_RTF,
+    'text/plain': 'LibreOffice content',
+  });
+
+  expect(imageOutline(value)).toEqual([
+    'p LibreOffice text before the image',
+    'plateimage LibreOffice image',
+    'p LibreOffice text after the image',
+  ]);
+
+  const editorHandle = await getEditorHandle(page, editable(page));
+  const [image] = await uploadedImages(page, editorHandle, 1);
+  expect(image.url).toMatch(/^\/.+/);
   expect(JSON.stringify(await getValue(page, editorHandle))).not.toMatch(
     /file:\/\/|data:image/,
   );
