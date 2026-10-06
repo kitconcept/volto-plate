@@ -9,6 +9,8 @@
  * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/58
  * CHANGELOG:
  *  - Add bulk accept/reject suggestion actions (#58) @iFlameing
+ *  - Remove draft comment on click outside, clear active ids on close,
+ *    anchor popover to a virtual element that survives re-renders @Tishasoumya-02
  *
  */
 import * as React from 'react';
@@ -82,6 +84,10 @@ export const discussionTriggerClassName = `
   hover:bg-muted hover:text-muted-foreground
   data-[active=true]:bg-muted
 `;
+
+// START CUSTOMIZATION
+type VirtualAnchor = { getBoundingClientRect: () => DOMRect };
+// END CUSTOMIZATION
 
 type DiscussionTriggerKind = 'comments' | 'mixed' | 'suggestions';
 
@@ -232,7 +238,9 @@ export function DiscussionPopover({
   triggerAsPopoverTrigger = true,
   wrapperProps,
 }: React.PropsWithChildren<{
-  anchorElement: HTMLElement | null;
+  // START CUSTOMIZATION
+  anchorElement: VirtualAnchor | null;
+  // END CUSTOMIZATION
   content: React.ReactNode;
   onOpenChange: (open: boolean) => void;
   open: boolean;
@@ -455,7 +463,29 @@ const BlockCommentContent = ({
     }
 
     setOpen(false);
+    // START CUSTOMIZATION
+    // The popover stays open while a suggestion is active, so the
+    // close button has to clear the active ids as well.
+    editor.setOption(suggestionPlugin, 'activeId', null);
+    editor.setOption(commentPlugin, 'activeId', null);
+    // END CUSTOMIZATION
   }, [draftCommentNode, editor.tf, isCommenting]);
+
+  // START CUSTOMIZATION
+  // Since @radix-ui/react-popover 1.1.17 a click outside closes the popover
+  // on `click` instead of `pointerdown`. The comment plugin's `onClick`
+  // resets `activeId` first, the popover unmounts and `closePopover` never
+  // runs, so the draft has to be removed when commenting ends.
+  React.useEffect(() => {
+    if (isCommenting || !draftCommentNode) return;
+
+    editor.tf.unsetNodes(getDraftCommentKey(), {
+      at: [],
+      mode: 'lowest',
+      match: (n) => n[getDraftCommentKey()],
+    });
+  }, [draftCommentNode, editor.tf, isCommenting]);
+  // END CUSTOMIZATION
 
   // === START CUSTOMIZATION ===
   const acceptAllSuggestions = () => {
@@ -496,8 +526,15 @@ const BlockCommentContent = ({
     }
 
     if (!activeNode) return null;
+    // START CUSTOMIZATION
+    const node = activeNode[0];
 
-    return editor.api.toDOMNode(activeNode[0])!;
+    return {
+      getBoundingClientRect: () =>
+        editor.api.toDOMNode(node)?.getBoundingClientRect() ?? new DOMRect(),
+    };
+    // END CUSTOMIZATION
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     open,
