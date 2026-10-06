@@ -1,1 +1,0 @@
-Fixed the default block width not being stored for code blocks, tables, callouts, tables of contents, columns and other native blocks, which made the history diff show a width change nobody made. @sneridagh

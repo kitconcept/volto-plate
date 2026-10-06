@@ -96,3 +96,143 @@ const markdown = true;
 | --- | --- |
 | Markdown cell A2 | Markdown cell B2 |
 `;
+
+/** A 1x1 PNG, the image of the image paste payloads. */
+export const PNG_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WnSUs8AAAAASUVORK5CYII=';
+
+/**
+ * HTML of a Word selection with an image between two paragraphs. Word points
+ * the image at a temporary `file://` copy and links it to its VML shape,
+ * whose image data comes with the RTF of the selection (`DOCX_IMAGE_RTF`).
+ */
+export const DOCX_IMAGE_HTML = `<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta name=ProgId content=Word.Document><meta name=Generator content="Microsoft Word 15"></head>
+<body lang=EN-US style='tab-interval:.5in;word-wrap:break-word'>
+<!--StartFragment-->
+<p class=MsoNormal>Word text before the image<o:p></o:p></p>
+
+<p class=MsoNormal><!--[if gte vml 1]><v:shape id="Picture_x0020_1"
+ o:spid="_x0000_i1025" type="#_x0000_t75" alt="Word image"
+ style='width:10pt;height:10pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="file:///C:/Users/test/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png"
+  o:title=""/>
+</v:shape><![endif]--><![if !vml]><img width=1 height=1
+src="file:///C:/Users/test/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png"
+alt="Word image" v:shapes="Picture_x0020_1"><![endif]><o:p></o:p></p>
+
+<p class=MsoNormal>Word text after the image<o:p></o:p></p>
+<!--EndFragment-->
+</body>
+</html>`;
+
+/** The RTF Word puts next to `DOCX_IMAGE_HTML`, with the image data. */
+export const DOCX_IMAGE_RTF = `{\\rtf1\\ansi\\ansicpg1252\\deff0
+{\\pard\\plain Word text before the image\\par}
+{\\pard\\plain {\\*\\shppict{\\pict{\\*\\picprop\\shplid1025{\\sp{\\sn shapeType}{\\sv 75}}{\\sp{\\sn fFlipH}{\\sv 0}}}\\picscalex100\\picscaley100\\picw26\\pich26\\picwgoal20\\pichgoal20\\pngblip\\bliptag-1288012592{\\*\\blipuid b33a6dd0a1b2c3d4e5f60718293a4b5c}${Buffer.from(PNG_BASE64, 'base64').toString('hex')}}}}\\par}
+{\\pard\\plain Word text after the image\\par}
+}`;
+
+/** Images of a site that allows fetching them (CORS) and of one that does not. */
+export const REMOTE_IMAGE_URL = 'https://images.example.test/remote-photo.png';
+export const BLOCKED_IMAGE_URL = 'https://blocked.example.test/photo.png';
+
+/**
+ * HTML of a web page with an image inside a paragraph (embedded as a data
+ * URL, as Google Docs does), and images of other sites.
+ */
+export const WEB_IMAGE_HTML = `<meta charset="utf-8">
+<p>Web text before <img src="data:image/png;base64,${PNG_BASE64}" alt="Embedded image"> web text after</p>
+<p><a href="https://plone.org"><img src="${REMOTE_IMAGE_URL}" alt="Remote image"></a></p>
+<p><img src="${BLOCKED_IMAGE_URL}" alt="Blocked image"></p>`;
+
+/**
+ * HTML of a LibreOffice selection with an image between two paragraphs.
+ * LibreOffice points the image at a temporary file and puts its data in the
+ * RTF only (`LIBREOFFICE_IMAGE_RTF`), without Word's VML shapes.
+ */
+export const LIBREOFFICE_IMAGE_HTML = `<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta name="generator" content="LibreOffice 25.8.4.2 (MacOSX)"/>
+</head>
+<body lang="en-US" dir="ltr">
+<p class="western" style="margin-bottom: 0.1in"><font face="Arial, serif">LibreOffice text before the image</font></p>
+<p class="western" align="center" style="margin-bottom: 0.1in"><img src="file:///Users/test/Library/Application%20Support/LibreOffice/4/user/temp/lu1234.tmp/lu1234_tmp_2c9e135.png" name="Picture 1" alt="LibreOffice image" align="bottom" hspace="12" width="1" height="1" border="0"/>
+</p>
+<p class="western" style="margin-bottom: 0.1in"><font face="Arial, serif">LibreOffice text after the image</font></p>
+</body>
+</html>`;
+
+/** The RTF LibreOffice puts next to `LIBREOFFICE_IMAGE_HTML`. */
+export const LIBREOFFICE_IMAGE_RTF = `{\\rtf1\\ansi\\deff4\\adeflang1025
+{\\pard\\plain \\s0\\ql LibreOffice text before the image\\par}
+\\pard\\plain \\s0\\qc{
+{\\pict{\\*\\picprop{\\sp{\\sn wzDescription}{\\sv A one pixel image}}{\\sp{\\sn wzName}{\\sv LibreOffice image}}}\\picscalex100\\picscaley100\\piccropl0\\piccropr0\\piccropt0\\piccropb0\\picw1\\pich1\\picwgoal15\\pichgoal15\\pngblip
+${Buffer.from(PNG_BASE64, 'base64')
+  .toString('hex')
+  .replace(/(.{64})/g, '$1\n')}}}
+\\par \\pard\\plain \\s0\\ql LibreOffice text after the image\\par}`;
+
+/** HTML of a table with an image (embedded as a data URL) in its last cell. */
+export const TABLE_IMAGE_HTML = `<meta charset="utf-8">
+<table><tbody>
+<tr><td>Table cell A1</td><td>Table cell B1</td></tr>
+<tr><td>Table cell A2</td><td><p><img src="data:image/png;base64,${PNG_BASE64}" alt="Cell image"></p></td></tr>
+</tbody></table>`;
+
+/**
+ * HTML of a styled LibreOffice selection: fonts, sizes, colors, line height,
+ * alignment, margins and cell backgrounds, around content with meaning.
+ */
+export const STYLED_HTML = `<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="LibreOffice 25.8.4.2 (MacOSX)"/></head>
+<body lang="en-US" dir="ltr">
+<h2 class="western" align="left" style="line-height: 108%"><font color="#1e3a5f"><font face="Calibri, serif"><font size="4" style="font-size: 15pt">Styled heading</font></font></font></h2>
+<p align="center" style="line-height: 100%; margin-left: 0.5in; text-indent: 0.25in"><font color="#000000"><font face="Arial, serif"><font size="2" style="font-size: 11pt"><span style="background: #fff1e6">Styled <b>bold</b> and <a href="https://plone.org">link</a></span></font></font></font></p>
+<ol><li><p style="line-height: 108%"><font face="Arial, serif"><font size="2" style="font-size: 11pt">Styled item</font></font></p></li></ol>
+<table width="642" cellpadding="7" cellspacing="0">
+<col width="300"/><col width="300"/>
+<tr><td bgcolor="#1e3a5f" style="background: #1e3a5f; border: 1.00pt solid #d9d9d9"><p><font color="#ffffff"><b>Styled header</b></font></p></td>
+<td style="background: #f1f5f9; border: 1.00pt solid #d9d9d9"><p>Styled cell</p></td></tr>
+</table>
+</body>
+</html>`;
+
+/** HTML with two H1s: the first one is the title of the document. */
+export const H1_HTML = `<meta charset="utf-8">
+<p>Text before the title</p>
+<h1>Pasted <b>document</b> title</h1>
+<p>Text after the title</p>
+<h1>Second H1</h1>`;
+
+/**
+ * HTML of a LibreOffice selection starting with the document title, a
+ * paragraph in the Title style, which the HTML turns into a big, bold
+ * paragraph. Only the RTF (`LIBREOFFICE_TITLE_RTF`) keeps the style.
+ */
+export const LIBREOFFICE_TITLE_HTML = `<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="LibreOffice 25.8.4.2 (MacOSX)"/></head>
+<body lang="en-US" dir="ltr"><p align="center" style="margin-bottom: 0.17in; line-height: 100%">
+<font face="Calibri, serif"><font size="6" style="font-size: 27pt"><b>LibreOffice
+document title</b></font></font></p>
+<p class="western">LibreOffice intro</p>
+<h1 class="western">LibreOffice section</h1>
+</body>
+</html>`;
+
+/** The RTF LibreOffice puts next to `LIBREOFFICE_TITLE_HTML`. */
+export const LIBREOFFICE_TITLE_RTF = String.raw`{\rtf1\ansi\deff4\adeflang1025
+{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f6\fswiss\fprq2\fcharset0 Calibri;}}
+{\stylesheet{\s0\snext0\ql\fs22 Normal;}{\s1\sbasedon87\snext0\b\fs38 heading 1;}{\s77\sbasedon87\snext0\i Subtitle;}{\s78\sbasedon87\snext0\b\fs54 Title;}}
+\pard\plain \s78\sl240\slmult1\sb0\sa240\b\qc{
+LibreOffice document title}
+\par \pard\plain \s0\ql LibreOffice intro
+\par \pard\plain \s1\ql\b LibreOffice section
+\par }`;

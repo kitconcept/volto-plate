@@ -8,6 +8,50 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.33 (2026-10-05)
+
+
+### Feature
+
+- Add a Diagram element (Plate code drawing) to the wiki editor: write Mermaid, Graphviz or Flowchart code and see the rendered diagram. PlantUML is disabled, as it sends the diagram source to plantuml.com. @sneridagh 
+
+## 1.0.0-alpha.32 (2026-10-05)
+
+
+### Internal
+
+- Re-release because a stale core. @sneridagh 
+
+## 1.0.0-alpha.31 (2026-10-05)
+
+
+### Feature
+
+- Keep the images of content pasted from Word, LibreOffice or a web page as image blocks. Images that come with the clipboard and images from other sites are uploaded as Image content, images of the site point at their Image content. @sneridagh 
+- Pasted content from Word, LibreOffice or a web page takes the styles of the wiki page: fonts, sizes, colors, alignment, spacing and table looks are dropped, while headings, lists, tables, links, images and marks like bold or italic stay. @sneridagh 
+- The title of pasted content becomes the title of the wiki page: the paragraph in the Title style of a Word or LibreOffice document, or else the first H1, from HTML or markdown. The H1s left become H2s. @sneridagh 
+
+## 1.0.0-alpha.30 (2026-10-01)
+
+
+### Feature
+
+- Added Cut, Copy and Paste to the block context menu, by upgrading to `@plone/plate` 1.0.0-alpha.20 (Aurora 1.0.0-alpha.14). @sneridagh 
+- Pasting an image copied from a web page (for example with "Copy image") now uploads it and inserts an image block, like pasting an image file. @sneridagh 
+
+
+### Bugfix
+
+- Fixed dragging an image block in the editor deleting it instead of moving it, by upgrading to `@plone/plate` 1.0.0-alpha.19 (Aurora 1.0.0-alpha.13). @sneridagh 
+- Fixed pasted or dropped images showing broken in the editor until the page was saved: the image block now stores the image scales returned by the upload, as Volto's image widget does. @sneridagh 
+- Fixed the caret sliding into place with an animation after pressing Enter on the last paragraph in edit mode, caused by the Volto Light Theme padding transition. @sneridagh 
+- Fixed the default block width not being stored for code blocks, tables, callouts, tables of contents, columns and other native blocks, which made the history diff show a width change nobody made. @sneridagh 
+
+
+### Internal
+
+- Use VLT 8 final. @sneridagh 
+
 ## 1.0.0-alpha.29 (2026-09-30)
 
 

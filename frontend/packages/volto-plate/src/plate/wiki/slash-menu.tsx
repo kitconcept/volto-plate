@@ -2,8 +2,9 @@ import type {
   SlashMenuConfig,
   SlashMenuGroup,
 } from '@plone/plate/components/editor/plugins/slash-menu';
+import { CODE_DRAWING_KEY, insertCodeDrawing } from '@platejs/code-drawing';
 import { PLONE_BLOCK_TYPE } from '@plone/helpers';
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, WorkflowIcon } from 'lucide-react';
 import { PathApi } from 'platejs';
 import type { PlateEditor } from 'platejs/react';
 
@@ -37,6 +38,31 @@ const IMAGE_SLASH_ITEM = {
   onSelect: (editor: PlateEditor) => {
     insertPloneBlock(editor, 'plateimage');
   },
+};
+
+const insertDiagram = (editor: PlateEditor) => {
+  editor.tf.withoutNormalizing(() => {
+    const block = editor.api.block();
+    if (!block) return;
+
+    insertCodeDrawing(
+      editor,
+      {},
+      { at: PathApi.next(block[1]), nextBlock: false, select: true },
+    );
+
+    if (block[0].type !== CODE_DRAWING_KEY) {
+      editor.tf.removeNodes({ previousEmptyBlock: true });
+    }
+  });
+};
+
+const DIAGRAM_SLASH_ITEM = {
+  icon: <WorkflowIcon />,
+  keywords: ['diagram', 'drawing', 'mermaid', 'plantuml', 'graphviz', 'chart'],
+  label: 'Diagram',
+  value: CODE_DRAWING_KEY,
+  onSelect: insertDiagram,
 };
 
 export const slashMenu: SlashMenuConfig = {
@@ -76,6 +102,13 @@ export const slashMenu: SlashMenuConfig = {
                     ...group.items.slice(paragraphIndex + 1),
                   ],
           };
+        }
+
+        if (
+          group.group === 'Advanced blocks' &&
+          !group.items.some((item) => item.value === DIAGRAM_SLASH_ITEM.value)
+        ) {
+          return { ...group, items: [...group.items, DIAGRAM_SLASH_ITEM] };
         }
 
         return group;
