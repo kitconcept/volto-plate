@@ -1,1 +1,0 @@
-Wiki editor sidebar: follow the selected block like the regular Volto editor, opening the Block tab for blocks whose config sets `sidebarTab` (e.g. images) and the Document tab for every other block, and hide the unused Order tab. @sneridagh
