@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { PlateEditor, type Value } from '@plone/plate/components/editor';
 import { translationFromIntl } from '@plone/plate/components/editor/plugins/i18n';
 import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
 import { useEditorRef } from 'platejs/react';
 import wikiEditorPreset from '../../plate/presets/wiki-editor';
 import {
@@ -86,8 +87,10 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
     latestOnChangeFormDataRef.current = onChangeFormData;
   }, [content, onChangeFormData]);
 
+  // Start on the Document tab; the sidebar plugin then picks the tab for
+  // each block the selection moves to.
   React.useEffect(() => {
-    dispatch(setSidebarTab(1));
+    dispatch(setSidebarTab(0));
   }, [dispatch]);
 
   if (!stableInitialValueRef.current) {
@@ -151,6 +154,7 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
 
   return (
     <ErrorBoundary isEdit type="plate editor">
+      <BodyClass className="plate-editor" />
       <TitleMetadataContext.Provider value={metadataTitle}>
         {/* Hydrate Plate from persisted block discussions/users, then persist
             discussion changes back into the somersault block on edit. */}
