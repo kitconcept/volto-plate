@@ -1,0 +1,1 @@
+Upgraded `@plone/plate` to Plone Aurora `1.0.0-alpha.18` and removed `@plone/quanta` from the workspace, since `@plone/plate` no longer depends on it. @sneridagh

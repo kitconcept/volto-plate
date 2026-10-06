@@ -5,5 +5,4 @@ packages:
   - aurora/packages/plate
   - aurora/packages/helpers
   - aurora/packages/icons
-  - aurora/packages/quanta
   - aurora/packages/tsconfig
