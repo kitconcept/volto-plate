@@ -469,7 +469,7 @@ const BlockCommentContent = ({
     editor.setOption(suggestionPlugin, 'activeId', null);
     editor.setOption(commentPlugin, 'activeId', null);
     // END CUSTOMIZATION
-  }, [draftCommentNode, editor.tf, isCommenting]);
+  }, [draftCommentNode, editor, isCommenting]);
 
   // START CUSTOMIZATION
   // Since @radix-ui/react-popover 1.1.17 a click outside closes the popover
@@ -484,7 +484,7 @@ const BlockCommentContent = ({
       mode: 'lowest',
       match: (n) => n[getDraftCommentKey()],
     });
-  }, [draftCommentNode, editor.tf, isCommenting]);
+  }, [draftCommentNode, editor, isCommenting]);
   // END CUSTOMIZATION
 
   // === START CUSTOMIZATION ===
