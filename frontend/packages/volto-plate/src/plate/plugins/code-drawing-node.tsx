@@ -27,7 +27,7 @@ import {
 import { cn } from '@plone/plate/lib/utils';
 import { BlockInnerContainer } from '@plone/plate/components/ui/block-inner-container';
 import { Button } from '@plone/plate/components/ui/button';
-import { getIntl } from '@plone/plate/components/editor/plugins/split-utils';
+import { useTranslation } from '@plone/plate/components/editor/plugins/i18n';
 import {
   Popover,
   PopoverAnchor,
@@ -53,11 +53,10 @@ export function CodeDrawingElement(
     [],
   );
 
-  const intl = getIntl(editor);
+  const { t: translate } = useTranslation();
   const t = React.useCallback(
-    (id: string) =>
-      intl?.formatMessage ? intl.formatMessage({ defaultMessage: id, id }) : id,
-    [intl],
+    (id: string) => translate(id, { defaultValue: id }),
+    [translate],
   );
 
   const { code, drawingType, drawingMode } = getCodeDrawingData(element);

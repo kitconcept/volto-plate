@@ -79,8 +79,11 @@ core/packages/components/dist: $(shell find core/packages/components/src -type f
 aurora/packages/helpers/dist: $(shell find aurora/packages/helpers/src -type f)
 	pnpm --filter @plone/helpers build
 
+aurora/packages/icons/dist: $(shell find aurora/packages/icons/src -type f)
+	pnpm --filter @plone/icons build
+
 .PHONY: build-deps
-build-deps: core/packages/registry/dist core/packages/components/dist aurora/packages/helpers/dist ## Build dependencies
+build-deps: core/packages/registry/dist core/packages/components/dist aurora/packages/helpers/dist aurora/packages/icons/dist ## Build dependencies
 
 .PHONY: i18n
 i18n: ## Sync i18n
