@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useSelector } from 'react-redux';
 import cx from 'classnames';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
-import { expandToBackendURL } from '@plone/volto/helpers/Url/Url';
 import AvatarFallback from '../../icons/avatar-fallback-silhouette.svg';
 
 type PersonPillProps = {
-  id: string;
+  id: string | undefined;
   fullname?: string;
   name?: string;
   portrait?: string;
@@ -39,10 +39,33 @@ const PersonPill = ({
       state.site?.data?.['kitconcept.clickable_profile_links'],
   );
 
+  // Portrait URLs handed to us (e.g. `comment.author_image`, `user.portrait`)
+  // arrive from the backend as absolute URLs built with the *internal* API
+  // host. `flattenToAppURL` only strips `settings.internalApiPath`, which is
+  // set on the SSR server but never shipped to the browser - so on the client
+  // the internal host survives and the image request fails
+  // (ERR_NAME_NOT_RESOLVED). Guard against that: flatten the explicit portrait,
+  // and if it is still absolute, drop it and fall back to the canonical
+  // `/@portrait/<id>` endpoint, which the Volto portrait middleware proxies
+  // through the public origin.
+  const explicitPortrait = portrait ? flattenToAppURL(portrait) : undefined;
+  const safeExplicitPortrait =
+    explicitPortrait && !/^https?:\/\//i.test(explicitPortrait)
+      ? explicitPortrait
+      : undefined;
   const portraitSrc =
-    portrait ?? (id ? expandToBackendURL(`@portrait/${id}`) : undefined);
+    safeExplicitPortrait ?? (id ? `/@portrait/${id}` : undefined);
 
   const [loadedPortraitSrc, setLoadedPortraitSrc] = useState<string>();
+  const portraitRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const image = portraitRef.current;
+    if (image?.complete && image.naturalWidth > 0) {
+      setLoadedPortraitSrc(portraitSrc);
+    }
+  }, [portraitSrc]);
+
   const showImage = Boolean(portraitSrc) && portraitSrc === loadedPortraitSrc;
 
   const avatar = (
@@ -61,6 +84,7 @@ const PersonPill = ({
       )}
       {portraitSrc && (
         <img
+          ref={portraitRef}
           className="person-pill-portrait"
           src={portraitSrc}
           alt={fullname || name}
