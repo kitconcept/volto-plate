@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { PlateEditor, type Value } from '@plone/plate/components/editor';
+import { translationFromIntl } from '@plone/plate/components/editor/plugins/i18n';
 import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
 import { useEditorRef } from 'platejs/react';
 import wikiEditorPreset from '../../plate/presets/wiki-editor';
@@ -35,7 +36,7 @@ type PlateEditorFormProps = {
     blocks?: Record<string, { value?: Value; [key: string]: unknown }>;
     [key: string]: unknown;
   };
-  intl?: unknown;
+  intl?: Parameters<typeof translationFromIntl>[0];
   onChangeFormData?: (data: Record<string, unknown>) => void;
 };
 
@@ -62,6 +63,11 @@ function InitialEditorFocus() {
 
 const PlateEditorForm = (props: PlateEditorFormProps) => {
   const { content, intl, onChangeFormData } = props;
+  // Adapts Volto's react-intl `intl` to Plate's react-i18next style contract.
+  const translation = React.useMemo(
+    () => (intl ? translationFromIntl(intl) : undefined),
+    [intl],
+  );
   const dispatch = useDispatch();
   const somersaultBlock = content?.blocks?.[SOMERSAULT_KEY];
   const metadataTitle = content?.title ?? '';
@@ -159,7 +165,8 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
           <PlateEditor
             editorConfig={wikiEditorPreset}
             value={stableInitialValueRef.current}
-            intl={intl}
+            t={translation?.t}
+            language={translation?.language}
             className="typeset"
             onChange={(options) => {
               latestValueRef.current = options.value as Value;
