@@ -8,6 +8,24 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.34 (2026-10-06)
+
+
+### Feature
+
+- Added `scripts/plate-i18n.mjs` to the `i18n` script, which brings `@plone/plate`'s translation keys into the add-on's gettext catalogs and fills them from Plate's translations, and made the date picker strings translatable. @sneridagh 
+
+
+### Bugfix
+
+- Wiki editor sidebar: follow the selected block like the regular Volto editor, opening the Block tab for blocks whose config sets `sidebarTab` (e.g. images) and the Document tab for every other block, and hide the unused Order tab. @sneridagh 
+
+
+### Internal
+
+- Upgraded `@plone/plate` to Plone Aurora `1.0.0-alpha.17` and adapted to its new i18n plugin: the editor gets `t` and `language` adapted from Volto's `intl`, and the date pill, date picker, diagram and wiki slash menu read them via `useTranslation()`. Added `@plone/icons` and `@plone/quanta`, now required by `@plone/plate`, to the workspace. Removed the unused split hotkey, `ploneBlocks` slash menu and `BlocksApiContext`. @sneridagh 
+- Upgraded `@plone/plate` to Plone Aurora `1.0.0-alpha.18` and removed `@plone/quanta` from the workspace, since `@plone/plate` no longer depends on it. @sneridagh 
+
 ## 1.0.0-alpha.33 (2026-10-05)
 
 
