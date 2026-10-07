@@ -80,3 +80,118 @@ msgstr "Beim Block {type} mit der ID {block} ist ein Fehler aufgetreten, er kann
 #: index
 msgid "openSuggestionsCount"
 msgstr "{count} offene Vorschläge"
+
+#. Default: "Actions"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.groups.actions"
+msgstr "Aktionen"
+
+#. Default: "Advanced blocks"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.groups.advancedBlocks"
+msgstr "Erweiterte Blöcke"
+
+#. Default: "Blocks"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.groups.blocks"
+msgstr "Blöcke"
+
+#. Default: "Text blocks"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.groups.textBlocks"
+msgstr "Textblöcke"
+
+#. Default: "Blockquote"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.blockquote"
+msgstr "Zitat"
+
+#. Default: "Bulleted list"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.bulletedList"
+msgstr "Aufzählung"
+
+#. Default: "Callout"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.callout"
+msgstr "Hinweisbox"
+
+#. Default: "Insert a highlighted block."
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.calloutDescription"
+msgstr "Einen hervorgehobenen Block einfügen."
+
+#. Default: "Code Block"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.codeBlock"
+msgstr "Codeblock"
+
+#. Default: "Heading 2"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading2"
+msgstr "Überschrift 2"
+
+#. Default: "Heading 3"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading3"
+msgstr "Überschrift 3"
+
+#. Default: "Heading 4"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading4"
+msgstr "Überschrift 4"
+
+#. Default: "Heading 5"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading5"
+msgstr "Überschrift 5"
+
+#. Default: "Heading 6"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading6"
+msgstr "Überschrift 6"
+
+#. Default: "Numbered list"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.numberedList"
+msgstr "Nummerierte Liste"
+
+#. Default: "Table"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.table"
+msgstr "Tabelle"
+
+#. Default: "Table of contents"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.tableOfContents"
+msgstr "Inhaltsverzeichnis"
+
+#. Default: "Text"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.text"
+msgstr "Text"
+
+#. Default: "3 columns"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.threeColumns"
+msgstr "3 Spalten"
+
+#. Default: "Title"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.title"
+msgstr "Titel"
+
+#. Default: "To-do list"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.todoList"
+msgstr "To-do-Liste"
+
+#. Default: "Toggle"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.toggle"
+msgstr "Aufklappbarer Abschnitt"
+
+#. Default: "No results"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.noResults"
+msgstr "Keine Ergebnisse"

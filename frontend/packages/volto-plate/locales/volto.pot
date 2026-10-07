@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2026-10-07T14:41:02.423Z\n"
+"POT-Creation-Date: 2026-10-07T20:29:21.180Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -81,4 +81,119 @@ msgstr ""
 #. Default: "{count} open suggestions"
 #: index
 msgid "openSuggestionsCount"
+msgstr ""
+
+#. Default: "Actions"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.groups.actions"
+msgstr ""
+
+#. Default: "Advanced blocks"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.groups.advancedBlocks"
+msgstr ""
+
+#. Default: "Blocks"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.groups.blocks"
+msgstr ""
+
+#. Default: "Text blocks"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.groups.textBlocks"
+msgstr ""
+
+#. Default: "Blockquote"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.blockquote"
+msgstr ""
+
+#. Default: "Bulleted list"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.bulletedList"
+msgstr ""
+
+#. Default: "Callout"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.callout"
+msgstr ""
+
+#. Default: "Insert a highlighted block."
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.calloutDescription"
+msgstr ""
+
+#. Default: "Code Block"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.codeBlock"
+msgstr ""
+
+#. Default: "Heading 2"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading2"
+msgstr ""
+
+#. Default: "Heading 3"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading3"
+msgstr ""
+
+#. Default: "Heading 4"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading4"
+msgstr ""
+
+#. Default: "Heading 5"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading5"
+msgstr ""
+
+#. Default: "Heading 6"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.heading6"
+msgstr ""
+
+#. Default: "Numbered list"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.numberedList"
+msgstr ""
+
+#. Default: "Table"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.table"
+msgstr ""
+
+#. Default: "Table of contents"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.tableOfContents"
+msgstr ""
+
+#. Default: "Text"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.text"
+msgstr ""
+
+#. Default: "3 columns"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.threeColumns"
+msgstr ""
+
+#. Default: "Title"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.title"
+msgstr ""
+
+#. Default: "To-do list"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.todoList"
+msgstr ""
+
+#. Default: "Toggle"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.toggle"
+msgstr ""
+
+#. Default: "No results"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.noResults"
 msgstr ""
