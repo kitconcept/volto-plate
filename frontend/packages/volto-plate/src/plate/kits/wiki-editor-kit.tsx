@@ -28,7 +28,6 @@ import { createSlashKit } from '@plone/plate/components/editor/plugins/slash-kit
 import { SuggestionKit } from '@plone/plate/components/editor/plugins/suggestion-kit';
 import { TableKit } from '@plone/plate/components/editor/plugins/table-kit';
 import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
-import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 
 import { CodeDrawingKit } from '../plugins/code-drawing-kit';
 import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
@@ -63,7 +62,6 @@ export const WikiEditorKit = [
   ...CodeBlockKit,
   ...CodeDrawingKit,
   ...TableKit,
-  ...ToggleKit,
   ...TocKit,
   ...CalloutKit,
   ...ColumnKit,
