@@ -10,16 +10,23 @@ import { expect, test } from './test';
 function withSomersaultDiscussionFixture({
   bodyText,
   commentText,
+  isResolved = false,
 }: {
   bodyText: string;
   commentText: string;
+  isResolved?: boolean;
 }) {
   return (body: Record<string, unknown>) => {
     const title = typeof body.title === 'string' ? body.title : '';
+    const existingBlocks =
+      typeof body.blocks === 'object' && body.blocks !== null
+        ? (body.blocks as Record<string, unknown>)
+        : {};
 
     return {
       ...body,
       blocks: {
+        ...existingBlocks,
         __somersault__: {
           '@type': '__somersault__',
           value: [
@@ -52,7 +59,7 @@ function withSomersaultDiscussionFixture({
               ],
               createdAt: '2026-04-17T09:00:00+00:00',
               documentContent: 'Discuss',
-              isResolved: false,
+              isResolved,
               userId: 'admin',
             },
           },
@@ -63,9 +70,6 @@ function withSomersaultDiscussionFixture({
             },
           },
         },
-      },
-      blocks_layout: {
-        items: ['__somersault__'],
       },
     };
   };
@@ -408,6 +412,83 @@ test.describe('Plate discussions and suggestions', () => {
 
     await page.mouse.click(20, 20);
     await expect(discussionDialog).toBeHidden();
+  });
+
+  test('resolving a discussion archives it and reopening restores it', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const commentText = 'Please raise the deadline';
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-resolve',
+      contentTitle: 'Discussion resolve',
+      bodyModifier: withSomersaultDiscussionFixture({
+        bodyText: 'Discuss this paragraph',
+        commentText,
+      }),
+    });
+    const commentMark = page.locator('[data-comment-id="discussion1"]');
+    const dialog = page.getByRole('dialog');
+
+    // Clicking a mark doesn't open the popover in edit mode, use the trigger
+    await page.getByRole('button', { name: '1' }).click();
+    await expect(dialog.getByText(commentText)).toBeVisible();
+    await dialog.getByRole('button', { name: 'Resolve' }).click();
+
+    // The thread stays reachable: banner instead of deletion, mark kept
+    await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
+    await expect(dialog.getByText(commentText)).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Reopen' })).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Resolve' })).toBeHidden();
+    await expect(dialog.getByText('Reply...')).toBeHidden();
+    await expect(commentMark).toHaveAttribute('data-comment-resolved', 'true');
+
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await expect(dialog).toBeHidden();
+    await page.locator('#toolbar-save').click();
+    await page.waitForURL(contentPath, { waitUntil: 'load', timeout: 30_000 });
+
+    // Persisted and visible read-only in view mode, without the reopen action
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await page.locator('[data-comment-id="discussion1"]').click();
+    await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
+    await expect(dialog.getByText(commentText)).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Reopen' })).toBeHidden();
+
+    await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
+    await waitForPlateEditorReady(page);
+    await page.getByRole('button', { name: '1' }).click();
+    await dialog.getByRole('button', { name: 'Reopen' }).click();
+
+    await expect(dialog.getByText('Resolved by Admin')).toBeHidden();
+    await expect(dialog.getByRole('button', { name: 'Resolve' })).toBeVisible();
+    await expect(commentMark).not.toHaveAttribute('data-comment-resolved');
+  });
+
+  test('shows resolved discussions with a resolved trigger icon', async ({
+    page,
+  }) => {
+    const commentText = 'Already handled';
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'discussion-resolved-view',
+      contentTitle: 'Discussion resolved view',
+      wikiId: 'wiki-discussion-resolved-view',
+      transition: 'publish',
+      bodyModifier: withSomersaultDiscussionFixture({
+        bodyText: 'Discuss this rendered paragraph',
+        commentText,
+        isResolved: true,
+      }),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const trigger = page.getByRole('button', { name: '1' });
+    await expect(trigger.locator('svg.lucide-circle-check')).toBeVisible();
+
+    await trigger.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
+    await expect(dialog.getByText(commentText)).toBeVisible();
   });
 
   test('hydrates persisted suggestions in edit mode and renders them in view mode', async ({

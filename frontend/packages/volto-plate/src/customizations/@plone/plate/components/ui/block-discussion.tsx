@@ -9,6 +9,8 @@
  * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/58
  * CHANGELOG:
  *  - Add bulk accept/reject suggestion actions (#58) @iFlameing
+ *  - Keep resolved discussions visible: Resolve/Reopen actions, resolved banner,
+ *    check-circle trigger icon (SID-13) @iFlameing
  *
  */
 import * as React from 'react';
@@ -39,6 +41,13 @@ import { acceptSuggestion, rejectSuggestion } from '@platejs/suggestion';
 import { CheckIcon } from 'lucide-react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { messages } from '../../../../../index';
+import { CircleCheckIcon } from 'lucide-react';
+import {
+  type TArchivableDiscussion,
+  ResolveDiscussionButton,
+  ResolvedDiscussionBanner,
+  useDiscussionResolution,
+} from '../../../../../plate/plugins/comment-resolution';
 // === END CUSTOMIZATION ===
 
 import { Button } from '@plone/plate/components/ui/button';
@@ -194,21 +203,32 @@ export const DiscussionTriggerButton = React.forwardRef<
     active: boolean;
     count: number;
     kind: DiscussionTriggerKind;
+    // === START CUSTOMIZATION === Every thread on the block is resolved
+    // (also destructured as `resolved` below)
+    resolved?: boolean;
+    // === END CUSTOMIZATION ===
   }
->(({ active, className, count, kind, ...props }, ref) => (
+>(({ active, className, count, kind, resolved, ...props }, ref) => (
   <Button
     ref={ref}
     variant="ghost"
     className={cn(
       discussionTriggerClassName,
-      active && (kind === 'suggestions' ? 'text-quanta-emerald' : 'text-brand'),
+      // === START CUSTOMIZATION === Resolved threads stay grey
+      active &&
+        !resolved &&
+        (kind === 'suggestions' ? 'text-quanta-emerald' : 'text-brand'),
+      // === END CUSTOMIZATION ===
       className,
     )}
     data-active={active}
     contentEditable={false}
     {...props}
   >
-    {kind === 'comments' ? (
+    {/* === START CUSTOMIZATION === Every thread on the block is resolved. */}
+    {resolved ? (
+      <CircleCheckIcon className="size-5 shrink-0" />
+    ) : /* === END CUSTOMIZATION === */ kind === 'comments' ? (
       <MessageSquareTextIcon className="size-5 shrink-0" />
     ) : (
       <MessagesSquareIcon className="size-5 shrink-0" />
@@ -290,10 +310,16 @@ export function DiscussionPopover({
 }
 
 export function DiscussionPopoverHeader({
+  // === START CUSTOMIZATION ===
+  action,
+  // === END CUSTOMIZATION ===
   count,
   onClose,
   title,
 }: {
+  // === START CUSTOMIZATION === e.g. the Resolve button of the active thread
+  action?: React.ReactNode;
+  // === END CUSTOMIZATION ===
   count: number;
   onClose: () => void;
   title: string;
@@ -307,19 +333,26 @@ export function DiscussionPopoverHeader({
       >
         {title} ({count})
       </div>
-      <Button
-        aria-label="Close"
-        className={`
+      {/* === START CUSTOMIZATION === */}
+      <div className="flex shrink-0 items-center gap-[6px]">
+        {action}
+        {/* === END CUSTOMIZATION === */}
+        <Button
+          aria-label="Close"
+          className={`
           size-[22px] rounded-md p-0.5 text-muted-foreground
           hover:bg-muted hover:text-foreground
         `}
-        onClick={onClose}
-        size="icon"
-        type="button"
-        variant="ghost"
-      >
-        <XIcon className="size-[18px] stroke-2" />
-      </Button>
+          onClick={onClose}
+          size="icon"
+          type="button"
+          variant="ghost"
+        >
+          <XIcon className="size-[18px] stroke-2" />
+        </Button>
+        {/* === START CUSTOMIZATION === */}
+      </div>
+      {/* === END CUSTOMIZATION === */}
     </div>
   );
 }
@@ -385,6 +418,7 @@ const BlockCommentContent = ({
   const { api: suggestionApi } = useEditorPlugin(SuggestionPlugin);
   const { currentUserId } = usePlatePlugins();
   const canManageSuggestion = !!currentUserId;
+  const { canResolve, resolve } = useDiscussionResolution();
   // === END CUSTOMIZATION ===
 
   const resolvedSuggestions = useResolveSuggestion(suggestionNodes, blockPath);
@@ -413,6 +447,14 @@ const BlockCommentContent = ({
     resolvedDiscussions.find((d) => d.id === activeCommentId);
 
   const noneActive = !activeSuggestion && !activeDiscussion;
+  // === START CUSTOMIZATION ===
+  // The thread shown on its own gets the Resolve button in the header.
+  const singleDiscussion =
+    activeDiscussion ||
+    (noneActive && discussionsCount === 1 && suggestionsCount === 0
+      ? resolvedDiscussions[0]
+      : undefined);
+  // === END CUSTOMIZATION ===
   const popoverHeaderCount = noneActive
     ? totalCount
     : activeDiscussion
@@ -517,6 +559,15 @@ const BlockCommentContent = ({
   ) : (
     <React.Fragment>
       <DiscussionPopoverHeader
+        // === START CUSTOMIZATION ===
+        action={
+          singleDiscussion && !singleDiscussion.isResolved && canResolve ? (
+            <ResolveDiscussionButton
+              onClick={() => resolve(singleDiscussion.id)}
+            />
+          ) : null
+        }
+        // === END CUSTOMIZATION ===
         count={popoverHeaderCount}
         onClose={closePopover}
         title={popoverTitle}
@@ -535,6 +586,9 @@ const BlockCommentContent = ({
               key={item.id}
               discussion={item}
               isLast={index === sortedMergedData.length - 1}
+              // === START CUSTOMIZATION ===
+              showResolve={!singleDiscussion}
+              // === END CUSTOMIZATION ===
             />
           ),
         )
@@ -622,6 +676,12 @@ const BlockCommentContent = ({
             active={open}
             count={totalCount}
             kind={triggerKind}
+            // === START CUSTOMIZATION ===
+            resolved={
+              suggestionsCount === 0 &&
+              resolvedDiscussions.every((d) => d.isResolved)
+            }
+            // === END CUSTOMIZATION ===
           />
         ) : null
       }
@@ -634,16 +694,37 @@ const BlockCommentContent = ({
 function BlockComment({
   discussion,
   isLast,
+  // === START CUSTOMIZATION ===
+  showResolve = false,
+  // === END CUSTOMIZATION ===
 }: {
-  discussion: TDiscussion;
+  // === START CUSTOMIZATION === Resolution fields; list mode has no header button
+  discussion: TArchivableDiscussion;
+  // === END CUSTOMIZATION ===
   isLast: boolean;
+  // === START CUSTOMIZATION ===
+  showResolve?: boolean;
+  // === END CUSTOMIZATION ===
 }) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const createFormRef = React.useRef<CommentCreateFormHandle>(null);
+  // === START CUSTOMIZATION ===
+  // Resolved threads are archived: shown with a banner, no new replies.
+  const { canResolve, reopen, resolve } = useDiscussionResolution();
+  const isResolved = !!discussion.isResolved;
+  // === END CUSTOMIZATION ===
 
   return (
     <React.Fragment key={discussion.id}>
       <div className="px-4 pt-1 pb-3.5">
+        {/* === START CUSTOMIZATION === */}
+        {isResolved && (
+          <ResolvedDiscussionBanner
+            discussion={discussion}
+            onReopen={canResolve ? () => reopen(discussion.id) : undefined}
+          />
+        )}
+        {/* === END CUSTOMIZATION === */}
         {discussion.comments.map((comment, index) => (
           <Comment
             key={comment.id ?? index}
@@ -652,14 +733,27 @@ function BlockComment({
             documentContent={discussion?.documentContent}
             editingId={editingId}
             index={index}
+            // === START CUSTOMIZATION === No replies or Resolve when resolved
             onReply={
-              index === 0 ? () => createFormRef.current?.focus() : undefined
+              index === 0 && !isResolved
+                ? () => createFormRef.current?.focus()
+                : undefined
             }
+            onResolve={
+              index === 0 && showResolve && !isResolved && canResolve
+                ? () => resolve(discussion.id)
+                : undefined
+            }
+            // === END CUSTOMIZATION ===
             setEditingId={setEditingId}
             showDocumentContent
           />
         ))}
-        <CommentCreateForm ref={createFormRef} discussionId={discussion.id} />
+        {/* === START CUSTOMIZATION === */}
+        {!isResolved && (
+          <CommentCreateForm ref={createFormRef} discussionId={discussion.id} />
+        )}
+        {/* === END CUSTOMIZATION === */}
       </div>
 
       {!isLast && <div className="h-px w-full bg-muted" />}
@@ -714,11 +808,9 @@ const useResolvedDiscussion = (
       if (!firstBlockPath) return false;
       if (!PathApi.equals(firstBlockPath, blockPath)) return false;
 
-      return (
-        api.comment.has({ id: item.id }) &&
-        commentsIds.has(item.id) &&
-        !item.isResolved
-      );
+      // === START CUSTOMIZATION === Resolved threads stay reachable
+      return api.comment.has({ id: item.id }) && commentsIds.has(item.id);
+      // === END CUSTOMIZATION ===
     });
 
   return resolvedDiscussions;

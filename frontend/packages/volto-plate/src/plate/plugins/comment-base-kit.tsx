@@ -39,6 +39,12 @@ import {
   suggestionPlugin,
 } from '@plone/plate/components/editor/plugins/suggestion-kit';
 
+import {
+  type TArchivableDiscussion,
+  ResolvedDiscussionBanner,
+  voltoCommentPlugin,
+} from './comment-resolution';
+
 const ReadOnlyBlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
   const { editor, element } = props;
   const blockPath = editor.api.findPath(element);
@@ -79,7 +85,7 @@ export const readOnlyDiscussionPlugin = createPlatePlugin({
 // paths) through the same plugin options the editor uses.
 export const BaseCommentKit = [
   readOnlyDiscussionPlugin,
-  commentPlugin,
+  voltoCommentPlugin,
   suggestionPlugin,
 ];
 
@@ -360,6 +366,10 @@ const ReadOnlyBlockDiscussionContent = ({
           active={open}
           count={totalCount}
           kind={triggerKind}
+          resolved={
+            suggestionsCount === 0 &&
+            resolvedDiscussions.every((discussion) => discussion.isResolved)
+          }
           onClick={() => {
             setClickedAnchorElement(null);
             setTriggerAnchorElement(discussionButtonRef.current);
@@ -376,11 +386,18 @@ const ReadOnlyBlockDiscussionContent = ({
   );
 };
 
-function ReadOnlyBlockComment({ discussion }: { discussion: TDiscussion }) {
+function ReadOnlyBlockComment({
+  discussion,
+}: {
+  discussion: TArchivableDiscussion;
+}) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
 
   return (
     <div className="px-4 pt-1 pb-3.5">
+      {discussion.isResolved && (
+        <ResolvedDiscussionBanner discussion={discussion} />
+      )}
       {discussion.comments.map((comment, index) => (
         <Comment
           key={comment.id ?? index}
@@ -441,10 +458,9 @@ const useResolvedDiscussion = (
       if (!firstBlockPath) return false;
       if (!PathApi.equals(firstBlockPath, blockPath)) return false;
 
+      // Resolved discussions are archived, not hidden
       return (
-        api.comment.has({ id: discussion.id }) &&
-        commentIds.has(discussion.id) &&
-        !discussion.isResolved
+        api.comment.has({ id: discussion.id }) && commentIds.has(discussion.id)
       );
     });
 };

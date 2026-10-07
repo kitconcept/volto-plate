@@ -28,6 +28,26 @@ msgstr ""
 msgid "Reject all"
 msgstr ""
 
+#. Default: "Reopen"
+#: index
+msgid "Reopen"
+msgstr ""
+
+#. Default: "Resolve"
+#: index
+msgid "Resolve"
+msgstr ""
+
+#. Default: "Resolved"
+#: index
+msgid "Resolved"
+msgstr ""
+
+#. Default: "Resolved by {name}"
+#: index
+msgid "Resolved by {name}"
+msgstr ""
+
 #. Default: "The {type} block with the id {block} has encountered an error.{lineBreak}You can try to undo your changes (via the undo toolbar or pressing {shortcut}), or try to delete the block and recreate it again."
 #: components/Blocks/ErrorBoundaryMessage
 msgid "blockErrorBoundaryDescription"
