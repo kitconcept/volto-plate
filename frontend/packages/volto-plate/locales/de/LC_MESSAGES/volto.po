@@ -166,11 +166,6 @@ msgstr "Titel"
 msgid "plate.slashMenu.items.todoList"
 msgstr "To-do-Liste"
 
-#. Default: "Toggle"
-#: plate/i18n/plateMessages
-msgid "plate.slashMenu.items.toggle"
-msgstr "Aufklappbarer Abschnitt"
-
 #. Default: "No results"
 #: plate/i18n/plateMessages
 msgid "plate.slashMenu.noResults"

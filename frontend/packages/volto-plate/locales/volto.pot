@@ -168,11 +168,6 @@ msgstr ""
 msgid "plate.slashMenu.items.todoList"
 msgstr ""
 
-#. Default: "Toggle"
-#: plate/i18n/plateMessages
-msgid "plate.slashMenu.items.toggle"
-msgstr ""
-
 #. Default: "No results"
 #: plate/i18n/plateMessages
 msgid "plate.slashMenu.noResults"
