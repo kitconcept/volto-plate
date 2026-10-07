@@ -21,8 +21,8 @@ body > div[id^='dmermaid-'] {
   position: absolute;
   top: 0;
   left: -10000px;
-  visibility: hidden;
   pointer-events: none;
+  visibility: hidden;
 }
 
 // Neutralize TW container CSS for .q.container
