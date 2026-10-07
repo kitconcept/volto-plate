@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2026-10-07T14:20:23.172Z\n"
+"POT-Creation-Date: 2026-10-07T14:41:02.423Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -16,6 +16,16 @@ msgstr ""
 #. Default: "Accept all"
 #: index
 msgid "Accept all"
+msgstr ""
+
+#. Default: "Insert date"
+#: plate/plugins/date-picker-panel
+msgid "Insert date"
+msgstr ""
+
+#. Default: "Next week"
+#: plate/plugins/date-picker-panel
+msgid "Next week"
 msgstr ""
 
 #. Default: "Reject all"
@@ -41,6 +51,16 @@ msgstr ""
 #. Default: "Resolved by {name}"
 #: index
 msgid "Resolved by {name}"
+msgstr ""
+
+#. Default: "Today"
+#: plate/plugins/date-picker-panel
+msgid "Today"
+msgstr ""
+
+#. Default: "Tomorrow"
+#: plate/plugins/date-picker-panel
+msgid "Tomorrow"
 msgstr ""
 
 #. Default: "The {type} block with the id {block} has encountered an error.{lineBreak}You can try to undo your changes (via the undo toolbar or pressing {shortcut}), or try to delete the block and recreate it again."

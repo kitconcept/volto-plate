@@ -21,6 +21,16 @@ msgstr ""
 msgid "Accept all"
 msgstr ""
 
+#. Default: "Insert date"
+#: plate/plugins/date-picker-panel
+msgid "Insert date"
+msgstr ""
+
+#. Default: "Next week"
+#: plate/plugins/date-picker-panel
+msgid "Next week"
+msgstr ""
+
 #. Default: "Reject all"
 #: index
 msgid "Reject all"
@@ -44,6 +54,16 @@ msgstr ""
 #. Default: "Resolved by {name}"
 #: index
 msgid "Resolved by {name}"
+msgstr ""
+
+#. Default: "Today"
+#: plate/plugins/date-picker-panel
+msgid "Today"
+msgstr ""
+
+#. Default: "Tomorrow"
+#: plate/plugins/date-picker-panel
+msgid "Tomorrow"
 msgstr ""
 
 #. Default: "The {type} block with the id {block} has encountered an error.{lineBreak}You can try to undo your changes (via the undo toolbar or pressing {shortcut}), or try to delete the block and recreate it again."

@@ -19,6 +19,7 @@ import { BaseTocKit } from '@plone/plate/components/editor/plugins/toc-base-kit'
 import { BaseToggleKit } from '@plone/plate/components/editor/plugins/toggle-base-kit';
 
 import { overrideKitPlugin } from './override-kit-plugin';
+import { BaseCodeDrawingKit } from '../plugins/code-drawing-base-kit';
 import { BaseCommentKit } from '../plugins/comment-base-kit';
 import { BaseDateKit } from '../plugins/date-base-kit';
 import { VoltoLinkElementStatic } from '../plugins/volto-link-node-static';
@@ -40,6 +41,7 @@ const wikiBaseToggleKit = overrideKitPlugin(BaseToggleKit, KEYS.toggle, {
 export const wikiBaseEditorKit = [
   ...BaseBasicBlocksKit,
   ...BaseCodeBlockKit,
+  ...BaseCodeDrawingKit,
   ...BaseTableKit,
   ...wikiBaseToggleKit,
   ...VoltoToggleVisibilityKit,

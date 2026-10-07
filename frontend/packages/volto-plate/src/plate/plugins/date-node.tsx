@@ -7,7 +7,7 @@ import { CalendarIcon } from 'lucide-react';
 import { PlateElement, useFocused, useSelected } from 'platejs/react';
 
 import { cn } from '@plone/plate/lib/utils';
-import { getIntl } from '@plone/plate/components/editor/plugins/split-utils';
+import { useTranslation } from '@plone/plate/components/editor/plugins/i18n';
 import {
   Popover,
   PopoverAnchor,
@@ -42,13 +42,7 @@ export function DateElement(props: PlateElementProps<TDateElement>) {
   const selected = useSelected();
   const focused = useFocused();
 
-  const intl = getIntl(editor);
-  const locale = intl?.locale;
-  const translate = React.useCallback(
-    (id: string) =>
-      intl?.formatMessage ? intl.formatMessage({ defaultMessage: id, id }) : id,
-    [intl],
-  );
+  const { i18n } = useTranslation();
 
   return (
     <PlateElement
@@ -72,13 +66,12 @@ export function DateElement(props: PlateElementProps<TDateElement>) {
             type="button"
           >
             <CalendarIcon className="size-3.5" />
-            {formatDatePillLabel(element.value, locale)}
+            {formatDatePillLabel(element.value, i18n.language)}
           </button>
         </PopoverAnchor>
 
         <PopoverContent align="start" className="w-auto p-0">
           <DatePickerPanel
-            locale={locale}
             onSelect={(isoDate) => {
               const path = editor.api.findPath(element);
 
@@ -88,7 +81,6 @@ export function DateElement(props: PlateElementProps<TDateElement>) {
 
               setOpen(false);
             }}
-            translate={translate}
             value={element.value}
           />
         </PopoverContent>

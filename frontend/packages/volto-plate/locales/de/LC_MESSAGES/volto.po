@@ -14,12 +14,22 @@ msgstr ""
 #. Default: "Accept all"
 #: index
 msgid "Accept all"
-msgstr ""
+msgstr "Alle annehmen"
+
+#. Default: "Insert date"
+#: plate/plugins/date-picker-panel
+msgid "Insert date"
+msgstr "Datum einfügen"
+
+#. Default: "Next week"
+#: plate/plugins/date-picker-panel
+msgid "Next week"
+msgstr "Nächste Woche"
 
 #. Default: "Reject all"
 #: index
 msgid "Reject all"
-msgstr ""
+msgstr "Alle ablehnen"
 
 #. Default: "Reopen"
 #: index
@@ -41,22 +51,32 @@ msgstr "Erledigt"
 msgid "Resolved by {name}"
 msgstr "Erledigt von {name}"
 
+#. Default: "Today"
+#: plate/plugins/date-picker-panel
+msgid "Today"
+msgstr "Heute"
+
+#. Default: "Tomorrow"
+#: plate/plugins/date-picker-panel
+msgid "Tomorrow"
+msgstr "Morgen"
+
 #. Default: "The {type} block with the id {block} has encountered an error.{lineBreak}You can try to undo your changes (via the undo toolbar or pressing {shortcut}), or try to delete the block and recreate it again."
 #: components/Blocks/ErrorBoundaryMessage
 msgid "blockErrorBoundaryDescription"
-msgstr ""
+msgstr "Beim Block {type} mit der ID {block} ist ein Fehler aufgetreten.{lineBreak}Sie können versuchen, Ihre Änderungen rückgängig zu machen (über die Werkzeugleiste oder mit {shortcut}), oder den Block löschen und neu erstellen."
 
 #. Default: "Block error:"
 #: components/Blocks/ErrorBoundaryMessage
 msgid "blockErrorBoundaryTitle"
-msgstr ""
+msgstr "Blockfehler:"
 
 #. Default: "The {type} block with the id {block} errored and cannot be displayed.{lineBreak}Please contact the site administrator for further assistance."
 #: components/Blocks/ErrorBoundaryMessage
 msgid "blockErrorBoundaryViewDescription"
-msgstr ""
+msgstr "Beim Block {type} mit der ID {block} ist ein Fehler aufgetreten, er kann nicht angezeigt werden.{lineBreak}Bitte wenden Sie sich an die Administration der Website."
 
 #. Default: "{count} open suggestions"
 #: index
 msgid "openSuggestionsCount"
-msgstr ""
+msgstr "{count} offene Vorschläge"

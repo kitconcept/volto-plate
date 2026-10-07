@@ -5,7 +5,7 @@ from zope.i18nmessageid import MessageFactory
 import logging
 
 
-__version__ = "1.0.0a32"
+__version__ = "1.0.0a34"
 
 PACKAGE_NAME = "kitconcept.plate"
 
