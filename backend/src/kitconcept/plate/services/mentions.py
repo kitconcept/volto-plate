@@ -1,5 +1,6 @@
 """Mentionable Plone users REST service."""
 
+from plone import api
 from plone.restapi.services import Service
 from plone.restapi.services.users.get import getPortraitUrl
 from Products.CMFCore.utils import getToolByName
@@ -28,6 +29,8 @@ class MentionsGet(Service):
         # The picker searches by name, while rendered mentions resolve one
         # already-persisted user id to keep their portrait current.
         if not search and not user_id:
+            return {"items": [], "items_total": 0}
+        if search and not api.user.has_permission("kitconcept.plate: Discuss content", obj=self.context):
             return {"items": [], "items_total": 0}
 
         membership = getToolByName(self.context, "portal_membership")

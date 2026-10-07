@@ -24,7 +24,6 @@ type SiteState = {
 };
 
 const PersonPill = ({
-  id,
   fullname,
   name,
   portrait,
@@ -39,15 +38,9 @@ const PersonPill = ({
       state.site?.data?.['kitconcept.clickable_profile_links'],
   );
 
-  const portraitSrc =
-    portrait ?? (id ? expandToBackendURL(`@portrait/${id}`) : undefined);
-
-  const [loadedPortraitSrc, setLoadedPortraitSrc] = useState<string>();
-  const showImage = Boolean(portraitSrc) && portraitSrc === loadedPortraitSrc;
-
   const avatar = (
     <>
-      {!showImage && (
+      {!portrait && (
         <Icon
           className="person-pill-avatar"
           name={AvatarFallback}
@@ -59,14 +52,11 @@ const PersonPill = ({
           ariaHidden
         />
       )}
-      {portraitSrc && (
+      {portrait && (
         <img
           className="person-pill-portrait"
-          src={portraitSrc}
+          src={expandToBackendURL(portrait)}
           alt={fullname || name}
-          onLoad={() => setLoadedPortraitSrc(portraitSrc)}
-          onError={() => setLoadedPortraitSrc(undefined)}
-          hidden={!showImage}
         />
       )}
     </>
