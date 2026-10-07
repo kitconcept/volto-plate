@@ -1,0 +1,1 @@
+Restore the editor focus when a draft comment is dropped: the cursor goes to the click position inside the editor, or to the end of the commented selection when clicking outside it or pressing Escape. @Tishasoumya-02
