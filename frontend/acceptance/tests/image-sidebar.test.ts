@@ -3,6 +3,8 @@ import { login } from './login';
 import { createWikiPage } from './content';
 import { waitForPlateEditorReady } from './plate';
 import { getEditorHandle, getNodeByPath } from '@platejs/playwright';
+import { createNativeBlocksPage, openInEditor } from '../fixtures/pages';
+import { insertWithSlashMenu } from '../fixtures/editor';
 
 const PAGE_ID = 'image-sidebar-page';
 const DATA_URI =
@@ -207,4 +209,73 @@ test('Changing Block width in the sidebar updates the rendered image width', asy
   await expect
     .poll(async () => getInheritedBlockWidth(imageBlock))
     .toBe(expectedWidth);
+});
+
+test('Wiki sidebar tabs follow the selected block and hide Order', async ({
+  page,
+}) => {
+  await openImageSidebarPage(page, {
+    contentId: 'image-sidebar-tabs-page',
+    contentTitle: 'Image sidebar tabs page',
+  });
+
+  const tabs = page.locator('#sidebar .formtabs');
+  const documentTab = tabs.locator('> .item').first();
+  const blockTab = tabs.getByRole('button', { name: 'Block', exact: true });
+  const altTextField = page
+    .locator('#sidebar-properties')
+    .getByRole('textbox', { name: 'Alt text' });
+
+  await expect(documentTab).toHaveClass(/\bactive\b/);
+  await expect(blockTab).toBeVisible();
+  await expect(tabs.locator('> .item', { hasText: 'Order' })).toBeHidden();
+
+  await page
+    .locator('.slate-editor img[alt="Inline test image"]')
+    .click({ force: true });
+  await expect(blockTab).toHaveClass(/\bactive\b/);
+  await expect(altTextField).toBeVisible();
+
+  await page.locator('.slate-editor').getByText('Text after image').click();
+  await expect(documentTab).toHaveClass(/\bactive\b/);
+
+  await page
+    .locator('.slate-editor img[alt="Inline test image"]')
+    .click({ force: true });
+  await expect(blockTab).toHaveClass(/\bactive\b/);
+
+  await page.locator('.slate-editor h1').click();
+  await expect(documentTab).toHaveClass(/\bactive\b/);
+});
+
+test('Inserting an image keeps the selection on it and opens the Block tab', async ({
+  page,
+}) => {
+  await login(page);
+  const contentPath = await createNativeBlocksPage(page, [], {
+    extra: [{ type: 'p', children: [{ text: '' }] }],
+  });
+  const editorHandle = await openInEditor(page, contentPath);
+
+  await insertWithSlashMenu(page, editorHandle, 1, 'Image');
+  await expect(
+    page.getByText('Browse the site, drop an image, or use a URL'),
+  ).toBeVisible();
+
+  // The selection used to jump to the start of the title right after the
+  // empty paragraph holding the slash command was removed.
+  await page.waitForTimeout(500);
+  await expect
+    .poll(() =>
+      editorHandle.evaluate(
+        (editor: any) => editor.selection?.anchor.path[0] ?? null,
+      ),
+    )
+    .toBe(1);
+  await expect(
+    page.locator('#sidebar .formtabs').getByRole('button', {
+      name: 'Block',
+      exact: true,
+    }),
+  ).toHaveClass(/\bactive\b/);
 });
