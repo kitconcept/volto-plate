@@ -30,7 +30,9 @@ class MentionsGet(Service):
         # already-persisted user id to keep their portrait current.
         if not search and not user_id:
             return {"items": [], "items_total": 0}
-        if search and not api.user.has_permission("kitconcept.plate: Discuss content", obj=self.context):
+        if search and not api.user.has_permission(
+            "kitconcept.plate: Discuss content", obj=self.context
+        ):
             return {"items": [], "items_total": 0}
 
         membership = getToolByName(self.context, "portal_membership")
