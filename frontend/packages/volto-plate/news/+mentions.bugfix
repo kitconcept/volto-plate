@@ -1,0 +1,4 @@
+Simplify loading of portraits in PersonPill component.
+(Assume it is correctly passed the portrait URL, instead of trying to detect
+whether it loaded.)
+@davisagli
