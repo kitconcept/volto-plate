@@ -31,6 +31,26 @@ msgstr "Nächste Woche"
 msgid "Reject all"
 msgstr "Alle ablehnen"
 
+#. Default: "Reopen"
+#: index
+msgid "Reopen"
+msgstr "Wieder öffnen"
+
+#. Default: "Resolve"
+#: index
+msgid "Resolve"
+msgstr "Erledigen"
+
+#. Default: "Resolved"
+#: index
+msgid "Resolved"
+msgstr "Erledigt"
+
+#. Default: "Resolved by {name}"
+#: index
+msgid "Resolved by {name}"
+msgstr "Erledigt von {name}"
+
 #. Default: "Today"
 #: plate/plugins/date-picker-panel
 msgid "Today"

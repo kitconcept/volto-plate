@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import UTC
 from kitconcept.plate.mentions import mentions_utility
 from plone import api
 from plone.restapi.interfaces import IBlockFieldDeserializationTransformer
@@ -60,6 +62,9 @@ class CommentsDeserializer:
             self._validate_unchanged_comments(
                 incoming_discussions, existing_discussions, current_user
             )
+            self._stamp_resolution(
+                incoming_discussions, existing_discussions, current_user
+            )
             block["discussions"] = incoming_discussions
         elif existing_discussions:
             # Keep existing discussions if none in request
@@ -91,6 +96,30 @@ class CommentsDeserializer:
         """Get existing discussions from the context if available."""
         # Try to get from blocks if context has blocks
         return self._get_existing_block().get("discussions", {})
+
+    def _stamp_resolution(self, incoming_discussions, existing_discussions, user):
+        """Set who resolved a discussion and when, ignoring client values.
+
+        Resolving archives a discussion rather than deleting it, so the
+        resolver is recorded server-side and cleared again on reopen.
+        """
+        for discussion_id, discussion in incoming_discussions.items():
+            if not isinstance(discussion, dict):
+                continue
+            existing = existing_discussions.get(discussion_id) or {}
+            was_resolved = bool(existing.get("isResolved"))
+            discussion.pop("resolvedBy", None)
+            discussion.pop("resolvedAt", None)
+
+            if not discussion.get("isResolved"):
+                continue
+            if was_resolved:
+                for key in ("resolvedBy", "resolvedAt"):
+                    if key in existing:
+                        discussion[key] = existing[key]
+            else:
+                discussion["resolvedBy"] = user.getId() if user else None
+                discussion["resolvedAt"] = datetime.now(UTC).isoformat()
 
     def _validate_unchanged_comments(
         self, incoming_discussions, existing_discussions, current_user

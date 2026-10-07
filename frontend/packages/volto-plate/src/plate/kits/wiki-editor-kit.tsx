@@ -12,7 +12,6 @@ import { BlockAnatomyKit } from '@plone/plate/components/editor/plugins/block-an
 import { CalloutKit } from '@plone/plate/components/editor/plugins/callout-kit';
 import { CodeBlockKit } from '@plone/plate/components/editor/plugins/code-block-kit';
 import { ColumnKit } from '@plone/plate/components/editor/plugins/column-kit';
-import { CommentKit } from '@plone/plate/components/editor/plugins/comment-kit';
 import { CursorOverlayKit } from '@plone/plate/components/editor/plugins/cursor-overlay-kit';
 import { DiscussionKit } from '@plone/plate/components/editor/plugins/discussion-kit';
 // import { DndKit } from '@plone/plate/components/editor/plugins/dnd-kit';
@@ -38,6 +37,7 @@ import { VoltoPasteFormattingPlugin } from '../plugins/volto-paste-formatting';
 import { VoltoPasteTitlePlugin } from '../plugins/volto-paste-title';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { VoltoMentionKit } from '../plugins/volto-mention-kit';
+import { voltoCommentPlugin } from '../plugins/comment-resolution';
 import { SidebarPlugin } from '../plugins/volto-sidebar';
 import { DateKit } from '../plugins/date-kit';
 import { slashMenu } from '../wiki/slash-menu';
@@ -83,7 +83,7 @@ export const WikiEditorKit = [
 
   // Collaboration
   ...DiscussionKit,
-  ...CommentKit,
+  voltoCommentPlugin,
   ...SuggestionKit,
 
   // Editing

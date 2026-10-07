@@ -19,6 +19,22 @@ export const messages = defineMessages({
     id: 'openSuggestionsCount',
     defaultMessage: '{count} open suggestions',
   },
+  resolveDiscussion: {
+    id: 'Resolve',
+    defaultMessage: 'Resolve',
+  },
+  resolved: {
+    id: 'Resolved',
+    defaultMessage: 'Resolved',
+  },
+  resolvedBy: {
+    id: 'Resolved by {name}',
+    defaultMessage: 'Resolved by {name}',
+  },
+  reopenDiscussion: {
+    id: 'Reopen',
+    defaultMessage: 'Reopen',
+  },
 });
 
 function applyConfig(config: ConfigType) {
