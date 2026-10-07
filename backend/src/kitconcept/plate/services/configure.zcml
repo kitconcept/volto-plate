@@ -7,7 +7,7 @@
       method="GET"
       factory=".mentions.MentionsGet"
       for="*"
-      permission="kitconcept.plate.DiscussContent"
+      permission="zope.Public"
       name="@mentions"
       />
 
