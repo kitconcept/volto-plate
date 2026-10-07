@@ -9,6 +9,11 @@
  * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/58
  * CHANGELOG:
  *  - Add bulk accept/reject suggestion actions (#58) @iFlameing
+ *  - Remove draft comment on click outside, clear active ids on close,
+ *    anchor popover to a virtual element that survives re-renders @Tishasoumya-02
+ *  - Refocus the editor when a draft comment is dropped, with the cursor at
+ *    the click inside the editor or else at the selection focus; keep the
+ *    draft popover open on pointerdown inside the editor @Tishasoumya-02
  *
  */
 import * as React from 'react';
@@ -23,10 +28,12 @@ import {
   type AnyPluginConfig,
   type NodeEntry,
   type Path,
+  type Point,
   type TCommentText,
   type TElement,
   type TSuggestionText,
   PathApi,
+  PointApi,
   TextApi,
 } from 'platejs';
 import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react';
@@ -82,6 +89,10 @@ export const discussionTriggerClassName = `
   hover:bg-muted hover:text-muted-foreground
   data-[active=true]:bg-muted
 `;
+
+// START CUSTOMIZATION
+type VirtualAnchor = { getBoundingClientRect: () => DOMRect };
+// END CUSTOMIZATION
 
 type DiscussionTriggerKind = 'comments' | 'mixed' | 'suggestions';
 
@@ -232,7 +243,9 @@ export function DiscussionPopover({
   triggerAsPopoverTrigger = true,
   wrapperProps,
 }: React.PropsWithChildren<{
-  anchorElement: HTMLElement | null;
+  // START CUSTOMIZATION
+  anchorElement: VirtualAnchor | null;
+  // END CUSTOMIZATION
   content: React.ReactNode;
   onOpenChange: (open: boolean) => void;
   open: boolean;
@@ -445,17 +458,94 @@ const BlockCommentContent = ({
     selected ||
     (isCommenting && !!draftCommentNode && commentingCurrent);
 
+  // START CUSTOMIZATION
+  // The comment form takes the focus, so when the draft is dropped, focus the
+  // editor again: with the cursor where the user clicked inside it, or else
+  // at the selection focus, unless another field took the focus.
+  const removeDraftComment = React.useCallback(() => {
+    const editorElement = editor.api.toDOMNode(editor);
+    const draftEntries = [
+      ...editor.api.nodes({ at: [], match: (n) => n[getDraftCommentKey()] }),
+    ];
+    const { selection } = editor;
+    const domSelection = window.getSelection();
+
+    const clickedRange = editorElement?.contains(document.activeElement)
+      ? (domSelection?.rangeCount &&
+          editor.api.toSlateRange(domSelection.getRangeAt(0), {
+            exactMatch: false,
+            suppressThrow: true,
+          })) ||
+        selection
+      : null;
+    let draftFocus: Point | undefined;
+
+    if (draftEntries.length > 0 && selection) {
+      const start = editor.api.start(draftEntries[0][1])!;
+      const end = editor.api.end(draftEntries[draftEntries.length - 1][1])!;
+
+      // `setDraft` collapses the selection to its anchor, so the selection
+      // focus is the other edge of the draft.
+      draftFocus = PointApi.equals(selection.anchor, end) ? start : end;
+    }
+
+    const targetRange =
+      clickedRange ?? (draftFocus && { anchor: draftFocus, focus: draftFocus });
+    const targetRangeRef = targetRange
+      ? editor.api.rangeRef(targetRange)
+      : undefined;
+
+    editor.tf.unsetNodes(getDraftCommentKey(), {
+      at: [],
+      mode: 'lowest',
+      match: (n) => n[getDraftCommentKey()],
+    });
+
+    const range = targetRangeRef?.unref();
+
+    if (!range) return;
+
+    const { activeElement } = document;
+    const focusedOtherField =
+      !!activeElement?.matches(
+        'input, textarea, select, [contenteditable="true"]',
+      ) &&
+      !editorElement?.contains(activeElement) &&
+      !activeElement.closest('[data-radix-popper-content-wrapper]');
+
+    editor.tf.select(range);
+
+    if (!focusedOtherField) editor.tf.focus();
+  }, [editor]);
+  // END CUSTOMIZATION
+
   const closePopover = React.useCallback(() => {
     if (isCommenting && draftCommentNode) {
-      editor.tf.unsetNodes(getDraftCommentKey(), {
-        at: [],
-        mode: 'lowest',
-        match: (n) => n[getDraftCommentKey()],
-      });
+      // START CUSTOMIZATION
+      removeDraftComment();
+      // END CUSTOMIZATION
     }
 
     setOpen(false);
-  }, [draftCommentNode, editor.tf, isCommenting]);
+    // START CUSTOMIZATION
+    // The popover stays open while a suggestion is active, so the
+    // close button has to clear the active ids as well.
+    editor.setOption(suggestionPlugin, 'activeId', null);
+    editor.setOption(commentPlugin, 'activeId', null);
+    // END CUSTOMIZATION
+  }, [draftCommentNode, editor, isCommenting, removeDraftComment]);
+
+  // START CUSTOMIZATION
+  // Since @radix-ui/react-popover 1.1.17 a click outside closes the popover
+  // on `click` instead of `pointerdown`. The comment plugin's `onClick`
+  // resets `activeId` first, the popover unmounts and `closePopover` never
+  // runs, so the draft has to be removed when commenting ends.
+  React.useEffect(() => {
+    if (isCommenting || !draftCommentNode) return;
+
+    removeDraftComment();
+  }, [draftCommentNode, isCommenting, removeDraftComment]);
+  // END CUSTOMIZATION
 
   // === START CUSTOMIZATION ===
   const acceptAllSuggestions = () => {
@@ -496,8 +586,15 @@ const BlockCommentContent = ({
     }
 
     if (!activeNode) return null;
+    // START CUSTOMIZATION
+    const node = activeNode[0];
 
-    return editor.api.toDOMNode(activeNode[0])!;
+    return {
+      getBoundingClientRect: () =>
+        editor.api.toDOMNode(node)?.getBoundingClientRect() ?? new DOMRect(),
+    };
+    // END CUSTOMIZATION
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     open,
@@ -607,6 +704,20 @@ const BlockCommentContent = ({
     <DiscussionPopover
       anchorElement={anchorElement}
       content={popoverContent}
+      // START CUSTOMIZATION
+      // Clicks inside the editor end a draft comment through the comment
+      // plugin's `onClick`, after the browser has placed the caret.
+      contentProps={{
+        onInteractOutside: (event) => {
+          if (
+            isCommenting &&
+            editor.api.toDOMNode(editor)?.contains(event.target as Node)
+          ) {
+            event.preventDefault();
+          }
+        },
+      }}
+      // END CUSTOMIZATION
       onOpenChange={(_open_) => {
         if (!_open_) {
           closePopover();
