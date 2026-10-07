@@ -14,6 +14,17 @@ body {
   align-items: stretch;
 }
 
+// Mermaid renders diagrams in a temporary `div#dmermaid-…` appended to body
+// and leaves it behind (with its "Syntax error" graphics) on invalid source.
+// Keep it out of view. Not `display: none`: Mermaid measures text in it.
+body > div[id^='dmermaid-'] {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  pointer-events: none;
+  visibility: hidden;
+}
+
 // Neutralize TW container CSS for .q.container
 @layer plone-components {
   .q.container {

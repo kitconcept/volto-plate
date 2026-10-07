@@ -5,7 +5,7 @@ import type {
 import { CODE_DRAWING_KEY, insertCodeDrawing } from '@platejs/code-drawing';
 import { PLONE_BLOCK_TYPE } from '@plone/helpers';
 import { ImageIcon, WorkflowIcon } from 'lucide-react';
-import { PathApi } from 'platejs';
+import { KEYS, PathApi } from 'platejs';
 import type { PlateEditor } from 'platejs/react';
 
 const insertPloneBlock = (editor: PlateEditor, blockType: string) => {
@@ -68,6 +68,11 @@ const DIAGRAM_SLASH_ITEM = {
 export const slashMenu: SlashMenuConfig = {
   extendGroups: (groups) =>
     groups
+      // The toggle plugin is not part of the wiki editor preset.
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => item.value !== KEYS.toggle),
+      }))
       .map((group) => {
         if (group.group === 'Actions') {
           return {

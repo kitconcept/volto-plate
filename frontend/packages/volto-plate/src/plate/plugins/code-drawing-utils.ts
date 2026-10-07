@@ -72,6 +72,21 @@ export const withIntrinsicSize = (dataUrl: string) => {
 };
 
 /**
+ * Mermaid renders into a temporary `<div id="dmermaid-…">` appended to
+ * `<body>`. On a syntax error it draws its "Syntax error in text" bomb into
+ * that div and throws without removing it (it only cleans up with
+ * `suppressErrorRendering`, which Plate's `renderMermaid` does not set), so
+ * the error graphics pile up on the page. Remove those leftovers.
+ */
+const removeMermaidErrorLeftovers = () => {
+  document.body
+    .querySelectorAll(':scope > div[id^="dmermaid-"]')
+    .forEach((el) => {
+      if (el.querySelector('.error-icon')) el.remove();
+    });
+};
+
+/**
  * Renders the diagram source of a code drawing element into an image data URL.
  * Rendering only happens in the browser (inside an effect), the renderers
  * (Mermaid, Graphviz, Flowchart, PlantUML) are lazy loaded on first use.
@@ -115,6 +130,9 @@ export function useCodeDrawingImage(
           setImage(withIntrinsicSize(imageData));
         }
       } catch (err) {
+        if (nextType === CODE_DRAWING_TYPE.Mermaid) {
+          removeMermaidErrorLeftovers();
+        }
         if (lastRequestId === requestId) {
           setError(err instanceof Error ? err.message : 'Rendering failed');
           setImage('');

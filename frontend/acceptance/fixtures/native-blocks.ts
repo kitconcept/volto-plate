@@ -121,11 +121,6 @@ export const nativeBlockSections = {
     },
   ],
 
-  toggle: [
-    { type: 'toggle', id: 'toggle-fixture', children: [{ text: 'Toggle' }] },
-    p('Content inside the toggle.', { id: 'toggle-content', indent: 1 }),
-  ],
-
   columns: [
     {
       type: 'column_group',

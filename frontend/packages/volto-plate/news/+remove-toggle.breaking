@@ -1,0 +1,1 @@
+Removed the toggle plugin from the wiki editor: it is no longer offered in the slash menu, the floating toolbar or the "Turn into" menu, and the `@platejs/toggle` dependency was dropped. @sneridagh

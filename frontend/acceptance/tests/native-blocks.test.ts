@@ -15,26 +15,6 @@ test.beforeEach(async ({ page }) => {
   await login(page);
 });
 
-test('Toggle shows and hides its content', async ({ page }) => {
-  const path = await createNativeBlocksPage(page, ['toggle']);
-  await openInEditor(page, path);
-
-  const content = editable(page).getByText('Content inside the toggle.');
-  const button = editable(page).getByRole('button', {
-    name: 'Toggle content',
-  });
-
-  await expect(button).toHaveAttribute('aria-expanded', 'false');
-  await expect(content).toBeHidden();
-
-  await button.click();
-  await expect(button).toHaveAttribute('aria-expanded', 'true');
-  await expect(content).toBeVisible();
-
-  await button.click();
-  await expect(content).toBeHidden();
-});
-
 test('To-do checkbox toggles the checked state', async ({ page }) => {
   const path = await createNativeBlocksPage(page, ['lists']);
   const editorHandle = await openInEditor(page, path);
