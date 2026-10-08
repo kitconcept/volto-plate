@@ -8,6 +8,19 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.36 (2026-10-08)
+
+
+### Bugfix
+
+- Pasting unformatted text keeps the style of where it lands: an empty heading or list item is no longer turned into a paragraph, toggled marks like bold apply to the pasted text, and each line pasted in a list becomes a list item. Pasted content with its own formatting, like a heading, keeps it. @sneridagh 
+- The "Image" and "Diagram" items of the wiki slash menu are now translated, and the missing German translations were added. @sneridagh 
+
+
+### Internal
+
+- Add acceptance for mention portraits loading for anonymous @iRohitSingh 
+
 ## 1.0.0-alpha.35 (2026-10-08)
 
 
