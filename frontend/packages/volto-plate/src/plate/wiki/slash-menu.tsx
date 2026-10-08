@@ -7,6 +7,17 @@ import { PLONE_BLOCK_TYPE } from '@plone/helpers';
 import { ImageIcon, WorkflowIcon } from 'lucide-react';
 import { KEYS, PathApi } from 'platejs';
 import type { PlateEditor } from 'platejs/react';
+import { defineMessages } from 'react-intl';
+
+import {
+  fallbackTranslate,
+  type TranslateFunction,
+} from '@plone/plate/components/editor/plugins/i18n';
+
+const messages = defineMessages({
+  diagram: { id: 'Diagram', defaultMessage: 'Diagram' },
+  image: { id: 'Image', defaultMessage: 'Image' },
+});
 
 const insertPloneBlock = (editor: PlateEditor, blockType: string) => {
   editor.tf.withoutNormalizing(() => {
@@ -30,15 +41,17 @@ const insertPloneBlock = (editor: PlateEditor, blockType: string) => {
   });
 };
 
-const IMAGE_SLASH_ITEM = {
+const IMAGE_SLASH_VALUE = 'block_plateimage';
+
+const createImageSlashItem = (t: TranslateFunction) => ({
   icon: <ImageIcon />,
   keywords: ['image', 'media', 'photo', 'picture'],
-  label: 'Image',
-  value: 'block_plateimage',
+  label: t(messages.image.id, { defaultValue: messages.image.defaultMessage }),
+  value: IMAGE_SLASH_VALUE,
   onSelect: (editor: PlateEditor) => {
     insertPloneBlock(editor, 'plateimage');
   },
-};
+});
 
 const insertDiagram = (editor: PlateEditor) => {
   editor.tf.withoutNormalizing(() => {
@@ -57,16 +70,18 @@ const insertDiagram = (editor: PlateEditor) => {
   });
 };
 
-const DIAGRAM_SLASH_ITEM = {
+const createDiagramSlashItem = (t: TranslateFunction) => ({
   icon: <WorkflowIcon />,
   keywords: ['diagram', 'drawing', 'mermaid', 'plantuml', 'graphviz', 'chart'],
-  label: 'Diagram',
+  label: t(messages.diagram.id, {
+    defaultValue: messages.diagram.defaultMessage,
+  }),
   value: CODE_DRAWING_KEY,
   onSelect: insertDiagram,
-};
+});
 
 export const slashMenu: SlashMenuConfig = {
-  extendGroups: (groups) =>
+  extendGroups: (groups, _editor, { t = fallbackTranslate }) =>
     groups
       // The toggle plugin is not part of the wiki editor preset.
       .map((group) => ({
@@ -86,9 +101,7 @@ export const slashMenu: SlashMenuConfig = {
         }
 
         if (group.group === 'Text blocks') {
-          if (
-            group.items.some((item) => item.value === IMAGE_SLASH_ITEM.value)
-          ) {
+          if (group.items.some((item) => item.value === IMAGE_SLASH_VALUE)) {
             return group;
           }
 
@@ -100,10 +113,10 @@ export const slashMenu: SlashMenuConfig = {
             ...group,
             items:
               paragraphIndex === -1
-                ? [...group.items, IMAGE_SLASH_ITEM]
+                ? [...group.items, createImageSlashItem(t)]
                 : [
                     ...group.items.slice(0, paragraphIndex + 1),
-                    IMAGE_SLASH_ITEM,
+                    createImageSlashItem(t),
                     ...group.items.slice(paragraphIndex + 1),
                   ],
           };
@@ -111,9 +124,12 @@ export const slashMenu: SlashMenuConfig = {
 
         if (
           group.group === 'Advanced blocks' &&
-          !group.items.some((item) => item.value === DIAGRAM_SLASH_ITEM.value)
+          !group.items.some((item) => item.value === CODE_DRAWING_KEY)
         ) {
-          return { ...group, items: [...group.items, DIAGRAM_SLASH_ITEM] };
+          return {
+            ...group,
+            items: [...group.items, createDiagramSlashItem(t)],
+          };
         }
 
         return group;
