@@ -88,6 +88,10 @@ export default defineMessages({
     id: 'plate.slashMenu.items.todoList',
     defaultMessage: 'To-do list',
   },
+  'plate.slashMenu.items.toggle': {
+    id: 'plate.slashMenu.items.toggle',
+    defaultMessage: 'Toggle',
+  },
   'plate.slashMenu.noResults': {
     id: 'plate.slashMenu.noResults',
     defaultMessage: 'No results',

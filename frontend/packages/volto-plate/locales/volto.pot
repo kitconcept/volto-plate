@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2026-10-07T20:29:21.180Z\n"
+"POT-Creation-Date: 2026-10-08T11:56:25.927Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -16,6 +16,16 @@ msgstr ""
 #. Default: "Accept all"
 #: index
 msgid "Accept all"
+msgstr ""
+
+#. Default: "Diagram"
+#: plate/wiki/slash-menu
+msgid "Diagram"
+msgstr ""
+
+#. Default: "Image"
+#: plate/wiki/slash-menu
+msgid "Image"
 msgstr ""
 
 #. Default: "Insert date"
@@ -186,6 +196,11 @@ msgstr ""
 #. Default: "To-do list"
 #: plate/i18n/plateMessages
 msgid "plate.slashMenu.items.todoList"
+msgstr ""
+
+#. Default: "Toggle"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.toggle"
 msgstr ""
 
 #. Default: "No results"

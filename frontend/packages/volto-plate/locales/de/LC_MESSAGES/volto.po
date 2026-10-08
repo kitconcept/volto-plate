@@ -16,6 +16,16 @@ msgstr ""
 msgid "Accept all"
 msgstr "Alle annehmen"
 
+#. Default: "Diagram"
+#: plate/wiki/slash-menu
+msgid "Diagram"
+msgstr "Diagramm"
+
+#. Default: "Image"
+#: plate/wiki/slash-menu
+msgid "Image"
+msgstr "Bild"
+
 #. Default: "Insert date"
 #: plate/plugins/date-picker-panel
 msgid "Insert date"
@@ -185,6 +195,11 @@ msgstr "Titel"
 #: plate/i18n/plateMessages
 msgid "plate.slashMenu.items.todoList"
 msgstr "To-do-Liste"
+
+#. Default: "Toggle"
+#: plate/i18n/plateMessages
+msgid "plate.slashMenu.items.toggle"
+msgstr "Aufklappbereich"
 
 #. Default: "No results"
 #: plate/i18n/plateMessages
