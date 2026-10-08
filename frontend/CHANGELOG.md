@@ -8,6 +8,29 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.35 (2026-10-08)
+
+
+### Breaking
+
+- Removed the toggle plugin from the wiki editor: it is no longer offered in the slash menu, the floating toolbar or the "Turn into" menu, and the `@platejs/toggle` dependency was dropped. @sneridagh 
+
+
+### Feature
+
+- Resolved comment threads stay in the text and can be reopened: a "Resolve" button in the thread header, a "Resolved by …" banner with "Reopen", a muted highlight and a check icon on blocks whose threads are all resolved. @iFlameing 
+
+
+### Bugfix
+
+- Fix comment and suggestion popovers: drop the draft comment highlight on click outside, clear the active suggestion when closing the popover, and keep the popover anchored after the block re-renders. @Tishasoumya-02 
+- Remove the Mermaid "Syntax error in text" graphics that leaked onto the page when a diagram had invalid source. @sneridagh 
+- Restore the editor focus when a draft comment is dropped: the cursor goes to the click position inside the editor, or to the end of the commented selection when clicking outside it or pressing Escape. @Tishasoumya-02 
+- Simplify loading of portraits in PersonPill component.
+  (Assume it is correctly passed the portrait URL, instead of trying to detect
+  whether it loaded.)
+  @davisagli 
+
 ## 1.0.0-alpha.34 (2026-10-06)
 
 

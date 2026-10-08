@@ -9,6 +9,18 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a35 (2026-10-08)
+
+
+### New features:
+
+- Resolving an inline comment thread archives it instead of removing it: the server records who resolved it and when, and clears that again when the thread is reopened. @iFlameing 
+
+
+### Bug fixes:
+
+- Allow anonymous users to retrieve user info for mentions. @davisagli 
+
 ## 1.0.0a34 (2026-10-06)
 
 No significant changes.

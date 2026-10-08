@@ -1,1 +1,0 @@
-Resolved comment threads stay in the text and can be reopened: a "Resolve" button in the thread header, a "Resolved by …" banner with "Reopen", a muted highlight and a check icon on blocks whose threads are all resolved. @iFlameing

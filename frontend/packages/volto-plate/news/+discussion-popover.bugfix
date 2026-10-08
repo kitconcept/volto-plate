@@ -1,1 +1,0 @@
-Fix comment and suggestion popovers: drop the draft comment highlight on click outside, clear the active suggestion when closing the popover, and keep the popover anchored after the block re-renders. @Tishasoumya-02
