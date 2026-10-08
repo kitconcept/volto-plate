@@ -34,6 +34,7 @@ import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image
 import { VoltoHtmlImagePastePlugin } from '../plugins/volto-html-image-paste';
 import { VoltoImageDropPlugin } from '../plugins/volto-image-drop';
 import { VoltoPasteFormattingPlugin } from '../plugins/volto-paste-formatting';
+import { VoltoPastePlainTextPlugin } from '../plugins/volto-paste-plain-text';
 import { VoltoPasteTitlePlugin } from '../plugins/volto-paste-title';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { VoltoMentionKit } from '../plugins/volto-mention-kit';
@@ -102,6 +103,7 @@ export const WikiEditorKit = [
   ...DocxKit,
   ...MarkdownKit,
   VoltoPasteFormattingPlugin,
+  VoltoPastePlainTextPlugin,
   VoltoPasteTitlePlugin,
 
   // UI
