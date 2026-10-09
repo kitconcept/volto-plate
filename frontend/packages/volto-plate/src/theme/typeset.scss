@@ -477,6 +477,9 @@
       margin-block-start: var(--typeset-flow);
       margin-inline: 0;
     }
+    &:where(.block-plateimage[data-style-align='center'] figure) {
+      margin-inline: auto;
+    }
     &:where(figcaption, caption) {
       color: var(--typeset-muted);
       font-size: 0.875em;
