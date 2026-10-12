@@ -11,6 +11,7 @@
  *  - Gate reply-box autoFocus behind an explicit prop @iFlameing
  *  - Wrap long unbroken words in comment text/input instead of overflowing the container @iFlameing
  *  - Resolving keeps the comment mark (archive instead of delete); the Resolve link is opt-in via `onResolve` (SID-13) @iFlameing
+ *  - Delete a comment and its emptied discussion with functional updates, so the second update doesn't overwrite the first with stale state @iFlameing
  */
 import * as React from 'react';
 
@@ -104,12 +105,15 @@ export function Comment(props: {
   const intl = useIntl();
   // === END CUSTOMIZATION ===
 
+  // === START CUSTOMIZATION ===
+  // Functional update: runs right after the comment was deleted from the
+  // discussion, so it must build on that state, not on this render's.
   const removeDiscussion = async (id: string) => {
-    const updatedDiscussions = discussions.filter(
-      (discussion) => discussion.id !== id,
+    setDiscussions((previous) =>
+      previous.filter((discussion) => discussion.id !== id),
     );
-    setDiscussions(updatedDiscussions);
   };
+  // === END CUSTOMIZATION ===
 
   const updateComment = async (input: {
     id: string;
@@ -351,7 +355,7 @@ function CommentMoreDropdown(props: {
     onRemoveComment,
   } = props;
 
-  const { discussions, setDiscussions } = usePlatePlugins();
+  const { setDiscussions } = usePlatePlugins();
 
   const selectedEditCommentRef = React.useRef<boolean>(false);
 
@@ -360,37 +364,22 @@ function CommentMoreDropdown(props: {
       // eslint-disable-next-line no-alert
       return alert('You are operating too quickly, please try again later.');
 
-    // Find and update the discussion
-    const updatedDiscussions = discussions.map((discussion) => {
-      if (discussion.id !== comment.discussionId) {
-        return discussion;
-      }
+    // === START CUSTOMIZATION === Functional update, see `removeDiscussion`
+    setDiscussions((previous) =>
+      previous.map((discussion) => {
+        if (discussion.id !== comment.discussionId) {
+          return discussion;
+        }
 
-      const commentIndex = discussion.comments.findIndex(
-        (c) => c.id === comment.id,
-      );
-      if (commentIndex === -1) {
-        return discussion;
-      }
-
-      return {
-        ...discussion,
-        comments: [
-          ...discussion.comments.slice(0, commentIndex),
-          ...discussion.comments.slice(commentIndex + 1),
-        ],
-      };
-    });
-
-    setDiscussions(updatedDiscussions);
+        return {
+          ...discussion,
+          comments: discussion.comments.filter((c) => c.id !== comment.id),
+        };
+      }),
+    );
+    // === END CUSTOMIZATION ===
     onRemoveComment?.();
-  }, [
-    comment.discussionId,
-    comment.id,
-    discussions,
-    onRemoveComment,
-    setDiscussions,
-  ]);
+  }, [comment.discussionId, comment.id, onRemoveComment, setDiscussions]);
 
   const onEditComment = React.useCallback(() => {
     selectedEditCommentRef.current = true;

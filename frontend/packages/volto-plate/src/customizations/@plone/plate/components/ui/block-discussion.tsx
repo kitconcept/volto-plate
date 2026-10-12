@@ -16,6 +16,8 @@
  *    draft popover open on pointerdown inside the editor @Tishasoumya-02
  *  - Keep resolved discussions visible: Resolve/Reopen actions, resolved banner,
  *    check-circle trigger icon (SID-13) @iFlameing
+ *  - Count comments instead of threads in the trigger and popover header, so
+ *    replies and deletions update the count @iFlameing
  *
  */
 import * as React from 'react';
@@ -55,6 +57,7 @@ import {
   ResolvedDiscussionBanner,
   useDiscussionResolution,
 } from '../../../../../plate/plugins/comment-resolution';
+import { countDiscussionComments } from '../../../../../plate/discussion-data';
 // === END CUSTOMIZATION ===
 
 import { Button } from '@plone/plate/components/ui/button';
@@ -439,7 +442,10 @@ const BlockCommentContent = ({
 
   const suggestionsCount = resolvedSuggestions.length;
   const discussionsCount = resolvedDiscussions.length;
-  const totalCount = suggestionsCount + discussionsCount;
+  // === START CUSTOMIZATION === Count comments, not threads
+  const totalCount =
+    suggestionsCount + countDiscussionComments(resolvedDiscussions);
+  // === END CUSTOMIZATION ===
   const popoverTitle =
     suggestionsCount > 0 && discussionsCount === 0
       ? 'Suggestions'
@@ -782,7 +788,9 @@ const BlockCommentContent = ({
       }}
       open={open}
       trigger={
-        totalCount > 0 ? (
+        // === START CUSTOMIZATION === Show while any thread exists
+        suggestionsCount + discussionsCount > 0 ? (
+          // === END CUSTOMIZATION ===
           <DiscussionTriggerButton
             active={open}
             count={totalCount}
