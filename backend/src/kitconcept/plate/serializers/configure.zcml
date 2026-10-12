@@ -2,6 +2,8 @@
 
   <!-- Serializers -->
 
+  <adapter factory=".tasks.TaskSerializer" />
+
   <utility
       factory=".summary.JSONSummarySerializerMetadata"
       name="kitconcept.plate.summary_serializer_metadata"

@@ -21,6 +21,11 @@ msgstr "Alle annehmen"
 msgid "Diagram"
 msgstr "Diagramm"
 
+#. Default: "Due"
+#: components/MyTasks/MyTasks
+msgid "Due"
+msgstr "Fällig"
+
 #. Default: "Image"
 #: plate/wiki/slash-menu
 msgid "Image"
@@ -31,10 +36,41 @@ msgstr "Bild"
 msgid "Insert date"
 msgstr "Datum einfügen"
 
+#. Default: "Loading tasks..."
+#: components/MyTasks/MyTasks
+msgid "Loading tasks"
+msgstr "Aufgaben werden geladen..."
+
+#. Default: "My tasks"
+#: components/MyTasks/MyTasks
+#: components/MyTasks/MyTasksMenu
+msgid "My tasks"
+msgstr "Meine Aufgaben"
+
+#. Default: "Next page"
+#: components/MyTasks/MyTasks
+msgid "Next page"
+msgstr "Nächste Seite"
+
 #. Default: "Next week"
 #: plate/plugins/date-picker-panel
 msgid "Next week"
 msgstr "Nächste Woche"
+
+#. Default: "No due date"
+#: components/MyTasks/MyTasks
+msgid "No due date"
+msgstr "Kein Fälligkeitsdatum"
+
+#. Default: "Overdue"
+#: components/MyTasks/MyTasks
+msgid "Overdue"
+msgstr "Überfällig"
+
+#. Default: "Previous page"
+#: components/MyTasks/MyTasks
+msgid "Previous page"
+msgstr "Vorherige Seite"
 
 #. Default: "Reject all"
 #: index
@@ -61,15 +97,46 @@ msgstr "Erledigt"
 msgid "Resolved by {name}"
 msgstr "Erledigt von {name}"
 
+#. Default: "Retry"
+#: components/MyTasks/MyTasks
+msgid "Retry"
+msgstr "Erneut versuchen"
+
+#. Default: "Source"
+#: components/MyTasks/MyTasks
+msgid "Source"
+msgstr "Quelle"
+
+#. Default: "Task"
+#: components/MyTasks/MyTasks
+msgid "Task"
+msgstr "Aufgabe"
+
+#. Default: "Task pages"
+#: components/MyTasks/MyTasks
+msgid "Task pages"
+msgstr "Aufgabenseiten"
+
 #. Default: "Today"
 #: plate/plugins/date-picker-panel
 msgid "Today"
 msgstr "Heute"
 
 #. Default: "Tomorrow"
+#: components/MyTasks/MyTasks
 #: plate/plugins/date-picker-panel
 msgid "Tomorrow"
 msgstr "Morgen"
+
+#. Default: "Unable to load tasks."
+#: components/MyTasks/MyTasks
+msgid "Unable to load tasks"
+msgstr "Aufgaben konnten nicht geladen werden."
+
+#. Default: "You have no open tasks."
+#: components/MyTasks/MyTasks
+msgid "You have no open tasks."
+msgstr "Sie haben keine offenen Aufgaben."
 
 #. Default: "The {type} block with the id {block} has encountered an error.{lineBreak}You can try to undo your changes (via the undo toolbar or pressing {shortcut}), or try to delete the block and recreate it again."
 #: components/Blocks/ErrorBoundaryMessage

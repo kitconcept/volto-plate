@@ -3,6 +3,7 @@ import { defineMessages } from 'react-intl';
 import installSettings from './config/settings';
 import installBlocks from './config/blocks';
 import installSlots from './config/slots';
+import installTasks from './config/tasks';
 import './theme/tailwind.css';
 import '@plone/components/dist/basic.css';
 
@@ -41,6 +42,7 @@ function applyConfig(config: ConfigType) {
   installSettings(config);
   installBlocks(config);
   installSlots(config);
+  installTasks(config);
 
   return config;
 }

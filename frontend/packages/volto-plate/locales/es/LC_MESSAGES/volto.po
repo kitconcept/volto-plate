@@ -28,6 +28,11 @@ msgstr ""
 msgid "Diagram"
 msgstr ""
 
+#. Default: "Due"
+#: components/MyTasks/MyTasks
+msgid "Due"
+msgstr ""
+
 #. Default: "Image"
 #: plate/wiki/slash-menu
 msgid "Image"
@@ -38,9 +43,40 @@ msgstr ""
 msgid "Insert date"
 msgstr ""
 
+#. Default: "Loading tasks..."
+#: components/MyTasks/MyTasks
+msgid "Loading tasks"
+msgstr ""
+
+#. Default: "My tasks"
+#: components/MyTasks/MyTasks
+#: components/MyTasks/MyTasksMenu
+msgid "My tasks"
+msgstr ""
+
+#. Default: "Next page"
+#: components/MyTasks/MyTasks
+msgid "Next page"
+msgstr ""
+
 #. Default: "Next week"
 #: plate/plugins/date-picker-panel
 msgid "Next week"
+msgstr ""
+
+#. Default: "No due date"
+#: components/MyTasks/MyTasks
+msgid "No due date"
+msgstr ""
+
+#. Default: "Overdue"
+#: components/MyTasks/MyTasks
+msgid "Overdue"
+msgstr ""
+
+#. Default: "Previous page"
+#: components/MyTasks/MyTasks
+msgid "Previous page"
 msgstr ""
 
 #. Default: "Reject all"
@@ -68,14 +104,45 @@ msgstr ""
 msgid "Resolved by {name}"
 msgstr ""
 
+#. Default: "Retry"
+#: components/MyTasks/MyTasks
+msgid "Retry"
+msgstr ""
+
+#. Default: "Source"
+#: components/MyTasks/MyTasks
+msgid "Source"
+msgstr ""
+
+#. Default: "Task"
+#: components/MyTasks/MyTasks
+msgid "Task"
+msgstr ""
+
+#. Default: "Task pages"
+#: components/MyTasks/MyTasks
+msgid "Task pages"
+msgstr ""
+
 #. Default: "Today"
 #: plate/plugins/date-picker-panel
 msgid "Today"
 msgstr ""
 
 #. Default: "Tomorrow"
+#: components/MyTasks/MyTasks
 #: plate/plugins/date-picker-panel
 msgid "Tomorrow"
+msgstr ""
+
+#. Default: "Unable to load tasks."
+#: components/MyTasks/MyTasks
+msgid "Unable to load tasks"
+msgstr ""
+
+#. Default: "You have no open tasks."
+#: components/MyTasks/MyTasks
+msgid "You have no open tasks."
 msgstr ""
 
 #. Default: "The {type} block with the id {block} has encountered an error.{lineBreak}You can try to undo your changes (via the undo toolbar or pressing {shortcut}), or try to delete the block and recreate it again."

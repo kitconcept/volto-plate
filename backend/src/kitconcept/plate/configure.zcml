@@ -24,6 +24,7 @@
   <include package=".serializers" />
   <include package=".services" />
   <include package=".subscribers" />
+  <include package=".tasks" />
   <include package=".vocabularies" />
   <include package=".upgrades" />
 

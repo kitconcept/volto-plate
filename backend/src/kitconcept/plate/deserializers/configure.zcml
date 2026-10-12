@@ -2,6 +2,13 @@
 
   <!-- Block deserializers -->
 
+  <adapter factory=".tasks.TaskBlocksDeserializer" />
+
+  <subscriber
+      factory=".tasks.TasksDeserializer"
+      provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"
+      />
+
   <subscriber
       factory=".comments.CommentsDeserializer"
       provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"

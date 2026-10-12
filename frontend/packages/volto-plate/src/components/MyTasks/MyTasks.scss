@@ -1,0 +1,128 @@
+.my-tasks {
+  max-width: 960px;
+  padding: 40px 24px 72px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 0 32px;
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 1.15;
+  }
+
+  table {
+    width: 100%;
+    border-top: 1px solid #c7d5d8;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  th,
+  td {
+    padding: 14px 4px;
+    overflow-wrap: anywhere;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    border-bottom: 1px solid #c7d5d8;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  th:first-child {
+    width: 55%;
+  }
+  th:nth-child(2) {
+    width: 27%;
+  }
+  th:last-child {
+    width: 18%;
+  }
+  td {
+    border-bottom: 1px solid #edf1f2;
+  }
+  tbody tr:hover {
+    background: #f2f5f6;
+  }
+  .my-tasks-text {
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .my-tasks-source {
+    padding-right: 16px;
+  }
+  .my-tasks-due {
+    font-size: 14px;
+  }
+  .my-tasks-due span[role='img'] {
+    display: inline-flex;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .overdue {
+    color: #b5004f;
+  }
+  button {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    cursor: pointer;
+    gap: 8px;
+  }
+  button:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+  .my-tasks-error {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .my-tasks-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 24px;
+    gap: 16px;
+  }
+
+  @media (max-width: 719px) {
+    padding: 32px 24px 64px;
+    thead {
+      position: absolute;
+      overflow: hidden;
+      width: 1px;
+      height: 1px;
+      clip-path: inset(50%);
+    }
+    tbody,
+    tr,
+    td {
+      display: block;
+    }
+    tr {
+      padding: 14px 4px;
+      border-bottom: 1px solid #edf1f2;
+    }
+    td {
+      padding: 0;
+      border: 0;
+    }
+    .my-tasks-text {
+      margin-bottom: 8px;
+    }
+    .my-tasks-source {
+      display: inline-block;
+      max-width: 100%;
+      margin-right: 16px;
+    }
+    .my-tasks-due {
+      display: inline-block;
+    }
+  }
+}
