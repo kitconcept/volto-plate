@@ -44,6 +44,7 @@ import {
   ResolvedDiscussionBanner,
   voltoCommentPlugin,
 } from './comment-resolution';
+import { countDiscussionComments } from '../discussion-data';
 
 const ReadOnlyBlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
   const { editor, element } = props;
@@ -131,7 +132,9 @@ const ReadOnlyBlockDiscussionContent = ({
 
   const suggestionsCount = resolvedSuggestions.length;
   const discussionsCount = resolvedDiscussions.length;
-  const totalCount = suggestionsCount + discussionsCount;
+  // Count comments, not threads, so replies and deletions update the count
+  const totalCount =
+    suggestionsCount + countDiscussionComments(resolvedDiscussions);
 
   const triggerKind =
     suggestionsCount > 0 && discussionsCount === 0
@@ -237,7 +240,7 @@ const ReadOnlyBlockDiscussionContent = ({
     setSuggestionOption('activeId', null);
   }, [setCommentOption, setSuggestionOption]);
 
-  if (totalCount === 0) {
+  if (suggestionsCount + discussionsCount === 0) {
     return <div className="w-full">{children}</div>;
   }
 
