@@ -165,6 +165,19 @@ acceptance-test: ## Start Cypress in interactive mode
 ci-acceptance-test: ## Run cypress tests in headless mode for CI
 	pnpm --filter @plone/volto exec cypress run --config-file $(CURRENT_DIR)/cypress.config.js --config specPattern=$(CURRENT_DIR)'/cypress/tests/**/*.{js,jsx,ts,tsx}' --env API_PATH="$(API_PATH)"
 
+## Visual regression (on demand, e.g. around an upgrade; not run in CI)
+.PHONY: visual-baseline
+visual-baseline: ## Take the baseline screenshots of the native blocks (before an upgrade)
+	pnpm exec playwright test --config playwright-visual.config.ts --update-snapshots=all
+
+.PHONY: visual-compare
+visual-compare: ## Compare the native blocks against the baseline screenshots (after an upgrade)
+	pnpm exec playwright test --config playwright-visual.config.ts
+
+.PHONY: visual-report
+visual-report: ## Open the report of the last visual comparison, with the diffs
+	pnpm exec playwright show-report playwright/visual-report
+
 .PHONY: build-image
 build-image:  ## Build Docker Image
 	@docker build . -t $(IMAGE_NAME):$(IMAGE_TAG) -f Dockerfile --build-arg VOLTO_VERSION=$(VOLTO_VERSION) --progress=plain

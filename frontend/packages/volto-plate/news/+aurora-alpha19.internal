@@ -1,0 +1,1 @@
+Upgraded to Plone Aurora 1.0.0-alpha.19, and loaded the block content styles of `@plone/plate` (`styles/content.css`) in the new `plone-content` cascade layer, since its blocks are no longer styled with Tailwind utilities. @sneridagh
