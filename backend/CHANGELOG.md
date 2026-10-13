@@ -9,6 +9,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a37 (2026-10-13)
+
+
+### Bug fixes:
+
+- Fix checks for whether the current user can delete a comment. @davisagli 
+
 ## 1.0.0a36 (2026-10-08)
 
 No significant changes.

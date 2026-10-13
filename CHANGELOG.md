@@ -7,6 +7,34 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a37 (2026-10-13)
+
+### Backend
+
+
+#### Bug fixes:
+
+- Fix checks for whether the current user can delete a comment. @davisagli 
+
+
+
+### Frontend
+
+
+#### Bugfix
+
+- Fix wiki images alignment when changing their size to medium or small. @iRohitSingh 
+- Fixed the inline comment count so it counts comments instead of threads and updates when replying or deleting a comment. @iFlameing 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a36 (2026-10-08)
 
 ### Backend

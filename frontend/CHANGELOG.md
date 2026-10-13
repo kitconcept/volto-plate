@@ -8,6 +8,14 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.37 (2026-10-13)
+
+
+### Bugfix
+
+- Fix wiki images alignment when changing their size to medium or small. @iRohitSingh 
+- Fixed the inline comment count so it counts comments instead of threads and updates when replying or deleting a comment. @iFlameing 
+
 ## 1.0.0-alpha.36 (2026-10-08)
 
 
