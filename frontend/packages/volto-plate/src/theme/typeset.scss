@@ -619,6 +619,15 @@
     padding-inline-start: 20px;
   }
 
+  /* TOC entries carry Tailwind's `block` utility, so Volto's
+     `.block .block:not(.inner)::before` selection frame (9px outset) matches
+     each one and the frames of adjacent entries overlap. Tighten the vertical
+     outset so a hovered entry's frame stays clear of its neighbours. */
+  .typeset .slate-toc button.block::before {
+    top: -5px;
+    height: calc(100% + 10px);
+  }
+
   /* Callout: #ECEBEB, 10px padding, box hugging its content.
      Plate paints the box on `.block-inner-container`, but that element is the
      width-constrained one (780px, centred with `margin-inline: auto`), so
