@@ -624,8 +624,7 @@
      each one and the frames of adjacent entries overlap. Tighten the vertical
      outset so a hovered entry's frame stays clear of its neighbours. */
   .typeset .slate-toc button.block::before {
-    top: -5px;
-    height: calc(100% + 10px);
+    border: none;
   }
 
   /* Callout: #ECEBEB, 10px padding, box hugging its content.
