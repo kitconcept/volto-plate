@@ -83,9 +83,9 @@ export const WikiEditorKit = [
   ...BlockWidthKit,
 
   // Collaboration
+  ...SuggestionKit,
   ...DiscussionKit,
   voltoCommentPlugin,
-  ...SuggestionKit,
 
   // Editing
   ...WikiSlashKit,
