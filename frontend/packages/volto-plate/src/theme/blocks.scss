@@ -75,13 +75,7 @@
 
 .block-plateimage[data-style-align='left'] ~ *,
 .block-plateimage[data-style-align='right'] ~ * {
-  &:is(
-      .slate-code_block,
-      .slate-callout,
-      .slate-blockquote,
-      .slate-toggle,
-      .slate-table
-    ),
+  &:is(.slate-callout, .slate-blockquote, .slate-toggle, .slate-table),
   &:has(> .block-inner-container :is(ul, ol)) {
     max-width: var(--block-width);
     margin-inline: auto !important; // Outranks the indent margin on list blocks.
@@ -92,4 +86,9 @@
       min-width: 12rem;
     }
   }
+}
+
+.block-plateimage[data-style-align='left'] ~ .slate-code_block,
+.block-plateimage[data-style-align='right'] ~ .slate-code_block {
+  clear: both;
 }
