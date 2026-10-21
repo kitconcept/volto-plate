@@ -88,7 +88,9 @@
   }
 }
 
-.block-plateimage[data-style-align='left'] ~ .slate-code_block,
-.block-plateimage[data-style-align='right'] ~ .slate-code_block {
-  clear: both;
+.block-plateimage[data-style-align='left'] ~ *,
+.block-plateimage[data-style-align='right'] ~ * {
+  &:is(.slate-code_block, .slate-code_drawing) {
+    clear: both;
+  }
 }
