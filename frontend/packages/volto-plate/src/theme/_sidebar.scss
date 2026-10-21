@@ -1,0 +1,6 @@
+// The wiki editor has no block ordering, so the Volto sidebar "Order" tab
+// (third tab) is always empty there. `.plate-editor` is set by
+// PlateEditorForm, so the regular Volto editor keeps the tab.
+.plate-editor .sidebar-container .formtabs.menu > .item:nth-child(3) {
+  display: none;
+}

@@ -4,4 +4,5 @@ packages:
   - packages/*/packages/*
   - aurora/packages/plate
   - aurora/packages/helpers
+  - aurora/packages/icons
   - aurora/packages/tsconfig

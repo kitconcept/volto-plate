@@ -7,7 +7,7 @@ import { SlashPlugin } from '@platejs/slash-command/react';
 import { ElementApi } from 'platejs';
 import { PlateElement } from 'platejs/react';
 
-import { getIntl } from '@plone/plate/components/editor/plugins/split-utils';
+import { useTranslation } from '@plone/plate/components/editor/plugins/i18n';
 import { TITLE_BLOCK_TYPE } from '@plone/plate/components/editor/plugins/title';
 import {
   resolveSlashMenuGroups,
@@ -56,14 +56,7 @@ export function WikiSlashInputElement(
       | undefined
   )?.menu;
 
-  const intl = getIntl(editor);
-  const translate = React.useMemo(() => {
-    if (!intl?.formatMessage) {
-      return (id: string) => id;
-    }
-
-    return (id: string) => intl.formatMessage({ defaultMessage: id, id });
-  }, [intl]);
+  const { t } = useTranslation();
 
   const hasTitleBlock = editor.children.some(
     (child) => ElementApi.isElement(child) && child.type === TITLE_BLOCK_TYPE,
@@ -72,9 +65,9 @@ export function WikiSlashInputElement(
   const groups = React.useMemo(() => {
     return resolveSlashMenuGroups(editor, menuConfig, {
       hasTitleBlock,
-      translate,
+      t,
     });
-  }, [editor, hasTitleBlock, menuConfig, translate]);
+  }, [editor, hasTitleBlock, menuConfig, t]);
 
   const insertDate = (isoDate: string) => {
     editor.tf.withoutNormalizing(() => {
@@ -147,20 +140,20 @@ export function WikiSlashInputElement(
               wrapper is what makes the popover actually open.
             */}
             <InlineComboboxEmpty className="m-0 h-auto items-stretch p-0">
-              <DatePickerPanel
-                locale={intl?.locale}
-                onSelect={insertDate}
-                translate={translate}
-              />
+              <DatePickerPanel onSelect={insertDate} />
             </InlineComboboxEmpty>
           </InlineComboboxContent>
         ) : (
           <InlineComboboxContent>
-            <InlineComboboxEmpty>No results</InlineComboboxEmpty>
+            <InlineComboboxEmpty>
+              {t('plate.slashMenu.noResults', { defaultValue: 'No results' })}
+            </InlineComboboxEmpty>
 
-            {groups.map(({ group, items }) => (
+            {groups.map(({ group, label: groupLabel, items }) => (
               <InlineComboboxGroup key={group}>
-                <InlineComboboxGroupLabel>{group}</InlineComboboxGroupLabel>
+                <InlineComboboxGroupLabel>
+                  {groupLabel ?? group}
+                </InlineComboboxGroupLabel>
 
                 {items.map(
                   ({ focusEditor, icon, keywords, label, value, onSelect }) => (

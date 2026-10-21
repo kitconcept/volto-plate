@@ -36,7 +36,6 @@ const cases: SlashCase[] = [
     label: 'To-do list',
     expect: (b) => expect(b.listStyleType).toBe('todo'),
   },
-  { label: 'Toggle', expect: (b) => expect(b.type).toBe('toggle') },
   { label: 'Code Block', expect: (b) => expect(b.type).toBe('code_block') },
   {
     label: 'Table',
@@ -111,8 +110,11 @@ test('Slash menu only offers the preset groups', async ({ page }) => {
   await expect(
     page.getByRole('option', { name: 'Image', exact: true }),
   ).toBeVisible();
-  // No AI actions, and no "Title" while the page has a title block.
+  // No AI actions, no toggle, and no "Title" while the page has a title block.
   await expect(page.getByRole('option', { name: 'AI' })).toHaveCount(0);
+  await expect(
+    page.getByRole('option', { name: 'Toggle', exact: true }),
+  ).toHaveCount(0);
   await expect(
     page.getByRole('option', { name: 'Title', exact: true }),
   ).toHaveCount(0);

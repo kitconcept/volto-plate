@@ -16,33 +16,25 @@ import { BaseBlockWidthKit } from '@plone/plate/components/editor/plugins/block-
 import { BaseStyleFieldsKit } from '@plone/plate/components/editor/plugins/style-fields-base-kit';
 import { BaseTableKit } from '@plone/plate/components/editor/plugins/table-base-kit';
 import { BaseTocKit } from '@plone/plate/components/editor/plugins/toc-base-kit';
-import { BaseToggleKit } from '@plone/plate/components/editor/plugins/toggle-base-kit';
 
 import { overrideKitPlugin } from './override-kit-plugin';
+import { BaseCodeDrawingKit } from '../plugins/code-drawing-base-kit';
 import { BaseCommentKit } from '../plugins/comment-base-kit';
 import { BaseDateKit } from '../plugins/date-base-kit';
 import { VoltoLinkElementStatic } from '../plugins/volto-link-node-static';
 import { VoltoMentionBaseKit } from '../plugins/volto-mention-kit';
-import { VoltoToggleElementStatic } from '../plugins/volto-toggle-node-static';
-import { VoltoToggleVisibilityKit } from '../plugins/volto-toggle-visibility-kit';
 
 const wikiBaseLinkKit = overrideKitPlugin(BaseLinkKit, KEYS.link, {
   node: {
     component: VoltoLinkElementStatic,
   },
 });
-const wikiBaseToggleKit = overrideKitPlugin(BaseToggleKit, KEYS.toggle, {
-  node: {
-    component: VoltoToggleElementStatic,
-  },
-});
 
 export const wikiBaseEditorKit = [
   ...BaseBasicBlocksKit,
   ...BaseCodeBlockKit,
+  ...BaseCodeDrawingKit,
   ...BaseTableKit,
-  ...wikiBaseToggleKit,
-  ...VoltoToggleVisibilityKit,
   ...BaseTocKit,
   ...BaseMediaKit,
   ...BaseCalloutKit,

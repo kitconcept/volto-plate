@@ -57,7 +57,6 @@ test.describe('Native blocks', () => {
     'Callout',
     'Code Block',
     'Table',
-    'Toggle',
     'Table of contents',
     '3 columns',
   ]) {

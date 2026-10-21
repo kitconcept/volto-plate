@@ -10,6 +10,8 @@
  *  - Render comment author with PersonPill instead of initials avatar (#55) @iFlameing
  *  - Gate reply-box autoFocus behind an explicit prop @iFlameing
  *  - Wrap long unbroken words in comment text/input instead of overflowing the container @iFlameing
+ *  - Resolving keeps the comment mark (archive instead of delete); the Resolve link is opt-in via `onResolve` (SID-13) @iFlameing
+ *  - Delete a comment and its emptied discussion with functional updates, so the second update doesn't overwrite the first with stale state @iFlameing
  */
 import * as React from 'react';
 
@@ -55,6 +57,11 @@ import { Editor, EditorContainer } from '@plone/plate/components/ui/editor';
 import PersonPill from '@kitconcept/volto-plate/components/PersonPill/PersonPill';
 // === END CUSTOMIZATION ===
 
+// === START CUSTOMIZATION === Translated Resolve link
+import { useIntl } from 'react-intl';
+import { messages } from '../../../../../index';
+// === END CUSTOMIZATION ===
+
 export interface TComment {
   id: string;
   contentRich: Value;
@@ -74,6 +81,9 @@ export function Comment(props: {
   showDocumentContent?: boolean;
   onEditorClick?: () => void;
   onReply?: () => void;
+  // === START CUSTOMIZATION === Resolve link only where the thread is open.
+  onResolve?: () => void;
+  // === END CUSTOMIZATION ===
 }) {
   const {
     comment,
@@ -85,28 +95,25 @@ export function Comment(props: {
     showDocumentContent = false,
     onEditorClick,
     onReply,
+    onResolve,
   } = props;
 
   const { discussions, setDiscussions, users, currentUserId } =
     usePlatePlugins();
   const userInfo = users[comment.userId];
+  // === START CUSTOMIZATION ===
+  const intl = useIntl();
+  // === END CUSTOMIZATION ===
 
-  const resolveDiscussion = async (id: string) => {
-    const updatedDiscussions = discussions.map((discussion) => {
-      if (discussion.id === id) {
-        return { ...discussion, isResolved: true };
-      }
-      return discussion;
-    });
-    setDiscussions(updatedDiscussions);
-  };
-
+  // === START CUSTOMIZATION ===
+  // Functional update: runs right after the comment was deleted from the
+  // discussion, so it must build on that state, not on this render's.
   const removeDiscussion = async (id: string) => {
-    const updatedDiscussions = discussions.filter(
-      (discussion) => discussion.id !== id,
+    setDiscussions((previous) =>
+      previous.filter((discussion) => discussion.id !== id),
     );
-    setDiscussions(updatedDiscussions);
   };
+  // === END CUSTOMIZATION ===
 
   const updateComment = async (input: {
     id: string;
@@ -165,11 +172,6 @@ export function Comment(props: {
       isEdited: true,
     });
     setEditingId(null);
-  };
-
-  const onResolveComment = () => {
-    void resolveDiscussion(comment.discussionId);
-    tf.comment.unsetMark({ id: comment.discussionId });
   };
 
   const isFirst = index === 0;
@@ -297,32 +299,40 @@ export function Comment(props: {
           </EditorContainer>
         </Plate>
 
-        {isFirst && onReply && !isEditing && (
+        {/* === START CUSTOMIZATION ===
+            Resolving no longer unsets the comment mark: the thread is
+            archived and can be reopened (see comment-resolution.tsx). */}
+        {isFirst && (onReply || onResolve) && !isEditing && (
           <div className="mt-[7px] flex gap-4">
-            <button
-              className={`
+            {onResolve && (
+              <button
+                className={`
+                  cursor-pointer border-0 bg-transparent p-0 text-[13px]! leading-[1.6]! font-semibold
+                  text-brand
+                  hover:underline
+                `}
+                onClick={onResolve}
+                type="button"
+              >
+                {intl.formatMessage(messages.resolveDiscussion)}
+              </button>
+            )}
+            {onReply && (
+              <button
+                className={`
                 cursor-pointer border-0 bg-transparent p-0 text-[13px]! leading-[1.6]! font-semibold
                 text-brand
                 hover:underline
               `}
-              onClick={onResolveComment}
-              type="button"
-            >
-              Resolve
-            </button>
-            <button
-              className={`
-                cursor-pointer border-0 bg-transparent p-0 text-[13px]! leading-[1.6]! font-semibold
-                text-brand
-                hover:underline
-              `}
-              onClick={onReply}
-              type="button"
-            >
-              Reply
-            </button>
+                onClick={onReply}
+                type="button"
+              >
+                Reply
+              </button>
+            )}
           </div>
         )}
+        {/* === END CUSTOMIZATION === */}
       </div>
     </div>
   );
@@ -345,7 +355,7 @@ function CommentMoreDropdown(props: {
     onRemoveComment,
   } = props;
 
-  const { discussions, setDiscussions } = usePlatePlugins();
+  const { setDiscussions } = usePlatePlugins();
 
   const selectedEditCommentRef = React.useRef<boolean>(false);
 
@@ -354,37 +364,22 @@ function CommentMoreDropdown(props: {
       // eslint-disable-next-line no-alert
       return alert('You are operating too quickly, please try again later.');
 
-    // Find and update the discussion
-    const updatedDiscussions = discussions.map((discussion) => {
-      if (discussion.id !== comment.discussionId) {
-        return discussion;
-      }
+    // === START CUSTOMIZATION === Functional update, see `removeDiscussion`
+    setDiscussions((previous) =>
+      previous.map((discussion) => {
+        if (discussion.id !== comment.discussionId) {
+          return discussion;
+        }
 
-      const commentIndex = discussion.comments.findIndex(
-        (c) => c.id === comment.id,
-      );
-      if (commentIndex === -1) {
-        return discussion;
-      }
-
-      return {
-        ...discussion,
-        comments: [
-          ...discussion.comments.slice(0, commentIndex),
-          ...discussion.comments.slice(commentIndex + 1),
-        ],
-      };
-    });
-
-    setDiscussions(updatedDiscussions);
+        return {
+          ...discussion,
+          comments: discussion.comments.filter((c) => c.id !== comment.id),
+        };
+      }),
+    );
+    // === END CUSTOMIZATION ===
     onRemoveComment?.();
-  }, [
-    comment.discussionId,
-    comment.id,
-    discussions,
-    onRemoveComment,
-    setDiscussions,
-  ]);
+  }, [comment.discussionId, comment.id, onRemoveComment, setDiscussions]);
 
   const onEditComment = React.useCallback(() => {
     selectedEditCommentRef.current = true;

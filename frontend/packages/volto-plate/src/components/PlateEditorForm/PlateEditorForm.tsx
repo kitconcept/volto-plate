@@ -2,7 +2,9 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { PlateEditor, type Value } from '@plone/plate/components/editor';
+import { translationFromIntl } from '@plone/plate/components/editor/plugins/i18n';
 import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
 import { useEditorRef } from 'platejs/react';
 import wikiEditorPreset from '../../plate/presets/wiki-editor';
 import {
@@ -35,7 +37,7 @@ type PlateEditorFormProps = {
     blocks?: Record<string, { value?: Value; [key: string]: unknown }>;
     [key: string]: unknown;
   };
-  intl?: unknown;
+  intl?: Parameters<typeof translationFromIntl>[0];
   onChangeFormData?: (data: Record<string, unknown>) => void;
 };
 
@@ -62,6 +64,11 @@ function InitialEditorFocus() {
 
 const PlateEditorForm = (props: PlateEditorFormProps) => {
   const { content, intl, onChangeFormData } = props;
+  // Adapts Volto's react-intl `intl` to Plate's react-i18next style contract.
+  const translation = React.useMemo(
+    () => (intl ? translationFromIntl(intl) : undefined),
+    [intl],
+  );
   const dispatch = useDispatch();
   const somersaultBlock = content?.blocks?.[SOMERSAULT_KEY];
   const metadataTitle = content?.title ?? '';
@@ -80,8 +87,10 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
     latestOnChangeFormDataRef.current = onChangeFormData;
   }, [content, onChangeFormData]);
 
+  // Start on the Document tab; the sidebar plugin then picks the tab for
+  // each block the selection moves to.
   React.useEffect(() => {
-    dispatch(setSidebarTab(1));
+    dispatch(setSidebarTab(0));
   }, [dispatch]);
 
   if (!stableInitialValueRef.current) {
@@ -145,6 +154,7 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
 
   return (
     <ErrorBoundary isEdit type="plate editor">
+      <BodyClass className="plate-editor" />
       <TitleMetadataContext.Provider value={metadataTitle}>
         {/* Hydrate Plate from persisted block discussions/users, then persist
             discussion changes back into the somersault block on edit. */}
@@ -159,7 +169,8 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
           <PlateEditor
             editorConfig={wikiEditorPreset}
             value={stableInitialValueRef.current}
-            intl={intl}
+            t={translation?.t}
+            language={translation?.language}
             className="typeset"
             onChange={(options) => {
               latestValueRef.current = options.value as Value;

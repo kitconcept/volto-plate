@@ -23,7 +23,6 @@ import {
   NumberedListToolbarButton,
   TodoListToolbarButton,
 } from '@plone/plate/components/ui/list-toolbar-button';
-import { ToggleToolbarButton } from '@plone/plate/components/ui/toggle-toolbar-button';
 import { ClearFormattingToolbarButton } from './clear-formatting-toolbar-button';
 
 export function FloatingToolbarButtons() {
@@ -79,7 +78,6 @@ export function FloatingToolbarButtons() {
             <BulletedListToolbarButton />
             <TodoListToolbarButton />
             <BlockWidthToolbarButton />
-            <ToggleToolbarButton />
           </ToolbarGroup>
         </>
       )}

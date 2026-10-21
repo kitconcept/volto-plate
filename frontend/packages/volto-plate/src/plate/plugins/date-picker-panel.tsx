@@ -13,14 +13,21 @@ import {
   Heading,
   I18nProvider,
 } from 'react-aria-components';
+import { defineMessages } from 'react-intl';
 
+import { useTranslation } from '@plone/plate/components/editor/plugins/i18n';
 import { cn } from '@plone/plate/lib/utils';
+
+const messages = defineMessages({
+  insertDate: { id: 'Insert date', defaultMessage: 'Insert date' },
+  nextWeek: { id: 'Next week', defaultMessage: 'Next week' },
+  today: { id: 'Today', defaultMessage: 'Today' },
+  tomorrow: { id: 'Tomorrow', defaultMessage: 'Tomorrow' },
+});
 
 export type DatePickerPanelProps = {
   /** Currently selected date, as an ISO `YYYY-MM-DD` string. */
   value?: string;
-  locale?: string;
-  translate?: (id: string) => string;
   onSelect: (isoDate: string) => void;
 };
 
@@ -32,24 +39,27 @@ const parseIsoDate = (value: string): CalendarDate | undefined => {
   return new CalendarDate(year, month, day);
 };
 
-export function DatePickerPanel({
-  locale,
-  onSelect,
-  translate,
-  value,
-}: DatePickerPanelProps) {
-  const t = translate ?? ((id: string) => id);
+export function DatePickerPanel({ onSelect, value }: DatePickerPanelProps) {
+  const { t: translate, i18n } = useTranslation();
+  const t = (message: { id: string; defaultMessage: string }) =>
+    translate(message.id, { defaultValue: message.defaultMessage });
   const todayDate = today(getLocalTimeZone());
   const selected = value ? parseIsoDate(value) : undefined;
 
   const quickOptions = [
-    { date: todayDate, label: t('Today') },
-    { date: todayDate.add({ days: 1 }), label: t('Tomorrow') },
-    { date: todayDate.add({ weeks: 1 }), label: t('Next week') },
+    { date: todayDate, label: t(messages.today) },
+    {
+      date: todayDate.add({ days: 1 }),
+      label: t(messages.tomorrow),
+    },
+    {
+      date: todayDate.add({ weeks: 1 }),
+      label: t(messages.nextWeek),
+    },
   ];
 
   return (
-    <I18nProvider locale={locale}>
+    <I18nProvider locale={i18n.language}>
       <div
         // Base typography for the whole panel (Figma's recurring
         // color/font-family/feature-settings triplet); each text element
@@ -72,7 +82,7 @@ export function DatePickerPanel({
       >
         {/* Head Title/teaser small: text-xs's default 16px line-height already matches the 16px spec */}
         <div className="mb-[20px] text-xs font-bold tracking-[1px] uppercase">
-          {t('Insert date')}
+          {t(messages.insertDate)}
         </div>
 
         <div className="mb-[20px] flex justify-center gap-1.5">
@@ -92,7 +102,7 @@ export function DatePickerPanel({
         </div>
 
         <Calendar
-          aria-label={t('Insert date')}
+          aria-label={t(messages.insertDate)}
           onChange={(date) => date && onSelect(date.toString())}
           value={selected ?? null}
           // The design system's `.react-aria-Calendar` rule (Calendar.css)

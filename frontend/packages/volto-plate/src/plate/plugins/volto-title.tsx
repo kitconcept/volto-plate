@@ -6,6 +6,7 @@ import { TitleRules } from '@plone/plate/components/editor/plugins/title';
 import { createSlatePlugin, ElementApi, PathApi } from 'platejs';
 import {
   PlateElement,
+  type PlateEditor,
   type PlateElementProps,
   toPlatePlugin,
   useEditorRef,
@@ -89,6 +90,28 @@ const runWithoutSuggestions = (editor: unknown, run: () => void) => {
 
   run();
 };
+
+/**
+ * Sets the text of the title block, adding the block at the top of the
+ * document when it has none.
+ */
+export function setTitleBlockText(editor: PlateEditor, text: string) {
+  const titleEntry = getTitleNodeEntry(editor.children as unknown[]);
+
+  runWithoutSuggestions(editor, () => {
+    if (titleEntry) {
+      editor.tf.replaceNodes(
+        { text },
+        { at: [titleEntry.index], children: true },
+      );
+    } else {
+      editor.tf.insertNodes(
+        { type: TITLE_BLOCK_TYPE, children: [{ text }] },
+        { at: [0] },
+      );
+    }
+  });
+}
 
 type SyncAction = 'none' | 'store-to-editor' | 'editor-to-store';
 

@@ -34,19 +34,23 @@ class CommentsSerializer:
             "kitconcept.plate: Discuss content", obj=self.context
         ):
             # Add user details
-            users = {}
+            user_ids = []
             for discussion in block.get("discussions", {}).values():
-                for comment in discussion.get("comments", []):
-                    user_id = comment.get("userId")
-                    if user_id and user_id not in users:
-                        user = api.user.get(userid=user_id)
-                        if user:
-                            users[user_id] = {
-                                "id": user_id,
-                                "fullname": user.getProperty("fullname")
-                                or user.getId(),
-                                "portrait": get_portrait_url(user_id),
-                            }
+                user_ids.extend(
+                    comment.get("userId") for comment in discussion.get("comments", [])
+                )
+                # The resolver may not have commented on the thread
+                user_ids.append(discussion.get("resolvedBy"))
+            users = {}
+            for user_id in user_ids:
+                if user_id and user_id not in users:
+                    user = api.user.get(userid=user_id)
+                    if user:
+                        users[user_id] = {
+                            "id": user_id,
+                            "fullname": user.getProperty("fullname") or user.getId(),
+                            "portrait": get_portrait_url(user_id),
+                        }
             block["users"] = users
         else:
             # User doesn't have permission - remove discussions

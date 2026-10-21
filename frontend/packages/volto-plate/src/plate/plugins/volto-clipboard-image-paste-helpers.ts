@@ -112,7 +112,7 @@ export function getImageUploadTarget(
 
 export function toPlateImageBlockData(
   createdItem: CreateContentResponse,
-  file: File,
+  file: Pick<File, 'name'>,
 ): PlateImageBlockData {
   const rawId = createdItem?.['@id'];
 

@@ -10,16 +10,23 @@ import { expect, test } from './test';
 function withSomersaultDiscussionFixture({
   bodyText,
   commentText,
+  isResolved = false,
 }: {
   bodyText: string;
   commentText: string;
+  isResolved?: boolean;
 }) {
   return (body: Record<string, unknown>) => {
     const title = typeof body.title === 'string' ? body.title : '';
+    const existingBlocks =
+      typeof body.blocks === 'object' && body.blocks !== null
+        ? (body.blocks as Record<string, unknown>)
+        : {};
 
     return {
       ...body,
       blocks: {
+        ...existingBlocks,
         __somersault__: {
           '@type': '__somersault__',
           value: [
@@ -52,7 +59,7 @@ function withSomersaultDiscussionFixture({
               ],
               createdAt: '2026-04-17T09:00:00+00:00',
               documentContent: 'Discuss',
-              isResolved: false,
+              isResolved,
               userId: 'admin',
             },
           },
@@ -64,8 +71,74 @@ function withSomersaultDiscussionFixture({
           },
         },
       },
-      blocks_layout: {
-        items: ['__somersault__'],
+    };
+  };
+}
+
+type DiscussionThreadFixture = {
+  id: string;
+  markText: string;
+  restText: string;
+  comments: { id: string; text: string; userId: string }[];
+};
+
+// One paragraph per thread, each with its own comment mark, so every
+// thread gets its own discussion trigger.
+function withSomersaultThreadsFixture(threads: DiscussionThreadFixture[]) {
+  return (body: Record<string, unknown>) => {
+    const title = typeof body.title === 'string' ? body.title : '';
+    const existingBlocks =
+      typeof body.blocks === 'object' && body.blocks !== null
+        ? (body.blocks as Record<string, unknown>)
+        : {};
+
+    return {
+      ...body,
+      blocks: {
+        ...existingBlocks,
+        __somersault__: {
+          '@type': '__somersault__',
+          value: [
+            { type: 'title', children: [{ text: title }] },
+            ...threads.map((thread) => ({
+              type: 'p',
+              children: [
+                {
+                  text: thread.markText,
+                  comment: true,
+                  [`comment_${thread.id}`]: true,
+                },
+                { text: thread.restText },
+              ],
+            })),
+          ],
+          discussions: Object.fromEntries(
+            threads.map((thread) => [
+              thread.id,
+              {
+                id: thread.id,
+                comments: thread.comments.map((comment) => ({
+                  id: comment.id,
+                  contentRich: [
+                    { type: 'p', children: [{ text: comment.text }] },
+                  ],
+                  createdAt: '2026-04-17T09:00:00+00:00',
+                  discussionId: thread.id,
+                  isEdited: false,
+                  userId: comment.userId,
+                })),
+                createdAt: '2026-04-17T09:00:00+00:00',
+                documentContent: thread.markText,
+                isResolved: false,
+                userId: thread.comments[0]?.userId ?? 'admin',
+              },
+            ]),
+          ),
+          users: {
+            admin: { id: 'admin', fullname: 'Admin' },
+            alok: { id: 'alok', fullname: 'Alok' },
+          },
+        },
       },
     };
   };
@@ -272,6 +345,15 @@ async function enableSuggestionMode(page: Page) {
   await finalGroup.locator('button').nth(1).click();
 }
 
+// The comment actions menu only shows while hovering one's own comment.
+async function deleteComment(page: Page, commentText: string) {
+  const dialog = page.getByRole('dialog');
+
+  await dialog.getByText(commentText).hover();
+  await dialog.locator('button:has(svg.lucide-ellipsis)').click();
+  await page.getByRole('menuitem', { name: 'Delete comment' }).click();
+}
+
 test.describe('Plate discussions and suggestions', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
@@ -408,6 +490,188 @@ test.describe('Plate discussions and suggestions', () => {
 
     await page.mouse.click(20, 20);
     await expect(discussionDialog).toBeHidden();
+  });
+
+  test('resolving a discussion archives it and reopening restores it', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const commentText = 'Please raise the deadline';
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-resolve',
+      contentTitle: 'Discussion resolve',
+      bodyModifier: withSomersaultDiscussionFixture({
+        bodyText: 'Discuss this paragraph',
+        commentText,
+      }),
+    });
+    const commentMark = page.locator('[data-comment-id="discussion1"]');
+    const dialog = page.getByRole('dialog');
+
+    // Clicking a mark doesn't open the popover in edit mode, use the trigger
+    await page.getByRole('button', { name: '1' }).click();
+    await expect(dialog.getByText(commentText)).toBeVisible();
+    await dialog.getByRole('button', { name: 'Resolve' }).click();
+
+    // The thread stays reachable: banner instead of deletion, mark kept
+    await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
+    await expect(dialog.getByText(commentText)).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Reopen' })).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Resolve' })).toBeHidden();
+    await expect(dialog.getByText('Reply...')).toBeHidden();
+    await expect(commentMark).toHaveAttribute('data-comment-resolved', 'true');
+
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await expect(dialog).toBeHidden();
+    await page.locator('#toolbar-save').click();
+    await page.waitForURL(contentPath, { waitUntil: 'load', timeout: 30_000 });
+
+    // Persisted and visible read-only in view mode, without the reopen action
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await page.locator('[data-comment-id="discussion1"]').click();
+    await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
+    await expect(dialog.getByText(commentText)).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Reopen' })).toBeHidden();
+
+    await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
+    await waitForPlateEditorReady(page);
+    await page.getByRole('button', { name: '1' }).click();
+    await dialog.getByRole('button', { name: 'Reopen' }).click();
+
+    await expect(dialog.getByText('Resolved by Admin')).toBeHidden();
+    await expect(dialog.getByRole('button', { name: 'Resolve' })).toBeVisible();
+    await expect(commentMark).not.toHaveAttribute('data-comment-resolved');
+  });
+
+  test('counts comments, updated when replying and deleting', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-count',
+      contentTitle: 'Discussion count',
+      bodyModifier: withSomersaultThreadsFixture([
+        {
+          id: 'discussion1',
+          markText: 'Discuss',
+          restText: ' this paragraph',
+          comments: [
+            { id: 'comment1', text: 'First comment', userId: 'admin' },
+            { id: 'comment2', text: 'Reply from Alok', userId: 'alok' },
+          ],
+        },
+      ]),
+    });
+    const dialog = page.getByRole('dialog');
+
+    // One thread with two comments counts two, not one
+    await page.getByRole('button', { name: '2' }).click();
+    await expect(
+      dialog.getByRole('heading', { name: 'Comments (2)' }),
+    ).toBeVisible();
+
+    await dialog
+      .getByRole('textbox')
+      .filter({ hasText: 'Reply to thread...' })
+      .click();
+    await page.keyboard.type('Another reply');
+    await page.keyboard.press('Enter');
+    await expect(dialog.getByText('Another reply')).toBeVisible();
+    await expect(
+      dialog.getByRole('heading', { name: 'Comments (3)' }),
+    ).toBeVisible();
+    await expect(page.getByRole('button', { name: '3' })).toBeVisible();
+
+    await deleteComment(page, 'Another reply');
+    await expect(dialog.getByText('Another reply')).toBeHidden();
+    await expect(
+      dialog.getByRole('heading', { name: 'Comments (2)' }),
+    ).toBeVisible();
+    await expect(page.getByRole('button', { name: '2' })).toBeVisible();
+
+    // The view mode trigger counts comments too
+    await page.locator('#toolbar-save').click();
+    await page.waitForURL(contentPath, { waitUntil: 'load', timeout: 30_000 });
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: '2' }).click();
+    await expect(
+      dialog.getByRole('heading', { name: 'Comments (2)' }),
+    ).toBeVisible();
+  });
+
+  test('deleting the only comment of a discussion removes it and keeps the others', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-delete',
+      contentTitle: 'Discussion delete',
+      bodyModifier: withSomersaultThreadsFixture([
+        {
+          id: 'discussionA',
+          markText: 'First',
+          restText: ' paragraph',
+          comments: [{ id: 'commentA', text: 'Comment A', userId: 'admin' }],
+        },
+        {
+          id: 'discussionB',
+          markText: 'Second',
+          restText: ' paragraph',
+          comments: [{ id: 'commentB', text: 'Comment B', userId: 'admin' }],
+        },
+      ]),
+    });
+    const dialog = page.getByRole('dialog');
+    const markA = page.locator('[data-comment-id="discussionA"]');
+    const markB = page.locator('[data-comment-id="discussionB"]');
+    const triggers = page.getByRole('button', { name: '1' });
+
+    await expect(triggers).toHaveCount(2);
+    await triggers.first().click();
+    await deleteComment(page, 'Comment A');
+
+    // The thread and its mark are gone, the other thread is untouched
+    await expect(markA).toHaveCount(0);
+    await expect(markB).toBeVisible();
+    await expect(triggers).toHaveCount(1);
+
+    // The backend accepts the save with one of two discussions removed
+    await page.locator('#toolbar-save').click();
+    await page.waitForURL(contentPath, { waitUntil: 'load', timeout: 30_000 });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await expect(page.getByText('First paragraph')).toBeVisible();
+    await expect(markA).toHaveCount(0);
+    await expect(markB).toBeVisible();
+    await triggers.click();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+    await expect(dialog.getByText('Comment A')).toBeHidden();
+  });
+
+  test('shows resolved discussions with a resolved trigger icon', async ({
+    page,
+  }) => {
+    const commentText = 'Already handled';
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'discussion-resolved-view',
+      contentTitle: 'Discussion resolved view',
+      wikiId: 'wiki-discussion-resolved-view',
+      transition: 'publish',
+      bodyModifier: withSomersaultDiscussionFixture({
+        bodyText: 'Discuss this rendered paragraph',
+        commentText,
+        isResolved: true,
+      }),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const trigger = page.getByRole('button', { name: '1' });
+    await expect(trigger.locator('svg.lucide-circle-check')).toBeVisible();
+
+    await trigger.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
+    await expect(dialog.getByText(commentText)).toBeVisible();
   });
 
   test('hydrates persisted suggestions in edit mode and renders them in view mode', async ({

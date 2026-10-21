@@ -151,24 +151,6 @@ test('Public view renders the title block as the page heading', async ({
   await expect(content.locator('h1')).toHaveText('Rendered title');
 });
 
-test('Public view toggle shows and hides its content', async ({ page }) => {
-  const path = await createNativeBlocksPage(page, ['toggle']);
-  const content = await openInView(page, path);
-
-  const text = content.getByText('Content inside the toggle.');
-  const button = content.getByRole('button', { name: 'Toggle content' });
-
-  await expect(button).toHaveAttribute('aria-expanded', 'false');
-  await expect(text).toBeHidden();
-
-  await button.click();
-  await expect(button).toHaveAttribute('aria-expanded', 'true');
-  await expect(text).toBeVisible();
-
-  await button.press('Enter');
-  await expect(text).toBeHidden();
-});
-
 test('Public view table of contents jumps to the headings', async ({
   page,
 }) => {

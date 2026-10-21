@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import UTC
 from kitconcept.plate.mentions import mentions_utility
 from plone import api
 from plone.restapi.interfaces import IBlockFieldDeserializationTransformer
@@ -38,14 +40,14 @@ class CommentsDeserializer:
         # Get discussions from the request
         incoming_discussions = block.get("discussions", {})
         # Discard user details from the request (they are not stored here)
-        incoming_users = block.pop("users", {})
+        block.pop("users", {})
 
         # Get existing discussions from the block data if it already exists
         existing_discussions = self._get_existing_discussions()
 
         if not has_permission:
             # User does not have permission to edit comments
-            if incoming_discussions or incoming_users:
+            if "discussions" in block or "users" in block:
                 # They're trying to modify comments but don't have permission
                 raise Unauthorized("You do not have permission to modify comments")
             else:
@@ -55,9 +57,12 @@ class CommentsDeserializer:
                 return block
 
         # User has permission - validate and store the discussions
-        if incoming_discussions:
+        if "discussions" in block:
             # Validate that comments from other users are unchanged
             self._validate_unchanged_comments(
+                incoming_discussions, existing_discussions, current_user
+            )
+            self._stamp_resolution(
                 incoming_discussions, existing_discussions, current_user
             )
             block["discussions"] = incoming_discussions
@@ -92,6 +97,30 @@ class CommentsDeserializer:
         # Try to get from blocks if context has blocks
         return self._get_existing_block().get("discussions", {})
 
+    def _stamp_resolution(self, incoming_discussions, existing_discussions, user):
+        """Set who resolved a discussion and when, ignoring client values.
+
+        Resolving archives a discussion rather than deleting it, so the
+        resolver is recorded server-side and cleared again on reopen.
+        """
+        for discussion_id, discussion in incoming_discussions.items():
+            if not isinstance(discussion, dict):
+                continue
+            existing = existing_discussions.get(discussion_id) or {}
+            was_resolved = bool(existing.get("isResolved"))
+            discussion.pop("resolvedBy", None)
+            discussion.pop("resolvedAt", None)
+
+            if not discussion.get("isResolved"):
+                continue
+            if was_resolved:
+                for key in ("resolvedBy", "resolvedAt"):
+                    if key in existing:
+                        discussion[key] = existing[key]
+            else:
+                discussion["resolvedBy"] = user.getId() if user else None
+                discussion["resolvedAt"] = datetime.now(UTC).isoformat()
+
     def _validate_unchanged_comments(
         self, incoming_discussions, existing_discussions, current_user
     ):
@@ -104,18 +133,13 @@ class CommentsDeserializer:
 
         # Check each existing discussion
         for discussion_id, existing_discussion in existing_discussions.items():
-            incoming_discussion = incoming_discussions.get(discussion_id)
-
-            if not incoming_discussion:
-                # Discussion was removed - not allowed
-                raise BadRequest("Cannot delete existing discussion")
-
-            # Check each existing comment
+            incoming_discussion = incoming_discussions.get(discussion_id) or {}
             existing_comments = existing_discussion.get("comments", [])
             incoming_comments = {
                 c["id"]: c for c in incoming_discussion.get("comments", [])
             }
 
+            # Check each existing comment
             for existing_comment in existing_comments:
                 comment_id = existing_comment.get("id")
                 user_id = existing_comment.get("userId")

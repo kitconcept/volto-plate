@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
+import { useDispatch } from 'react-redux';
 import { PLONE_BLOCK_TYPE } from '@plone/helpers';
 import {
   BlockSelectionPlugin,
@@ -8,6 +9,7 @@ import {
   useEditorRef,
   useEditorSelector,
 } from '@plone/plate/components/editor';
+import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
 import { BlockDataForm } from '@plone/volto/components/manage/Form';
 import config from '@plone/volto/registry';
 import type { BlockConfigBase } from '@plone/types';
@@ -135,6 +137,40 @@ const getSelectedNativeBlock = (editor: any): SelectedNativeBlock | null => {
   };
 };
 
+// Same rule as Volto's block Edit: a block whose config sets `sidebarTab`
+// opens the Block tab, any other block the Document tab. Native Plate blocks
+// read it from `plateBlocksConfig`, Plone blocks from `blocksConfig`.
+const getSidebarTab = (blockType: string, isPloneBlock: boolean) => {
+  const blockConfig = isPloneBlock
+    ? getVoltoBlockConfig(blockType)
+    : (
+        config.blocks.plateBlocksConfig as unknown as
+          | Record<string, Partial<BlockConfigBase>>
+          | undefined
+      )?.[blockType];
+
+  return blockConfig?.sidebarTab ? 1 : 0;
+};
+
+const getSelectedBlockTab = (
+  editor: any,
+  selectedNativeBlock: SelectedNativeBlock | null,
+): { key: string; tab: number } | null => {
+  if (selectedNativeBlock) {
+    return {
+      key: selectedNativeBlock.key,
+      tab: getSidebarTab(selectedNativeBlock.blockType, true),
+    };
+  }
+
+  if (!editor.selection) return null;
+  const entry = editor.api.block({ highest: true });
+  if (!entry) return null;
+
+  const [node, path] = entry;
+  return { key: path.join('-'), tab: getSidebarTab(node.type, false) };
+};
+
 export function SidebarAfterEditable() {
   const editor = useEditorRef();
   // Keep this component subscribed to editor selection/tree updates even
@@ -142,11 +178,23 @@ export function SidebarAfterEditable() {
   useEditorSelection();
   useEditorSelector((currentEditor) => currentEditor.children, []);
   const intl = useIntl();
+  const dispatch = useDispatch();
   const selectedNativeBlock = getSelectedNativeBlock(editor);
+  const selectedBlockTab = getSelectedBlockTab(editor, selectedNativeBlock);
+  const selectedBlockKey = selectedBlockTab?.key;
+  const sidebarTab = selectedBlockTab?.tab;
   const blocksConfig = config.blocks.blocksConfig;
   const selectedPathRef = React.useRef<number[] | null>(null);
 
   selectedPathRef.current = selectedNativeBlock?.path ?? null;
+
+  // Switch tabs only when the selection moves to another block, so a tab
+  // picked by hand stays while editing inside the same block.
+  React.useEffect(() => {
+    if (selectedBlockKey !== undefined && sidebarTab !== undefined) {
+      dispatch(setSidebarTab(sidebarTab));
+    }
+  }, [dispatch, selectedBlockKey, sidebarTab]);
 
   const formData = React.useMemo(() => {
     if (!selectedNativeBlock) return null;
