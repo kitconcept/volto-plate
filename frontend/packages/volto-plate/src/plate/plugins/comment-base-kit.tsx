@@ -45,6 +45,7 @@ import {
   voltoCommentPlugin,
 } from './comment-resolution';
 import { countDiscussionComments } from '../discussion-data';
+import { discussionSlotRender } from '../discussion-slot';
 
 const ReadOnlyBlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
   const { editor, element } = props;
@@ -78,7 +79,7 @@ const ReadOnlyBlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
 export const readOnlyDiscussionPlugin = createPlatePlugin({
   key: 'readOnlyDiscussion',
 }).configure({
-  render: { belowNodes: ReadOnlyBlockDiscussion },
+  render: discussionSlotRender(ReadOnlyBlockDiscussion),
 });
 
 // The renderer registers the interactive comment and suggestion plugins so the

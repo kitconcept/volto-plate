@@ -1,0 +1,1 @@
+Fixed the comment popover of tables and code blocks breaking their layout: it now renders around the block content instead of inside the table or code. @Tishasoumya-02
