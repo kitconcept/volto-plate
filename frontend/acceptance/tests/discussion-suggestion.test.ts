@@ -662,7 +662,7 @@ test.describe('Plate discussions and suggestions', () => {
       .toBe(scrollBeforeSave);
   });
 
-  test('anchors the comment action to the first fragment of a multiline selection', async ({
+  test('centers the comment action over the first line of a multiline selection', async ({
     page,
   }) => {
     const bodyText = `${'Selection geometry needs enough text to wrap naturally. '.repeat(8)}`;
@@ -691,11 +691,18 @@ test.describe('Plate discussions and suggestions', () => {
       selection?.addRange(range);
       document.dispatchEvent(new Event('selectionchange'));
 
-      const firstRect = range.getClientRects()[0];
+      const rects = [...range.getClientRects()];
+      const firstLine = rects.filter(
+        (rect) => Math.abs(rect.top - rects[0].top) < rects[0].height / 2,
+      );
+      const firstLeft = Math.min(...firstLine.map((rect) => rect.left));
+      const firstRight = Math.max(...firstLine.map((rect) => rect.right));
       const boundingRect = range.getBoundingClientRect();
       return {
         boundingLeft: boundingRect.left,
-        firstLeft: firstRect.left,
+        firstCenter: (firstLeft + firstRight) / 2,
+        firstLeft,
+        firstTop: rects[0].top,
       };
     });
 
@@ -703,13 +710,79 @@ test.describe('Plate discussions and suggestions', () => {
       name: 'Comment on selected text',
     });
     await expect(commentAction).toBeVisible();
-    const actionBox = await commentAction.boundingBox();
+    const popover = commentAction.locator('..');
+    const popoverBox = await popover.boundingBox();
+    const arrowBox = await popover.locator('.rotate-45').boundingBox();
 
-    expect(actionBox).not.toBeNull();
-    expect(selectionRects.firstLeft - selectionRects.boundingLeft).toBeGreaterThan(
-      20,
+    expect(popoverBox).not.toBeNull();
+    expect(arrowBox).not.toBeNull();
+    // The selection starts well after the left edge of the paragraph, so a
+    // popover placed from the whole selection box would be visibly off.
+    expect(
+      selectionRects.firstLeft - selectionRects.boundingLeft,
+    ).toBeGreaterThan(20);
+    expect(
+      Math.abs(
+        popoverBox!.x + popoverBox!.width / 2 - selectionRects.firstCenter,
+      ),
+    ).toBeLessThan(2);
+    expect(
+      Math.abs(arrowBox!.x + arrowBox!.width / 2 - selectionRects.firstCenter),
+    ).toBeLessThan(2);
+    expect(popoverBox!.y + popoverBox!.height).toBeLessThanOrEqual(
+      selectionRects.firstTop,
     );
-    expect(Math.abs(actionBox!.x - selectionRects.firstLeft)).toBeLessThan(2);
+  });
+
+  test('creates a comment spanning several paragraphs from view mode', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const firstText = 'First paragraph of the selection';
+    const secondText = 'Second paragraph of the selection';
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'view-comment-multi-paragraph',
+      contentTitle: 'View comment multi paragraph',
+      wikiId: 'wiki-view-comment-multi-paragraph',
+      transition: 'publish',
+      bodyModifier: withSomersaultBody([firstText, secondText]),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const first = page.getByText(firstText, { exact: true });
+    const second = page.getByText(secondText, { exact: true });
+    await expect(second).toBeVisible();
+    const startHandle = await first.elementHandle();
+    await second.evaluate((element, startElement) => {
+      const range = document.createRange();
+      range.setStart(
+        startElement!.firstChild!,
+        'First paragraph of the '.length,
+      );
+      range.setEnd(element.firstChild!, 'Second'.length);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+    }, startHandle);
+
+    await page
+      .getByRole('button', { name: 'Comment on selected text' })
+      .click();
+    const composer = page.locator('[data-inline-comment-composer]');
+    await composer.getByRole('textbox').click();
+    await page.keyboard.type('Spans two paragraphs');
+    await page.keyboard.press('Enter');
+    await expect(composer).toBeHidden();
+
+    await page.reload({ waitUntil: 'networkidle' });
+    await expect(
+      page.locator('.typeset [data-comment-id]').first(),
+    ).toBeVisible();
+    const highlighted = await page
+      .locator('.typeset [data-comment-id]')
+      .allTextContents();
+    expect(highlighted.join('')).toBe('selectionSecond');
   });
 
   test('does not offer view-mode commenting while the document is locked', async ({
