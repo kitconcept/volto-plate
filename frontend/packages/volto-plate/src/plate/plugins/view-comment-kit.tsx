@@ -148,20 +148,13 @@ const getRangeStartRect = (range: globalThis.Range) =>
     (clientRect) => clientRect.width > 0 || clientRect.height > 0,
   ) ?? range.getBoundingClientRect();
 
-const SelectionPopoverArrow = ({ primary = false }: { primary?: boolean }) => (
+const SelectionPopoverArrow = () => (
   <span
     aria-hidden
-    className={
-      primary
-        ? `
-          absolute bottom-[-7px] left-8 size-3.5 rotate-45 border-r border-b
-          border-primary bg-primary
-        `
-        : `
-          absolute bottom-[-7px] left-8 size-3.5 rotate-45 border-r border-b
-          border-border bg-popover
-        `
-    }
+    className={`
+      absolute bottom-[-7px] left-8 size-3.5 rotate-45 border-r border-b
+      border-border bg-popover
+    `}
   />
 );
 
@@ -360,25 +353,35 @@ const ViewCommentSelection = () => {
 
   if (!composing) {
     return (
-      <div className="relative" style={style}>
+      <div
+        className={`
+          relative rounded-[4px] border border-border bg-popover p-1
+          text-foreground shadow-xl
+        `}
+        style={style}
+      >
         <Button
           aria-label="Comment on selected text"
-          className="gap-2 shadow-lg"
+          className="gap-2"
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => setComposing(true)}
           type="button"
+          variant="ghost"
         >
           <MessageSquareTextIcon className="size-4" />
           Comment
         </Button>
-        <SelectionPopoverArrow primary />
+        <SelectionPopoverArrow />
       </div>
     );
   }
 
   return (
     <div
-      className="w-[320px] rounded-[14px] border border-border bg-popover p-3 shadow-xl"
+      className={`
+        w-[320px] rounded-[4px] border border-border bg-popover p-3
+        text-foreground shadow-xl
+      `}
       data-inline-comment-composer
       style={style}
     >
