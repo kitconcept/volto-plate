@@ -22,6 +22,7 @@ import {
 } from '../context/InlineCommentsProvider';
 
 const findTextWrapper = (
+  editorElement: Element,
   container: Node,
   offset: number,
   end: boolean,
@@ -30,19 +31,25 @@ const findTextWrapper = (
     container instanceof Element ? container : container.parentElement;
   const containingWrapper = element?.closest('[data-slate-node="text"]');
   if (containingWrapper) return { wrapper: containingWrapper };
-  if (!(container instanceof Element)) return null;
 
-  // A browser may place a range boundary between Slate text wrappers rather
-  // than inside their text node. Use the wrapper on the selected side.
-  const child = end
-    ? container.childNodes[offset - 1]
-    : container.childNodes[offset];
-  if (!child) return null;
-  const childElement = child instanceof Element ? child : child.parentElement;
-  const wrappers = childElement?.matches('[data-slate-node="text"]')
-    ? [childElement]
-    : [...(childElement?.querySelectorAll('[data-slate-node="text"]') ?? [])];
-  const wrapper = end ? wrappers.at(-1) : wrappers[0];
+  // A browser may place a range boundary between Slate text wrappers, for
+  // example at the start of the next paragraph when a selection ends at a
+  // line break. Use the nearest wrapper on the selected side.
+  const boundary = document.createRange();
+  try {
+    boundary.setStart(container, offset);
+  } catch {
+    return null;
+  }
+  const wrappers = [
+    ...editorElement.querySelectorAll('[data-slate-node="text"]'),
+  ];
+  const wrapper = end
+    ? wrappers.findLast(
+        (candidate) =>
+          boundary.comparePoint(candidate, candidate.childNodes.length) <= 0,
+      )
+    : wrappers.find((candidate) => boundary.comparePoint(candidate, 0) >= 0);
 
   return wrapper ? { edge: end ? 'end' : 'start', wrapper } : null;
 };
@@ -72,7 +79,7 @@ const mapDomRange = (
   domRange: globalThis.Range,
 ): Range | null => {
   const point = (container: Node, offset: number, end: boolean) => {
-    const boundary = findTextWrapper(container, offset, end);
+    const boundary = findTextWrapper(editorElement, container, offset, end);
     if (!boundary) return null;
 
     let blockElement = boundary.wrapper.closest('[data-block-id]');
@@ -143,28 +150,157 @@ const mapDomRange = (
   return start && end ? { anchor: start, focus: end } : null;
 };
 
-const getRangeStartRect = (range: globalThis.Range) =>
-  [...range.getClientRects()].find(
-    (clientRect) => clientRect.width > 0 || clientRect.height > 0,
-  ) ?? range.getBoundingClientRect();
+type LineBox = { bottom: number; left: number; right: number; top: number };
+type Placement = 'bottom' | 'top';
 
-const SelectionPopoverArrow = () => (
-  <span
-    aria-hidden
-    className={`
-      absolute bottom-[-7px] left-8 size-3.5 rotate-45 border-r border-b
-      border-border bg-popover
-    `}
-  />
-);
+const POPOVER_GAP = 10;
+const VIEWPORT_MARGIN = 12;
+const ARROW_HALF = 7;
+
+const useIsomorphicLayoutEffect =
+  typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect;
+
+/**
+ * Rectangles of the selected text only. A range's own client rects also
+ * include the full boxes of every element it contains, such as whole
+ * paragraphs in a selection that spans several of them.
+ */
+const selectedTextRects = (range: globalThis.Range) => {
+  const root = range.commonAncestorContainer;
+  const textNodes: Node[] = [];
+  if (root.nodeType === Node.TEXT_NODE) {
+    textNodes.push(root);
+  } else {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (range.intersectsNode(node)) textNodes.push(node);
+    }
+  }
+
+  return textNodes
+    .flatMap((node) => {
+      const part = document.createRange();
+      part.selectNodeContents(node);
+      if (node === range.startContainer) part.setStart(node, range.startOffset);
+      if (node === range.endContainer) part.setEnd(node, range.endOffset);
+      return [...part.getClientRects()];
+    })
+    .filter((rect) => rect.width > 0 && rect.height > 0);
+};
+
+/** The box of the rendered line that contains `reference`. */
+const lineBox = (rects: DOMRect[], reference: DOMRect): LineBox => {
+  const line = rects.filter(
+    (rect) => rect.top < reference.bottom && rect.bottom > reference.top,
+  );
+  return {
+    bottom: Math.max(...line.map((rect) => rect.bottom)),
+    left: Math.min(...line.map((rect) => rect.left)),
+    right: Math.max(...line.map((rect) => rect.right)),
+    top: Math.min(...line.map((rect) => rect.top)),
+  };
+};
+
+const selectionLines = (range: globalThis.Range) => {
+  const rects = selectedTextRects(range);
+  if (!rects.length) {
+    const box = range.getBoundingClientRect();
+    return { first: box, last: box };
+  }
+  return {
+    first: lineBox(rects, rects[0]),
+    last: lineBox(rects, rects[rects.length - 1]),
+  };
+};
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), Math.max(min, max));
+
+/**
+ * Center the popover over the first selected line, which for a one-line
+ * selection is the selection itself, with the arrow on the line's center.
+ * When there is no room above, open below the last selected line instead.
+ */
+const positionPopover = (
+  popover: HTMLElement,
+  arrow: HTMLElement | null,
+  range: globalThis.Range,
+): Placement => {
+  const { first, last } = selectionLines(range);
+  const { height, width } = popover.getBoundingClientRect();
+  const roomAbove = first.top - POPOVER_GAP - VIEWPORT_MARGIN;
+  const roomBelow =
+    window.innerHeight - last.bottom - POPOVER_GAP - VIEWPORT_MARGIN;
+  const placement: Placement =
+    roomAbove >= height || roomAbove >= roomBelow ? 'top' : 'bottom';
+  const line = placement === 'top' ? first : last;
+  const center = (line.left + line.right) / 2;
+  const left = clamp(
+    center - width / 2,
+    VIEWPORT_MARGIN,
+    window.innerWidth - width - VIEWPORT_MARGIN,
+  );
+
+  popover.style.left = `${left}px`;
+  if (placement === 'top') {
+    // Anchor the bottom edge so a growing composer expands upwards.
+    popover.style.top = 'auto';
+    popover.style.bottom = `${window.innerHeight - first.top + POPOVER_GAP}px`;
+  } else {
+    popover.style.bottom = 'auto';
+    popover.style.top = `${last.bottom + POPOVER_GAP}px`;
+  }
+  if (arrow) {
+    arrow.style.left = `${clamp(
+      center - left - ARROW_HALF,
+      VIEWPORT_MARGIN,
+      width - VIEWPORT_MARGIN - 2 * ARROW_HALF,
+    )}px`;
+  }
+  return placement;
+};
+
+const SelectionPopoverArrow = React.forwardRef<
+  HTMLSpanElement,
+  { placement: Placement }
+>(function SelectionPopoverArrow({ placement }, ref) {
+  return (
+    <span
+      aria-hidden
+      ref={ref}
+      className={
+        placement === 'top'
+          ? `
+            absolute bottom-[-7px] size-3.5 rotate-45 border-r border-b
+            border-border bg-popover
+          `
+          : `
+            absolute top-[-7px] size-3.5 rotate-45 border-t border-l
+            border-border bg-popover
+          `
+      }
+    />
+  );
+});
 
 const ViewCommentSelection = () => {
   const editor = useEditorRef();
   const inlineComments = useInlineComments();
   const intl = useIntl();
   const [anchor, setAnchor] = React.useState<InlineCommentAnchor | null>(null);
-  const [rect, setRect] = React.useState<DOMRect | null>(null);
   const [composing, setComposing] = React.useState(false);
+  const [placement, setPlacement] = React.useState<Placement>('top');
+  const [layoutTick, setLayoutTick] = React.useState(0);
+  // The selected DOM range outlives the browser selection, which moves into
+  // the composer once it takes focus.
+  const rangeRef = React.useRef<globalThis.Range | null>(null);
+  const popoverRef = React.useRef<HTMLDivElement>(null);
+  const arrowRef = React.useRef<HTMLSpanElement>(null);
+
+  const clearSelection = React.useCallback(() => {
+    rangeRef.current = null;
+    setAnchor(null);
+  }, []);
 
   React.useEffect(() => {
     if (
@@ -191,8 +327,7 @@ const ViewCommentSelection = () => {
         !editorElement?.classList.contains('typeset') ||
         !editorElement.contains(domSelection.focusNode)
       ) {
-        setAnchor(null);
-        setRect(null);
+        clearSelection();
         return;
       }
 
@@ -203,43 +338,29 @@ const ViewCommentSelection = () => {
           exactMatch: false,
           suppressThrow: true,
         }) as Range | null);
-      if (!slateRange) {
-        setAnchor(null);
-        setRect(null);
-        return;
-      }
-      if (RangeApi.isCollapsed(slateRange)) {
-        setAnchor(null);
-        setRect(null);
+      if (!slateRange || RangeApi.isCollapsed(slateRange)) {
+        clearSelection();
         return;
       }
 
       const [start, end] = editor.api.edges(slateRange);
-      if (start.path[0] !== end.path[0]) {
-        setAnchor(null);
-        setRect(null);
-        return;
-      }
       const text = editor.api.string(slateRange);
       if (!text) {
-        setAnchor(null);
-        setRect(null);
+        clearSelection();
         return;
       }
       const block = editor.api.node([start.path[0]])?.[0] as
         | { id?: string }
         | undefined;
 
+      rangeRef.current = domRange.cloneRange();
       setAnchor({
         blockId: block?.id,
         end: { offset: end.offset, path: [...end.path] },
         start: { offset: start.offset, path: [...start.path] },
         text,
       });
-      // A multiline range's bounding box starts at the leftmost selected line,
-      // which can be far to the left of the selection's actual starting point.
-      // Anchor to the first rendered fragment instead.
-      setRect(getRangeStartRect(domRange));
+      setLayoutTick((current) => current + 1);
     };
 
     const scheduleSelectionUpdate = () => {
@@ -250,8 +371,6 @@ const ViewCommentSelection = () => {
     document.addEventListener('selectionchange', scheduleSelectionUpdate);
     document.addEventListener('pointerup', scheduleSelectionUpdate);
     document.addEventListener('keyup', scheduleSelectionUpdate);
-    window.addEventListener('resize', scheduleSelectionUpdate);
-    window.addEventListener('scroll', scheduleSelectionUpdate, true);
     scheduleSelectionUpdate();
 
     return () => {
@@ -259,27 +378,57 @@ const ViewCommentSelection = () => {
       document.removeEventListener('selectionchange', scheduleSelectionUpdate);
       document.removeEventListener('pointerup', scheduleSelectionUpdate);
       document.removeEventListener('keyup', scheduleSelectionUpdate);
-      window.removeEventListener('resize', scheduleSelectionUpdate);
-      window.removeEventListener('scroll', scheduleSelectionUpdate, true);
     };
   }, [
+    clearSelection,
     composing,
     editor,
     inlineComments?.canComment,
     inlineComments?.currentUserId,
   ]);
 
-  if (!inlineComments?.canComment || !inlineComments.currentUserId) return null;
-  if (!anchor || !rect) return null;
+  // Follow the selected text while the page scrolls or resizes, including
+  // while the composer is open.
+  React.useEffect(() => {
+    if (!anchor) return;
 
-  const locked = inlineComments.locked;
+    let animationFrame = 0;
+    const scheduleLayout = () => {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(() =>
+        setLayoutTick((current) => current + 1),
+      );
+    };
+
+    window.addEventListener('resize', scheduleLayout);
+    window.addEventListener('scroll', scheduleLayout, true);
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener('resize', scheduleLayout);
+      window.removeEventListener('scroll', scheduleLayout, true);
+    };
+  }, [anchor]);
+
+  const locked = !!inlineComments?.locked;
+  const canMutate = !!inlineComments?.canMutate;
+  const error = inlineComments?.error;
+
+  useIsomorphicLayoutEffect(() => {
+    const popover = popoverRef.current;
+    const range = rangeRef.current;
+    if (!popover || !range) return;
+    setPlacement(positionPopover(popover, arrowRef.current, range));
+  }, [anchor, canMutate, composing, error, layoutTick, locked]);
+
+  if (!inlineComments?.canComment || !inlineComments.currentUserId) return null;
+  if (!anchor) return null;
+
+  // Placed by `positionPopover` before paint, so React must not own the
+  // offsets.
   const style: React.CSSProperties = {
-    bottom: window.innerHeight - rect.top + 8,
-    left: Math.max(
-      12,
-      Math.min(rect.left, window.innerWidth - (locked ? 652 : 332)),
-    ),
+    left: 0,
     position: 'fixed',
+    top: 0,
     zIndex: 1000,
   };
 
@@ -306,6 +455,7 @@ const ViewCommentSelection = () => {
         `}
         data-inline-comment-lock
         role="status"
+        ref={popoverRef}
         style={style}
       >
         <div className="flex items-start gap-3">
@@ -344,7 +494,7 @@ const ViewCommentSelection = () => {
             </p>
           </div>
         </div>
-        <SelectionPopoverArrow />
+        <SelectionPopoverArrow placement={placement} ref={arrowRef} />
       </div>
     );
   }
@@ -358,6 +508,7 @@ const ViewCommentSelection = () => {
           relative rounded-[4px] border border-border bg-popover p-1
           text-foreground shadow-xl
         `}
+        ref={popoverRef}
         style={style}
       >
         <Button
@@ -371,7 +522,7 @@ const ViewCommentSelection = () => {
           <MessageSquareTextIcon className="size-4" />
           Comment
         </Button>
-        <SelectionPopoverArrow />
+        <SelectionPopoverArrow placement={placement} ref={arrowRef} />
       </div>
     );
   }
@@ -383,6 +534,7 @@ const ViewCommentSelection = () => {
         text-foreground shadow-xl
       `}
       data-inline-comment-composer
+      ref={popoverRef}
       style={style}
     >
       <div className="mb-2 flex justify-end">
@@ -392,7 +544,7 @@ const ViewCommentSelection = () => {
           onClick={() => {
             inlineComments.clearError();
             setComposing(false);
-            setAnchor(null);
+            clearSelection();
           }}
           size="icon"
           type="button"
@@ -411,11 +563,11 @@ const ViewCommentSelection = () => {
         focusOnMount
         onSubmitted={() => {
           setComposing(false);
-          setAnchor(null);
+          clearSelection();
           window.getSelection()?.removeAllRanges();
         }}
       />
-      <SelectionPopoverArrow />
+      <SelectionPopoverArrow placement={placement} ref={arrowRef} />
     </div>
   );
 };

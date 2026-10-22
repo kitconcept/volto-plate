@@ -175,6 +175,34 @@ class TestInlineCommentsService:
         children = block["value"][0]["children"]
         assert [leaf["text"] for leaf in children] == ["🎉 Alpha ", "beta"]
 
+    def test_create_spans_several_top_level_blocks(self):
+        block = make_block()
+        block["value"].append({
+            "type": "p",
+            "id": "paragraph-2",
+            "children": [{"text": "Delta epsilon"}],
+        })
+        self.page.blocks = {"__somersault__": block}
+        transaction.commit()
+
+        anchor = {
+            "blockId": "paragraph-1",
+            "start": {"path": [0, 0], "offset": 11},
+            "end": {"path": [1, 0], "offset": 5},
+            # Slate joins the text of several blocks without a separator.
+            "text": "gammaDelta",
+        }
+        block, discussion = self.create_thread(anchor=anchor)
+        key = f"comment_{discussion['id']}"
+        first, second = block["value"][0]["children"], block["value"][1]["children"]
+        assert [leaf["text"] for leaf in first] == ["Alpha beta ", "gamma"]
+        assert [leaf["text"] for leaf in second] == ["Delta", " epsilon"]
+        assert first[1][key] is True
+        assert second[0][key] is True
+        assert key not in first[0]
+        assert key not in second[1]
+        assert discussion["documentContent"] == "gammaDelta"
+
     def test_anchor_offset_inside_surrogate_pair_is_stale(self):
         block = make_block()
         block["value"][0]["children"][0]["text"] = "🎉 Alpha beta"

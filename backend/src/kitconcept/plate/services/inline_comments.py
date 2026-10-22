@@ -197,8 +197,6 @@ def _validated_anchor(value, anchor):
             raise StaleAnchor("The selected block no longer matches")
     start_path, start_offset = start
     end_path, end_offset = end
-    if start_path[0] != end_path[0]:
-        raise BadRequest("Inline comments must stay within one top-level block")
     return expected_text, start_path, start_offset, end_path, end_offset
 
 
