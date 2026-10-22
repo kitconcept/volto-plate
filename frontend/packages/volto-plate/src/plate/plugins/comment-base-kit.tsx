@@ -45,6 +45,7 @@ import {
 
 import {
   type TArchivableDiscussion,
+  ResolveDiscussionButton,
   ResolvedDiscussionBanner,
   useDiscussionResolution,
   voltoCommentPlugin,
@@ -156,6 +157,14 @@ const ReadOnlyBlockDiscussionContent = ({
         : 'Comments & Suggestions';
 
   const noneActive = !activeDiscussion && !activeSuggestion;
+  // As in edit mode, the thread shown on its own gets the Resolve button in
+  // the header; several threads keep a Resolve link each.
+  const singleDiscussion =
+    activeDiscussion ||
+    (noneActive && discussionsCount === 1 && suggestionsCount === 0
+      ? resolvedDiscussions[0]
+      : undefined);
+  const { canResolve, resolve } = useDiscussionResolution();
   const popoverHeaderCount = noneActive
     ? totalCount
     : activeDiscussion
@@ -330,7 +339,10 @@ const ReadOnlyBlockDiscussionContent = ({
       />
     ) : (
       <React.Fragment key={item.id}>
-        <ReadOnlyBlockComment discussion={item} />
+        <ReadOnlyBlockComment
+          discussion={item}
+          showResolve={!singleDiscussion}
+        />
         {!isLast && <div className="h-px w-full bg-muted" />}
       </React.Fragment>
     );
@@ -338,6 +350,13 @@ const ReadOnlyBlockDiscussionContent = ({
   const popoverContent = (
     <React.Fragment>
       <DiscussionPopoverHeader
+        action={
+          singleDiscussion && !singleDiscussion.isResolved && canResolve ? (
+            <ResolveDiscussionButton
+              onClick={() => resolve(singleDiscussion.id)}
+            />
+          ) : null
+        }
         count={popoverHeaderCount}
         onClose={closePopover}
         title={popoverTitle}
@@ -397,8 +416,10 @@ const ReadOnlyBlockDiscussionContent = ({
 
 function ReadOnlyBlockComment({
   discussion,
+  showResolve,
 }: {
   discussion: TArchivableDiscussion;
+  showResolve: boolean;
 }) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const replyRef = React.useRef<CommentCreateFormHandle>(null);
@@ -428,7 +449,7 @@ function ReadOnlyBlockComment({
               : undefined
           }
           onResolve={
-            index === 0 && !discussion.isResolved && canResolve
+            index === 0 && showResolve && !discussion.isResolved && canResolve
               ? () => resolve(discussion.id)
               : undefined
           }
