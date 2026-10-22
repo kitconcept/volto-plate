@@ -19,6 +19,7 @@ import type { TDiscussion } from '@plone/plate/components/editor/plugins/discuss
 import { cn } from '@plone/plate/lib/utils';
 
 import { messages } from '../../index';
+import { useInlineComments } from '../context/InlineCommentsProvider';
 
 /**
  * Resolving a discussion archives it: the thread and its text anchor are
@@ -31,9 +32,17 @@ export type TArchivableDiscussion = TDiscussion & {
 
 export const useDiscussionResolution = () => {
   const { currentUserId, setDiscussions } = usePlatePlugins();
+  const inlineComments = useInlineComments();
 
   const setResolved = React.useCallback(
     (id: string, isResolved: boolean) => {
+      if (inlineComments) {
+        void inlineComments.setResolved(id, isResolved).catch(() => {
+          // The view-mode provider renders the request error in the thread.
+        });
+        return;
+      }
+
       setDiscussions((discussions) =>
         discussions.map((discussion: TArchivableDiscussion) => {
           if (discussion.id !== id) return discussion;
@@ -44,11 +53,11 @@ export const useDiscussionResolution = () => {
         }),
       );
     },
-    [currentUserId, setDiscussions],
+    [currentUserId, inlineComments, setDiscussions],
   );
 
   return {
-    canResolve: !!currentUserId,
+    canResolve: inlineComments?.canMutate ?? !!currentUserId,
     reopen: (id: string) => setResolved(id, false),
     resolve: (id: string) => setResolved(id, true),
   };
