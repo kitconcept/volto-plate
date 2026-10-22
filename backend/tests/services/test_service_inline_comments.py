@@ -162,6 +162,35 @@ class TestInlineCommentsService:
         assert children[1]["comment"] is True
         assert children[1][f"comment_{discussion['id']}"] is True
 
+    def test_create_uses_javascript_utf16_offsets(self):
+        # "🎉" is one Python code point but two JavaScript UTF-16 code units.
+        block = make_block()
+        block["value"][0]["children"][0]["text"] = "🎉 Alpha beta"
+        self.page.blocks = {"__somersault__": block}
+        transaction.commit()
+
+        block, _discussion = self.create_thread(
+            anchor=make_anchor(text="beta", start=9, end=13)
+        )
+        children = block["value"][0]["children"]
+        assert [leaf["text"] for leaf in children] == ["🎉 Alpha ", "beta"]
+
+    def test_anchor_offset_inside_surrogate_pair_is_stale(self):
+        block = make_block()
+        block["value"][0]["children"][0]["text"] = "🎉 Alpha beta"
+        self.page.blocks = {"__somersault__": block}
+        transaction.commit()
+
+        response = self.session.post(
+            self.path,
+            json={
+                "anchor": make_anchor(text="\ud83c", start=1, end=3),
+                "contentRich": deepcopy(CONTENT_RICH),
+            },
+        )
+        assert response.status_code == 409
+        assert response.json()["error"]["type"] == "StaleAnchor"
+
     def test_rich_comment_preserves_and_notifies_mentions(
         self, make_plate_mention, get_messages, get_msg_body
     ):

@@ -229,27 +229,29 @@ export function Comment(props: {
         />
         {/* === END CUSTOMIZATION === */}
 
-        {isMyComment && (hovering || dropdownOpen) && (
-          <div className="absolute top-0 right-0 flex space-x-1">
-            <CommentMoreDropdown
-              onCloseAutoFocus={() => {
-                setTimeout(() => {
-                  commentEditor.tf.focus({ edge: 'endEditor' });
-                }, 0);
-              }}
-              onRemoveComment={() => {
-                if (discussionLength === 1) {
-                  tf.comment.unsetMark({ id: comment.discussionId });
-                  void removeDiscussion(comment.discussionId);
-                }
-              }}
-              comment={comment}
-              dropdownOpen={dropdownOpen}
-              setDropdownOpen={setDropdownOpen}
-              setEditingId={setEditingId}
-            />
-          </div>
-        )}
+        {isMyComment &&
+          (inlineComments?.canMutate ?? true) &&
+          (hovering || dropdownOpen) && (
+            <div className="absolute top-0 right-0 flex space-x-1">
+              <CommentMoreDropdown
+                onCloseAutoFocus={() => {
+                  setTimeout(() => {
+                    commentEditor.tf.focus({ edge: 'endEditor' });
+                  }, 0);
+                }}
+                onRemoveComment={() => {
+                  if (discussionLength === 1) {
+                    tf.comment.unsetMark({ id: comment.discussionId });
+                    void removeDiscussion(comment.discussionId);
+                  }
+                }}
+                comment={comment}
+                dropdownOpen={dropdownOpen}
+                setDropdownOpen={setDropdownOpen}
+                setEditingId={setEditingId}
+              />
+            </div>
+          )}
       </div>
 
       {isFirst && showDocumentContent && (

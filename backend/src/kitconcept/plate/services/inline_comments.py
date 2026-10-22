@@ -154,9 +154,27 @@ def _point(value, data, label):
         (node for node_path, node in _text_entries(value) if list(node_path) == path),
         None,
     )
-    if target is None or offset > len(target["text"]):
+    index = _utf16_to_index(target["text"], offset) if target is not None else None
+    if index is None:
         raise StaleAnchor(f"anchor.{label} no longer exists")
-    return tuple(path), offset
+    return tuple(path), index
+
+
+def _utf16_to_index(text, offset):
+    """Convert a Slate (JavaScript UTF-16) offset to a Python string index.
+
+    Characters outside the Basic Multilingual Plane, such as most emoji, take
+    two UTF-16 code units but a single Python code point. Return ``None`` when
+    the offset is past the end or splits a surrogate pair.
+    """
+    units = 0
+    for index, char in enumerate(text):
+        if units == offset:
+            return index
+        units += 2 if ord(char) > 0xFFFF else 1
+        if units > offset:
+            return None
+    return len(text) if units == offset else None
 
 
 def _validated_anchor(value, anchor):

@@ -58,6 +58,12 @@ const errorMessage = (error: any) =>
   error?.message ??
   'Unable to save the comment.';
 
+const errorType = (error: any): string | undefined =>
+  error?.response?.body?.error?.type;
+
+const REFRESH_FAILED_MESSAGE =
+  'The comment was saved, but the page could not be refreshed. Reload the page to see it.';
+
 export function InlineCommentsProvider({
   children,
   contentPath,
@@ -119,26 +125,33 @@ export function InlineCommentsProvider({
       pendingRef.current = true;
       setPending(true);
       setError(null);
+      const api = new Api() as any;
       try {
-        const api = new Api() as any;
-        const response = (await api[method](`${endpoint}${suffix}`, {
-          data,
-        })) as InlineCommentsCapabilities;
-        applyCapabilities(response);
+        try {
+          const response = (await api[method](`${endpoint}${suffix}`, {
+            data,
+          })) as InlineCommentsCapabilities;
+          applyCapabilities(response);
+        } catch (requestError: any) {
+          if (errorType(requestError) === 'ResourceLocked')
+            setLock((current) => ({ ...current, locked: true }));
+          setError(errorMessage(requestError));
+          throw requestError;
+        }
 
-        const content = (await api.get(contentPath)) as {
-          blocks?: Record<string, Record<string, unknown>>;
-        };
-        const block = content.blocks?.[SOMERSAULT_KEY];
-        if (!block)
-          throw new Error('The content does not contain a Plate document.');
-        onBlockChange(block);
-      } catch (requestError: any) {
-        if (requestError?.status === 403)
-          setLock((current) => ({ ...current, locked: true }));
-        const message = errorMessage(requestError);
-        setError(message);
-        throw requestError;
+        // The mutation is already stored. A failed refresh must not be
+        // reported as a failed save, or a retry would duplicate the comment.
+        try {
+          const content = (await api.get(contentPath)) as {
+            blocks?: Record<string, Record<string, unknown>>;
+          };
+          const block = content.blocks?.[SOMERSAULT_KEY];
+          if (!block)
+            throw new Error('The content does not contain a Plate document.');
+          onBlockChange(block);
+        } catch {
+          setError(REFRESH_FAILED_MESSAGE);
+        }
       } finally {
         pendingRef.current = false;
         setPending(false);
