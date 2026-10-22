@@ -436,13 +436,13 @@ function ReadOnlyBlockComment({
           showDocumentContent
         />
       ))}
+      {/* Full width like the edit-mode thread: the comment editor's minimum
+          width does not fit next to an avatar-wide indent. */}
       {!discussion.isResolved && canMutate && (
-        <div className="pl-[42px]">
-          <CommentCreateForm ref={replyRef} discussionId={discussion.id} />
-        </div>
+        <CommentCreateForm ref={replyRef} discussionId={discussion.id} />
       )}
       {inlineComments?.error && (
-        <p className="mt-2 pl-[42px] text-sm text-destructive" role="alert">
+        <p className="mt-2 text-sm text-destructive" role="alert">
           {inlineComments.error}
         </p>
       )}
