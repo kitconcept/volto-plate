@@ -41,8 +41,13 @@ const PlateEditorRenderer = ({ content }: PlateEditorRendererProps) => {
   const pendingScrollPosition = React.useRef<{ x: number; y: number } | null>(
     null,
   );
+  const lastContentBlock = React.useRef(contentBlock);
 
   React.useEffect(() => {
+    // State is already initialized from the first content block. Re-keying
+    // the controller here on mount would discard and rebuild the whole tree.
+    if (lastContentBlock.current === contentBlock) return;
+    lastContentBlock.current = contentBlock;
     setSomersaultBlock(contentBlock ?? null);
     renderedValue.current = contentBlock?.value;
     setRevision((current) => current + 1);
