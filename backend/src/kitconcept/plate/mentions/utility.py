@@ -1,7 +1,10 @@
 """Named utility for Plate mention extraction and notification."""
 
 from Acquisition import aq_base
+from Acquisition import aq_parent
 from collections.abc import Iterator
+from datetime import datetime
+from datetime import UTC
 from kitconcept.plate import logger
 from kitconcept.plate import types as t
 from kitconcept.plate.interfaces import IMentions
@@ -10,12 +13,57 @@ from plone import api
 from plone.dexterity.content import DexterityContent
 from Products.PlonePAS.tools.memberdata import MemberData
 from urllib.parse import urlencode
+from zoneinfo import ZoneInfo
 from zope.globalrequest import getRequest
 from zope.interface import implementer
 from ZPublisher.HTTPRequest import HTTPRequest
 
 
 PENDING_MENTIONS_KEY = "kitconcept.plate.pending_mention_notifications"
+
+
+def plain_text(value):
+    """Read visible text from Plate nodes, including mention labels."""
+    if isinstance(value, list):
+        return "".join(plain_text(child) for child in value)
+    if not isinstance(value, dict):
+        return ""
+    if value.get("type") == "mention":
+        return f"@{value.get('value', '')}"
+    return value.get("text", "") + plain_text(value.get("children", []))
+
+
+def mention_excerpt(value, mention_id):
+    """Find bounded surrounding text in a document or discussion comment."""
+    if isinstance(value, dict):
+        children = value.get("children", [])
+        for index, child in enumerate(children):
+            if (
+                isinstance(child, dict)
+                and child.get("type") == "mention"
+                and child.get("mentionId") == mention_id
+            ):
+                before = plain_text(children[:index])[-140:]
+                after = plain_text(children[index + 1 :])[:140]
+                text = before + plain_text(child)[:180] + after
+                return " ".join(text.split())
+        value = value.values()
+    elif not isinstance(value, list):
+        return ""
+    for child in value:
+        if excerpt := mention_excerpt(child, mention_id):
+            return excerpt
+    return ""
+
+
+def breadcrumbs(context):
+    """Return parent and page titles, excluding the Plone site."""
+    portal = api.portal.get()
+    titles = []
+    while context is not None and context != portal:
+        titles.append(context.Title())
+        context = aq_parent(context)
+    return " \N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK} ".join(reversed(titles))
 
 
 @implementer(IMentions)
@@ -134,7 +182,7 @@ class Mentions:
     ) -> None:
         """Send a single mention notification email.
 
-        :param message: The rendered plain-text body.
+        :param message: The rendered plain-text notification.
         :param recipient: The recipient email address.
         :param sender: The sender email address.
         :param site_name: The site name used in the subject line.
@@ -178,11 +226,28 @@ class Mentions:
             "recipients": recipients,
             "site_name": mail_settings.site_title,
         }
-        for _user_id, (recipient, mention_id) in payload["recipients"].items():
+        timezone = api.portal.get_registry_record("plone.portal_timezone") or "UTC"
+        payload.update({
+            "breadcrumbs": breadcrumbs(context),
+            "timestamp": datetime
+            .now(UTC)
+            .astimezone(ZoneInfo(timezone))
+            .strftime("%d %b %Y, %H:%M %Z"),
+        })
+        for user_id, (recipient, mention_id) in payload["recipients"].items():
+            if not api.user.has_permission("View", username=user_id, obj=context):
+                continue
+            excerpt = mention_excerpt(getattr(context, "blocks", {}) or {}, mention_id)
             url = f"{payload['page_url']}?{urlencode({'plateMention': mention_id})}"
             message = (
                 f"{payload['author']} mentioned you on '{payload['page_title']}'.\n\n"
-                f"Open the mention: {url}\n"
+                f"{payload['breadcrumbs']}\n\n"
+                + (f"{excerpt}\n\n" if excerpt else "")
+                + f"Open the mention: {url}\n"
+                f"View page: {payload['page_url']}\n\n"
+                f"Mentioned {payload['timestamp']}\n\n"
+                f"You received this email because {payload['author']} mentioned you.\n"
+                f"{payload['site_name']}\n"
             )
             try:
                 self._send_email(

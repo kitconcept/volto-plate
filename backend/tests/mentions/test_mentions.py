@@ -2,6 +2,8 @@
 
 from kitconcept.plate.deserializers.comments import CommentsDeserializer
 from kitconcept.plate.mentions import mentions_utility
+from kitconcept.plate.mentions.utility import breadcrumbs
+from kitconcept.plate.mentions.utility import mention_excerpt
 from kitconcept.plate.mentions.utility import PENDING_MENTIONS_KEY
 from kitconcept.plate.types import Mention
 from plone import api
@@ -144,3 +146,31 @@ class TestQueueNotifications:
         ]
         assert author_id == author.getId()
         assert mentions == (Mention("new", "mentioned-user"),)
+
+
+@pytest.mark.parametrize("in_comment", [False, True])
+def test_mention_excerpt(make_mention, in_comment):
+    """Extract only the matching paragraph from documents and comments."""
+    value = [
+        {
+            "type": "p",
+            "children": [
+                {"text": "Please ask "},
+                make_mention("target"),
+                {"text": " to review."},
+            ],
+        }
+    ]
+    block = {"value": value}
+    if in_comment:
+        block = {"discussions": {"thread": {"comments": [{"contentRich": value}]}}}
+    assert mention_excerpt(block, "target") == "Please ask @Mentioned User to review."
+    assert mention_excerpt(block, "missing") == ""
+
+
+def test_breadcrumbs(portal, make_workspace):
+    """Breadcrumbs include the page but exclude the site."""
+    workspace = make_workspace("Engineering")
+    with api.env.adopt_roles(["Manager"]):
+        page = api.content.create(container=workspace, type="WikiPage", title="Notes")
+    assert breadcrumbs(page) == "Engineering › Notes"
