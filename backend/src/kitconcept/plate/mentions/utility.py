@@ -234,9 +234,7 @@ class Mentions:
             .astimezone(ZoneInfo(timezone))
             .strftime("%d %b %Y, %H:%M %Z"),
         })
-        for user_id, (recipient, mention_id) in payload["recipients"].items():
-            if not api.user.has_permission("View", username=user_id, obj=context):
-                continue
+        for _user_id, (recipient, mention_id) in payload["recipients"].items():
             excerpt = mention_excerpt(getattr(context, "blocks", {}) or {}, mention_id)
             url = f"{payload['page_url']}?{urlencode({'plateMention': mention_id})}"
             message = (

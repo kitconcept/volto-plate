@@ -111,6 +111,13 @@ class TestSendNotifications(TestBaseMentionsService):
         body = get_msg_body(msg, "text/plain")
         assert "Mentioning User mentioned you on 'My Workspace'." in body
         assert "plateMention=abc" in body
+        assert not msg.is_multipart()
+        assert msg.get_content_type() == "text/plain"
+        assert "Mentioned " in body
+        assert "You received this email because Mentioning User mentioned you." in body
+        site_name = api.portal.get_registry_record("plone.site_title")
+        assert site_name in body
+        assert f"View page: {self.workspace.absolute_url()}" in body
 
     def test_wiki_page_creation_sends_notification(
         self, make_plate_mention, get_messages, get_msg_body
