@@ -13,6 +13,7 @@
  *  - Resolving keeps the comment mark (archive instead of delete); the Resolve link is opt-in via `onResolve` (SID-13) @iFlameing
  *  - Delete a comment and its emptied discussion with functional updates, so the second update doesn't overwrite the first with stale state @iFlameing
  *  - Persist create, reply, edit, and delete actions through the view-mode inline-comments service while retaining the rich mention-enabled composer @sneridagh
+ *  - Wrap long quoted document text and author names instead of overflowing the thread @Tishasoumya-02
  */
 import * as React from 'react';
 
@@ -260,8 +261,14 @@ export function Comment(props: {
             <div className="absolute top-[5px] left-4 h-full w-0.5 shrink-0 bg-muted" />
           )}
           <div className="bg-highlight my-px w-0.5 shrink-0" />
-          {documentContent && <div className="ml-2">{documentContent}</div>}
+          {documentContent && (
+            // === START CUSTOMIZATION === Wrap long quoted text instead of overflowing.
+            <div className="ml-2 wrap-anywhere hyphens-auto">
+              {documentContent}
+            </div>
+          )}
         </div>
+        // === END CUSTOMIZATION ===
       )}
 
       <div className="relative mt-1.5 mb-3 pl-[42px]">
