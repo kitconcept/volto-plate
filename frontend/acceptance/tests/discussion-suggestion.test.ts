@@ -292,6 +292,74 @@ function withTwoSuggestionsFixture(body: Record<string, unknown>) {
   };
 }
 
+// Two paragraphs split by a suggested line break: the block suggestion lives
+// on the first paragraph, as Plate stores it after pressing Enter in
+// suggestion mode.
+function withLineBreakSuggestionFixture(body: Record<string, unknown>) {
+  const title = typeof body.title === 'string' ? body.title : '';
+
+  return {
+    ...body,
+    blocks: {
+      __somersault__: {
+        '@type': '__somersault__',
+        value: [
+          { type: 'title', children: [{ text: title }] },
+          {
+            type: 'p',
+            suggestion: {
+              createdAt: 1760691600000,
+              id: 'linebreak',
+              isLineBreak: true,
+              type: 'insert',
+              userId: 'admin',
+            },
+            children: [{ text: 'First line of the paragraph' }],
+          },
+          { type: 'p', children: [{ text: 'Second line' }] },
+        ],
+        discussions: {
+          linebreak: {
+            id: 'linebreak',
+            comments: [],
+            createdAt: '2026-04-17T09:00:00+00:00',
+            isResolved: false,
+            userId: 'admin',
+          },
+        },
+        users: {
+          admin: { id: 'admin', fullname: 'Admin' },
+        },
+      },
+    },
+    blocks_layout: {
+      items: ['__somersault__'],
+    },
+  };
+}
+
+// The line-break indicator is absolutely positioned, so it only lands after
+// the text when it renders inside the block discussion wrapper. That depends
+// on the suggestion plugin being registered before the discussion plugin.
+async function expectLineBreakIndicatorAfterText(page: Page, text: string) {
+  const textString = page.locator('[data-slate-string]', { hasText: text });
+  const paragraph = page.locator('[data-slate-node="element"]', {
+    has: textString,
+  });
+  const indicator = paragraph.locator(
+    'span[contenteditable="false"]:has(svg.lucide-corner-down-left)',
+  );
+  await expect(indicator).toBeVisible();
+
+  const textBox = await textString.boundingBox();
+  const indicatorBox = await indicator.boundingBox();
+  if (!textBox || !indicatorBox) throw new Error('Missing bounding box');
+
+  expect(indicatorBox.x).toBeGreaterThanOrEqual(textBox.x + textBox.width - 1);
+  expect(indicatorBox.y).toBeLessThan(textBox.y + textBox.height);
+  expect(indicatorBox.y + indicatorBox.height).toBeGreaterThan(textBox.y);
+}
+
 async function openWikiPageEditor(
   page: Page,
   {
@@ -865,5 +933,28 @@ test.describe('Plate discussions and suggestions', () => {
     await expect(dialog.getByText('Suggested adding')).toBeVisible();
     await expect(dialog.getByText('in der Regel')).toBeVisible();
     await expect(dialog.getByText('Suggested removing')).toBeHidden();
+  });
+
+  test('renders the line-break suggestion indicator after the text in edit and view mode', async ({
+    page,
+  }) => {
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'suggestion-line-break',
+      contentTitle: 'Suggestion line break',
+      bodyModifier: withLineBreakSuggestionFixture,
+    });
+
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+    await expectLineBreakIndicatorAfterText(
+      page,
+      'First line of the paragraph',
+    );
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+    await expectLineBreakIndicatorAfterText(
+      page,
+      'First line of the paragraph',
+    );
   });
 });
