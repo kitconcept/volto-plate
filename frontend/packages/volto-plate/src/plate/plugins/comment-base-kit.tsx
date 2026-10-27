@@ -30,7 +30,11 @@ import {
   isResolvedSuggestion,
   useResolveSuggestion,
 } from '@plone/plate/components/ui/block-suggestion';
-import { Comment } from '@plone/plate/components/ui/comment';
+import {
+  Comment,
+  type CommentCreateFormHandle,
+  CommentCreateForm,
+} from '@plone/plate/components/ui/comment';
 import { usePlatePlugins } from '@plone/plate/components/editor/plate-plugins-context';
 import { commentPlugin } from '@plone/plate/components/editor/plugins/comment-kit';
 import type { TDiscussion } from '@plone/plate/components/editor/plugins/discussion-kit';
@@ -41,11 +45,14 @@ import {
 
 import {
   type TArchivableDiscussion,
+  ResolveDiscussionButton,
   ResolvedDiscussionBanner,
+  useDiscussionResolution,
   voltoCommentPlugin,
 } from './comment-resolution';
 import { countDiscussionComments } from '../discussion-data';
 import { discussionSlotRender } from '../discussion-slot';
+import { useInlineComments } from '../context/InlineCommentsProvider';
 
 const ReadOnlyBlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
   const { editor, element } = props;
@@ -151,6 +158,14 @@ const ReadOnlyBlockDiscussionContent = ({
         : 'Comments & Suggestions';
 
   const noneActive = !activeDiscussion && !activeSuggestion;
+  // As in edit mode, the thread shown on its own gets the Resolve button in
+  // the header; several threads keep a Resolve link each.
+  const singleDiscussion =
+    activeDiscussion ||
+    (noneActive && discussionsCount === 1 && suggestionsCount === 0
+      ? resolvedDiscussions[0]
+      : undefined);
+  const { canResolve, resolve } = useDiscussionResolution();
   const popoverHeaderCount = noneActive
     ? totalCount
     : activeDiscussion
@@ -325,7 +340,10 @@ const ReadOnlyBlockDiscussionContent = ({
       />
     ) : (
       <React.Fragment key={item.id}>
-        <ReadOnlyBlockComment discussion={item} />
+        <ReadOnlyBlockComment
+          discussion={item}
+          showResolve={!singleDiscussion}
+        />
         {!isLast && <div className="h-px w-full bg-muted" />}
       </React.Fragment>
     );
@@ -333,6 +351,13 @@ const ReadOnlyBlockDiscussionContent = ({
   const popoverContent = (
     <React.Fragment>
       <DiscussionPopoverHeader
+        action={
+          singleDiscussion && !singleDiscussion.isResolved && canResolve ? (
+            <ResolveDiscussionButton
+              onClick={() => resolve(singleDiscussion.id)}
+            />
+          ) : null
+        }
         count={popoverHeaderCount}
         onClose={closePopover}
         title={popoverTitle}
@@ -392,15 +417,24 @@ const ReadOnlyBlockDiscussionContent = ({
 
 function ReadOnlyBlockComment({
   discussion,
+  showResolve,
 }: {
   discussion: TArchivableDiscussion;
+  showResolve: boolean;
 }) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
+  const replyRef = React.useRef<CommentCreateFormHandle>(null);
+  const inlineComments = useInlineComments();
+  const { canResolve, reopen, resolve } = useDiscussionResolution();
+  const canMutate = inlineComments?.canMutate ?? false;
 
   return (
     <div className="px-4 pt-1 pb-3.5">
       {discussion.isResolved && (
-        <ResolvedDiscussionBanner discussion={discussion} />
+        <ResolvedDiscussionBanner
+          discussion={discussion}
+          onReopen={canResolve ? () => reopen(discussion.id) : undefined}
+        />
       )}
       {discussion.comments.map((comment, index) => (
         <Comment
@@ -410,10 +444,30 @@ function ReadOnlyBlockComment({
           documentContent={discussion.documentContent}
           editingId={editingId}
           index={index}
+          onReply={
+            index === 0 && !discussion.isResolved && canMutate
+              ? () => replyRef.current?.focus()
+              : undefined
+          }
+          onResolve={
+            index === 0 && showResolve && !discussion.isResolved && canResolve
+              ? () => resolve(discussion.id)
+              : undefined
+          }
           setEditingId={setEditingId}
           showDocumentContent
         />
       ))}
+      {/* Full width like the edit-mode thread: the comment editor's minimum
+          width does not fit next to an avatar-wide indent. */}
+      {!discussion.isResolved && canMutate && (
+        <CommentCreateForm ref={replyRef} discussionId={discussion.id} />
+      )}
+      {inlineComments?.error && (
+        <p className="mt-2 text-sm text-destructive" role="alert">
+          {inlineComments.error}
+        </p>
+      )}
     </div>
   );
 }

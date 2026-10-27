@@ -9,6 +9,15 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a38 (2026-10-22)
+
+
+### New features:
+
+- Add the ``@inline-comments`` REST service for creating, replying to, editing,
+  deleting, resolving, and reopening Plate comments outside the edit form, with
+  lock enforcement and rich mention support. 
+
 ## 1.0.0a37 (2026-10-13)
 
 

@@ -18,6 +18,7 @@
  *    check-circle trigger icon (SID-13) @iFlameing
  *  - Count comments instead of threads in the trigger and popover header, so
  *    replies and deletions update the count @iFlameing
+ *  - Position discussion popovers above their selected text anchors.
  *
  */
 import * as React from 'react';
@@ -299,17 +300,19 @@ export function DiscussionPopover({
           />
         )}
 
+        {/* === START CUSTOMIZATION === Keep the discussion above its text anchor. */}
         <PopoverContent
           className={cn(discussionPopoverContentClassName, contentClassName)}
           collisionPadding={collisionPadding}
           onCloseAutoFocus={(event) => event.preventDefault()}
           onOpenAutoFocus={(event) => event.preventDefault()}
           align="center"
-          side="bottom"
+          side="top"
           {...restContentProps}
         >
           {content}
         </PopoverContent>
+        {/* === END CUSTOMIZATION === */}
 
         {trigger && (
           <div className="relative left-0 size-0 select-none">
