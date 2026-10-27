@@ -3,18 +3,19 @@
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from collections.abc import Iterator
-from datetime import datetime
-from datetime import UTC
+from DateTime import DateTime
+from kitconcept.plate import _
 from kitconcept.plate import logger
 from kitconcept.plate import types as t
 from kitconcept.plate.interfaces import IMentions
 from kitconcept.plate.utils import mail as mail_utils
 from plone import api
+from plone.base.i18nl10n import ulocalized_time
 from plone.dexterity.content import DexterityContent
 from Products.PlonePAS.tools.memberdata import MemberData
 from urllib.parse import urlencode
-from zoneinfo import ZoneInfo
 from zope.globalrequest import getRequest
+from zope.i18n import translate
 from zope.interface import implementer
 from ZPublisher.HTTPRequest import HTTPRequest
 
@@ -196,7 +197,14 @@ class Mentions:
                 body=message,
                 recipient=recipient,
                 sender=sender,
-                subject=f"You were mentioned on {site_name}",
+                subject=translate(
+                    _(
+                        "mention_notification_subject",
+                        default="You were mentioned on ${site_name}",
+                        mapping={"site_name": site_name},
+                    ),
+                    context=self.get_request(),
+                ),
             )
 
     def send_notifications(
@@ -229,23 +237,41 @@ class Mentions:
         timezone = api.portal.get_registry_record("plone.portal_timezone") or "UTC"
         payload.update({
             "breadcrumbs": breadcrumbs(context),
-            "timestamp": datetime
-            .now(UTC)
-            .astimezone(ZoneInfo(timezone))
-            .strftime("%d %b %Y, %H:%M %Z"),
+            "timestamp": ulocalized_time(
+                DateTime().toZone(timezone),
+                long_format=True,
+                context=context,
+                request=self.get_request(),
+            ),
         })
         for _user_id, (recipient, mention_id) in payload["recipients"].items():
             excerpt = mention_excerpt(getattr(context, "blocks", {}) or {}, mention_id)
             url = f"{payload['page_url']}?{urlencode({'plateMention': mention_id})}"
-            message = (
-                f"{payload['author']} mentioned you on '{payload['page_title']}'.\n\n"
-                f"{payload['breadcrumbs']}\n\n"
-                + (f"{excerpt}\n\n" if excerpt else "")
-                + f"Open the mention: {url}\n"
-                f"View page: {payload['page_url']}\n\n"
-                f"Mentioned {payload['timestamp']}\n\n"
-                f"You received this email because {payload['author']} mentioned you.\n"
-                f"{payload['site_name']}\n"
+            message = translate(
+                _(
+                    "mention_notification_body",
+                    default=(
+                        "${author} mentioned you on '${page_title}'.\n\n"
+                        "${breadcrumbs}\n\n"
+                        "${excerpt}"
+                        "Open the mention: ${mention_url}\n"
+                        "View page: ${page_url}\n\n"
+                        "Mentioned ${timestamp}\n\n"
+                        "You received this email because ${author} mentioned you.\n"
+                        "${site_name}\n"
+                    ),
+                    mapping={
+                        "author": payload["author"],
+                        "page_title": payload["page_title"],
+                        "breadcrumbs": payload["breadcrumbs"],
+                        "excerpt": f"{excerpt}\n\n" if excerpt else "",
+                        "mention_url": url,
+                        "page_url": payload["page_url"],
+                        "timestamp": payload["timestamp"],
+                        "site_name": payload["site_name"],
+                    },
+                ),
+                context=self.get_request(),
             )
             try:
                 self._send_email(

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-07 20:30+0000\n"
+"POT-Creation-Date: 2026-10-27 12:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,3 +63,21 @@ msgstr ""
 #: kitconcept/plate/profiles.zcml:30
 msgid "kitconcept.plate: Uninstall"
 msgstr ""
+
+#. Default: "${author} mentioned you on '${page_title}'.\n\n${breadcrumbs}\n\n${excerpt}Open the mention: ${mention_url}\nView page: ${page_url}\n\nMentioned ${timestamp}\n\nYou received this email because ${author} mentioned you.\n${site_name}\n"
+#: kitconcept/plate/mentions/utility.py:251
+msgid "mention_notification_body"
+msgstr ""
+"${author} hat Sie auf der Seite '${page_title}' erwähnt.\n\n"
+"${breadcrumbs}\n\n"
+"${excerpt}"
+"Zur Erwähnung: ${mention_url}\n"
+"Seite anzeigen: ${page_url}\n\n"
+"Erwähnt am ${timestamp}\n\n"
+"Sie erhalten diese E-Mail, weil ${author} Sie erwähnt hat.\n"
+"${site_name}\n"
+
+#. Default: "You were mentioned on ${site_name}"
+#: kitconcept/plate/mentions/utility.py:201
+msgid "mention_notification_subject"
+msgstr "Sie wurden auf ${site_name} erwähnt"
