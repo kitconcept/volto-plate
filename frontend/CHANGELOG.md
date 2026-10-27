@@ -8,6 +8,19 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.38 (2026-10-22)
+
+
+### Feature
+
+- Add view-mode inline commenting with text-selection UX, rich mention-enabled
+  comments, and persisted thread actions through ``@inline-comments``. 
+
+
+### Bugfix
+
+- Fix overlapping hover frames on table of contents entries in the wiki page. @Tishasoumya-02 
+
 ## 1.0.0-alpha.37 (2026-10-13)
 
 

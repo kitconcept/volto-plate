@@ -1,8 +1,8 @@
 /**
  * OVERRIDE comment.tsx
  * REASON: PersonPill component to render the comment author instead of the Avatar/AvatarFallback initial-letter avatar.
- * FILE: https://github.com/plone/aurora/blob/plone-plate-1.0.0-alpha.13/packages/plate/components/ui/comment.tsx
- * FILE VERSION: @plone/plate 1.0.0-alpha.13
+ * FILE: https://github.com/plone/aurora/blob/1.0.0-alpha.18/packages/plate/components/ui/comment.tsx
+ * FILE VERSION: @plone/plate 1.0.0-alpha.18
  * DATE: 2026-08-25
  * DEVELOPER: @iFlameing
  * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/55
@@ -12,6 +12,7 @@
  *  - Wrap long unbroken words in comment text/input instead of overflowing the container @iFlameing
  *  - Resolving keeps the comment mark (archive instead of delete); the Resolve link is opt-in via `onResolve` (SID-13) @iFlameing
  *  - Delete a comment and its emptied discussion with functional updates, so the second update doesn't overwrite the first with stale state @iFlameing
+ *  - Persist create, reply, edit, and delete actions through the view-mode inline-comments service while retaining the rich mention-enabled composer @sneridagh
  */
 import * as React from 'react';
 
@@ -49,6 +50,11 @@ import { BasicMarksKit } from '@plone/plate/components/editor/plugins/basic-mark
 import { type TDiscussion } from '@plone/plate/components/editor/plugins/discussion-kit';
 
 import { Editor, EditorContainer } from '@plone/plate/components/ui/editor';
+
+import {
+  type InlineCommentAnchor,
+  useInlineComments,
+} from '../../../../../plate/context/InlineCommentsProvider';
 
 // === START CUSTOMIZATION ===
 // Customization of @plone/plate's components/ui/comment.tsx:
@@ -100,6 +106,7 @@ export function Comment(props: {
 
   const { discussions, setDiscussions, users, currentUserId } =
     usePlatePlugins();
+  const inlineComments = useInlineComments();
   const userInfo = users[comment.userId];
   // === START CUSTOMIZATION ===
   const intl = useIntl();
@@ -121,6 +128,14 @@ export function Comment(props: {
     discussionId: string;
     isEdited: boolean;
   }) => {
+    if (inlineComments) {
+      await inlineComments.edit(
+        input.discussionId,
+        input.id,
+        input.contentRich,
+      );
+      return;
+    }
     const updatedDiscussions = discussions.map((discussion) => {
       if (discussion.id === input.discussionId) {
         const updatedComments = discussion.comments.map((comment) => {
@@ -144,7 +159,8 @@ export function Comment(props: {
   const { tf } = useEditorPlugin(CommentPlugin);
 
   // Replace to your own backend or refer to potion
-  const isMyComment = currentUserId === comment.userId;
+  const isMyComment =
+    (inlineComments?.currentUserId ?? currentUserId) === comment.userId;
 
   const initialValue = comment.contentRich;
 
@@ -164,14 +180,18 @@ export function Comment(props: {
     });
   };
 
-  const onSave = () => {
-    void updateComment({
-      id: comment.id,
-      contentRich: commentEditor.children,
-      discussionId: comment.discussionId,
-      isEdited: true,
-    });
-    setEditingId(null);
+  const onSave = async () => {
+    try {
+      await updateComment({
+        id: comment.id,
+        contentRich: commentEditor.children,
+        discussionId: comment.discussionId,
+        isEdited: true,
+      });
+      setEditingId(null);
+    } catch {
+      // The view-mode provider keeps the editor open and exposes the error.
+    }
   };
 
   const isFirst = index === 0;
@@ -209,27 +229,29 @@ export function Comment(props: {
         />
         {/* === END CUSTOMIZATION === */}
 
-        {isMyComment && (hovering || dropdownOpen) && (
-          <div className="absolute top-0 right-0 flex space-x-1">
-            <CommentMoreDropdown
-              onCloseAutoFocus={() => {
-                setTimeout(() => {
-                  commentEditor.tf.focus({ edge: 'endEditor' });
-                }, 0);
-              }}
-              onRemoveComment={() => {
-                if (discussionLength === 1) {
-                  tf.comment.unsetMark({ id: comment.discussionId });
-                  void removeDiscussion(comment.discussionId);
-                }
-              }}
-              comment={comment}
-              dropdownOpen={dropdownOpen}
-              setDropdownOpen={setDropdownOpen}
-              setEditingId={setEditingId}
-            />
-          </div>
-        )}
+        {isMyComment &&
+          (inlineComments?.canMutate ?? true) &&
+          (hovering || dropdownOpen) && (
+            <div className="absolute top-0 right-0 flex space-x-1">
+              <CommentMoreDropdown
+                onCloseAutoFocus={() => {
+                  setTimeout(() => {
+                    commentEditor.tf.focus({ edge: 'endEditor' });
+                  }, 0);
+                }}
+                onRemoveComment={() => {
+                  if (discussionLength === 1) {
+                    tf.comment.unsetMark({ id: comment.discussionId });
+                    void removeDiscussion(comment.discussionId);
+                  }
+                }}
+                comment={comment}
+                dropdownOpen={dropdownOpen}
+                setDropdownOpen={setDropdownOpen}
+                setEditingId={setEditingId}
+              />
+            </div>
+          )}
       </div>
 
       {isFirst && showDocumentContent && (
@@ -281,6 +303,7 @@ export function Comment(props: {
                 <Button
                   size="icon"
                   variant="ghost"
+                  disabled={inlineComments?.pending}
                   onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation();
                     void onSave();
@@ -356,6 +379,7 @@ function CommentMoreDropdown(props: {
   } = props;
 
   const { setDiscussions } = usePlatePlugins();
+  const inlineComments = useInlineComments();
 
   const selectedEditCommentRef = React.useRef<boolean>(false);
 
@@ -363,6 +387,15 @@ function CommentMoreDropdown(props: {
     if (!comment.id)
       // eslint-disable-next-line no-alert
       return alert('You are operating too quickly, please try again later.');
+
+    if (inlineComments) {
+      void inlineComments
+        .deleteComment(comment.discussionId, comment.id)
+        .catch(() => {
+          // The view-mode provider renders the request error in the thread.
+        });
+      return;
+    }
 
     // === START CUSTOMIZATION === Functional update, see `removeDiscussion`
     setDiscussions((previous) =>
@@ -379,7 +412,13 @@ function CommentMoreDropdown(props: {
     );
     // === END CUSTOMIZATION ===
     onRemoveComment?.();
-  }, [comment.discussionId, comment.id, onRemoveComment, setDiscussions]);
+  }, [
+    comment.discussionId,
+    comment.id,
+    inlineComments,
+    onRemoveComment,
+    setDiscussions,
+  ]);
 
   const onEditComment = React.useCallback(() => {
     selectedEditCommentRef.current = true;
@@ -456,17 +495,21 @@ export interface CommentCreateFormHandle {
 export const CommentCreateForm = React.forwardRef<
   CommentCreateFormHandle,
   {
+    anchor?: InlineCommentAnchor;
     autoFocus?: boolean;
     className?: string;
     discussionId?: string;
     focusOnMount?: boolean;
+    onSubmitted?: () => void;
   }
 >(function CommentCreateForm(
   {
+    anchor,
     autoFocus = false,
     className,
     discussionId: discussionIdProp,
     focusOnMount = false,
+    onSubmitted,
   },
   ref,
 ) {
@@ -474,6 +517,7 @@ export const CommentCreateForm = React.forwardRef<
   const commentId = useCommentId();
   const discussionId = discussionIdProp ?? commentId;
   const { currentUserId, discussions, setDiscussions } = usePlatePlugins();
+  const inlineComments = useInlineComments();
   const [commentValue, setCommentValue] = React.useState<Value | undefined>();
   const commentContent = React.useMemo(
     () =>
@@ -501,7 +545,25 @@ export const CommentCreateForm = React.forwardRef<
   );
 
   const onAddComment = React.useCallback(async () => {
-    if (!commentValue || !currentUserId) return;
+    const actorId = inlineComments?.currentUserId ?? currentUserId;
+    if (!commentValue || !actorId || inlineComments?.pending) return;
+
+    if (inlineComments) {
+      try {
+        if (anchor) {
+          await inlineComments.create(anchor, commentValue);
+        } else if (discussionId) {
+          await inlineComments.reply(discussionId, commentValue);
+        } else {
+          return;
+        }
+        commentEditor.tf.reset();
+        onSubmitted?.();
+      } catch {
+        // Keep the rich comment value available so the user can retry.
+      }
+      return;
+    }
 
     commentEditor.tf.reset();
 
@@ -519,12 +581,12 @@ export const CommentCreateForm = React.forwardRef<
               createdAt: new Date(),
               discussionId,
               isEdited: false,
-              userId: currentUserId,
+              userId: actorId,
             },
           ],
           createdAt: new Date(),
           isResolved: false,
-          userId: currentUserId,
+          userId: actorId,
         };
 
         setDiscussions([...discussions, newDiscussion]);
@@ -538,7 +600,7 @@ export const CommentCreateForm = React.forwardRef<
         createdAt: new Date(),
         discussionId,
         isEdited: false,
-        userId: currentUserId,
+        userId: actorId,
       };
 
       // Add reply to discussion comments
@@ -578,13 +640,13 @@ export const CommentCreateForm = React.forwardRef<
           createdAt: new Date(),
           discussionId: _discussionId,
           isEdited: false,
-          userId: currentUserId,
+          userId: actorId,
         },
       ],
       createdAt: new Date(),
       documentContent,
       isResolved: false,
-      userId: currentUserId,
+      userId: actorId,
     };
 
     setDiscussions([...discussions, newDiscussion]);
@@ -603,10 +665,13 @@ export const CommentCreateForm = React.forwardRef<
   }, [
     commentValue,
     commentEditor.tf,
+    anchor,
     currentUserId,
     discussionId,
     editor,
     discussions,
+    inlineComments,
+    onSubmitted,
     setDiscussions,
   ]);
 
@@ -658,7 +723,9 @@ export const CommentCreateForm = React.forwardRef<
                 hover:bg-transparent! hover:text-[#2563eb]!
                 disabled:cursor-default disabled:text-[#b8c6c8]!
               `}
-              disabled={commentContent.trim().length === 0}
+              disabled={
+                commentContent.trim().length === 0 || inlineComments?.pending
+              }
               onClick={(e) => {
                 e.stopPropagation();
                 onAddComment();

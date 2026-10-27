@@ -7,6 +7,41 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a38 (2026-10-22)
+
+### Backend
+
+
+#### New features:
+
+- Add the ``@inline-comments`` REST service for creating, replying to, editing,
+  deleting, resolving, and reopening Plate comments outside the edit form, with
+  lock enforcement and rich mention support. 
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Add view-mode inline commenting with text-selection UX, rich mention-enabled
+  comments, and persisted thread actions through ``@inline-comments``. 
+
+
+#### Bugfix
+
+- Fix overlapping hover frames on table of contents entries in the wiki page. @Tishasoumya-02 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a37 (2026-10-13)
 
 ### Backend
