@@ -4,6 +4,9 @@ from Acquisition import aq_base
 from Acquisition import aq_parent
 from collections.abc import Iterator
 from DateTime import DateTime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from html import escape
 from kitconcept.plate import _
 from kitconcept.plate import logger
 from kitconcept.plate import types as t
@@ -18,6 +21,8 @@ from zope.globalrequest import getRequest
 from zope.i18n import translate
 from zope.interface import implementer
 from ZPublisher.HTTPRequest import HTTPRequest
+
+import re
 
 
 PENDING_MENTIONS_KEY = "kitconcept.plate.pending_mention_notifications"
@@ -179,7 +184,13 @@ class Mentions:
         return recipients
 
     def _send_email(
-        self, message: str, recipient: str, sender: str, site_name: str
+        self,
+        message: str,
+        recipient: str,
+        sender: str,
+        site_name: str,
+        mention_url: str = "",
+        page_url: str = "",
     ) -> None:
         """Send a single mention notification email.
 
@@ -187,14 +198,56 @@ class Mentions:
         :param recipient: The recipient email address.
         :param sender: The sender email address.
         :param site_name: The site name used in the subject line.
+        :param mention_url: The destination for the HTML mention button.
+        :param page_url: The destination for the HTML page link.
         """
+        msg = MIMEMultipart("alternative")
+        msg.attach(MIMEText(message, "plain", "utf-8"))
+        paragraphs = "".join(
+            '<p style="margin:0 0 10px;">'
+            + escape(paragraph).replace("\n", "<br>")
+            + "</p>"
+            for paragraph in message.strip().split("\n\n")
+        )
+        links = {}
+        if mention_url:
+            label = translate(_("Go to mention"), context=self.get_request())
+            links[escape(mention_url)] = (
+                f'<a href="{escape(mention_url)}" style="display:inline-block;'
+                "margin:8px 0 10px 10px;padding:8px 14px;font-size:14px;"
+                "background-color:#005ea8;color:#ffffff;"
+                'text-decoration:none;border-radius:4px;font-weight:bold;">'
+                f"{escape(label)}</a>"
+            )
+        if page_url:
+            label = translate(_("View page"), context=self.get_request())
+            links[escape(page_url)] = (
+                f'<a href="{escape(page_url)}">{escape(label)}</a>'
+            )
+        if links:
+            pattern = "|".join(
+                re.escape(url) for url in sorted(links, key=len, reverse=True)
+            )
+            paragraphs = re.sub(pattern, lambda match: links[match.group()], paragraphs)
+        html = (
+            '<html><body style="margin:0;padding:24px 12px;background-color:#f3f4f6;">'
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">'
+            '<tr><td align="center">'
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+            'style="max-width:640px;background-color:#ffffff;border:1px solid #e5e7eb;'
+            'border-radius:8px;">'
+            '<tr><td style="padding:32px 24px;font-family:Arial,Helvetica,sans-serif;'
+            'font-size:16px;line-height:1.6;color:#1f2937;overflow-wrap:anywhere;">'
+            f"{paragraphs}</td></tr></table></td></tr></table></body></html>"
+        )
+        msg.attach(MIMEText(html, "html", "utf-8"))
         # Editors can mention users, but normally cannot invoke MailHost.
         # This server-owned action has already validated both recipients
         # and content, so grant the narrow temporary role needed for
         # delivery.
         with api.env.adopt_roles(["Manager"]):
             api.portal.send_email(
-                body=message,
+                body=msg,
                 recipient=recipient,
                 sender=sender,
                 subject=translate(
@@ -279,6 +332,8 @@ class Mentions:
                     recipient=recipient,
                     sender=payload["from_address"],
                     site_name=payload["site_name"],
+                    mention_url=url,
+                    page_url=payload["page_url"],
                 )
             except ValueError:
                 logger.exception("Unable to send Plate mention notification")

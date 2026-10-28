@@ -111,8 +111,18 @@ class TestSendNotifications(TestBaseMentionsService):
         body = get_msg_body(msg, "text/plain")
         assert "Mentioning User mentioned you on 'My Workspace'." in body
         assert "plateMention=abc" in body
-        assert not msg.is_multipart()
-        assert msg.get_content_type() == "text/plain"
+        assert msg.get_content_type() == "multipart/alternative"
+        assert [part.get_content_type() for part in msg.get_payload()] == [
+            "text/plain",
+            "text/html",
+        ]
+        html = get_msg_body(msg, "text/html")
+        assert "Mentioning User mentioned you on &#x27;My Workspace&#x27;." in html
+        assert "plateMention=abc" in html
+        assert '<table role="presentation"' in html
+        assert f'href="{self.workspace.absolute_url()}?plateMention=abc"' in html
+        assert ">Go to mention</a>" in html
+        assert f'href="{self.workspace.absolute_url()}">View page</a>' in html
         assert "Mentioned " in body
         assert "You received this email because Mentioning User mentioned you." in body
         site_name = api.portal.get_registry_record("plone.site_title")

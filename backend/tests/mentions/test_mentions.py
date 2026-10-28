@@ -174,3 +174,21 @@ def test_breadcrumbs(portal, make_workspace):
     with api.env.adopt_roles(["Manager"]):
         page = api.content.create(container=workspace, type="WikiPage", title="Notes")
     assert breadcrumbs(page) == "Engineering › Notes"
+
+
+def test_email_alternatives_escape_html(portal, monkeypatch):
+    """Both alternatives preserve Unicode while content remains text in HTML."""
+    sent = {}
+    monkeypatch.setattr(api.portal, "send_email", lambda **kwargs: sent.update(kwargs))
+    text = 'Grüße <script>alert("test")</script> & review\n\nNext line'
+    mentions_utility()._send_email(
+        text, "recipient@example.com", "sender@example.com", "Site"
+    )
+    msg = sent["body"]
+    assert msg.get_content_type() == "multipart/alternative"
+    plain, html = msg.get_payload()
+    assert plain.get_payload(decode=True).decode("utf-8") == text
+    rendered = html.get_payload(decode=True).decode("utf-8")
+    assert "Grüße &lt;script&gt;" in rendered
+    assert "<script>" not in rendered
+    assert '&amp; review</p><p style="margin:0 0 10px;">Next line</p>' in rendered
