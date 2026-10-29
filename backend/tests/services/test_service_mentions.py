@@ -108,6 +108,7 @@ class TestSendNotifications(TestBaseMentionsService):
         assert len(messages) == 1
         msg = messages[0]
         assert msg["To"] == "mentioned-user@example.com"
+        assert str(msg["Subject"]) == 'Mentioning User mentioned you in "My Workspace"'
         body = get_msg_body(msg, "text/plain")
         assert "Mentioning User mentioned you on 'My Workspace'." in body
         assert "plateMention=abc" in body
@@ -122,6 +123,10 @@ class TestSendNotifications(TestBaseMentionsService):
         assert '<table role="presentation"' in html
         assert f'href="{self.workspace.absolute_url()}?plateMention=abc"' in html
         assert ">Go to mention</a>" in html
+        assert "Open the mention:" not in html
+        assert "View page:" not in html
+        assert "</a></td><td" in html
+        assert "<hr " in html
         assert f'href="{self.workspace.absolute_url()}">View page</a>' in html
         assert "Mentioned " in body
         assert "You received this email because Mentioning User mentioned you." in body

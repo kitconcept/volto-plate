@@ -22,8 +22,6 @@ from zope.i18n import translate
 from zope.interface import implementer
 from ZPublisher.HTTPRequest import HTTPRequest
 
-import re
-
 
 PENDING_MENTIONS_KEY = "kitconcept.plate.pending_mention_notifications"
 
@@ -188,47 +186,12 @@ class Mentions:
         message: str,
         recipient: str,
         sender: str,
-        site_name: str,
-        mention_url: str = "",
-        page_url: str = "",
+        subject: str,
+        html_message: str,
     ) -> None:
-        """Send a single mention notification email.
-
-        :param message: The rendered plain-text notification.
-        :param recipient: The recipient email address.
-        :param sender: The sender email address.
-        :param site_name: The site name used in the subject line.
-        :param mention_url: The destination for the HTML mention button.
-        :param page_url: The destination for the HTML page link.
-        """
+        """Send translated plain-text and HTML alternatives in one email."""
         msg = MIMEMultipart("alternative")
         msg.attach(MIMEText(message, "plain", "utf-8"))
-        paragraphs = "".join(
-            '<p style="margin:0 0 10px;">'
-            + escape(paragraph).replace("\n", "<br>")
-            + "</p>"
-            for paragraph in message.strip().split("\n\n")
-        )
-        links = {}
-        if mention_url:
-            label = translate(_("Go to mention"), context=self.get_request())
-            links[escape(mention_url)] = (
-                f'<a href="{escape(mention_url)}" style="display:inline-block;'
-                "margin:8px 0 10px 10px;padding:8px 14px;font-size:14px;"
-                "background-color:#005ea8;color:#ffffff;"
-                'text-decoration:none;border-radius:4px;font-weight:bold;">'
-                f"{escape(label)}</a>"
-            )
-        if page_url:
-            label = translate(_("View page"), context=self.get_request())
-            links[escape(page_url)] = (
-                f'<a href="{escape(page_url)}">{escape(label)}</a>'
-            )
-        if links:
-            pattern = "|".join(
-                re.escape(url) for url in sorted(links, key=len, reverse=True)
-            )
-            paragraphs = re.sub(pattern, lambda match: links[match.group()], paragraphs)
         html = (
             '<html><body style="margin:0;padding:24px 12px;background-color:#f3f4f6;">'
             '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">'
@@ -238,7 +201,7 @@ class Mentions:
             'border-radius:8px;">'
             '<tr><td style="padding:32px 24px;font-family:Arial,Helvetica,sans-serif;'
             'font-size:16px;line-height:1.6;color:#1f2937;overflow-wrap:anywhere;">'
-            f"{paragraphs}</td></tr></table></td></tr></table></body></html>"
+            f"{html_message}</td></tr></table></td></tr></table></body></html>"
         )
         msg.attach(MIMEText(html, "html", "utf-8"))
         # Editors can mention users, but normally cannot invoke MailHost.
@@ -250,15 +213,66 @@ class Mentions:
                 body=msg,
                 recipient=recipient,
                 sender=sender,
-                subject=translate(
-                    _(
-                        "mention_notification_subject",
-                        default="You were mentioned on ${site_name}",
-                        mapping={"site_name": site_name},
-                    ),
-                    context=self.get_request(),
-                ),
+                subject=subject,
             )
+
+    def _render_html(self, payload: dict, excerpt: str, mention_url: str) -> str:
+        """Render HTML from structured values, escaping all dynamic content."""
+        request = self.get_request()
+        heading = translate(
+            _(
+                "mention_notification_heading",
+                default="${author} mentioned you on '${page_title}'.",
+                mapping={
+                    "author": payload["author"],
+                    "page_title": payload["page_title"],
+                },
+            ),
+            context=request,
+        )
+        timestamp = translate(
+            _(
+                "mention_notification_timestamp",
+                default="Mentioned ${timestamp}",
+                mapping={"timestamp": payload["timestamp"]},
+            ),
+            context=request,
+        )
+        footer = translate(
+            _(
+                "mention_notification_footer",
+                default="You received this email because ${author} mentioned you.",
+                mapping={"author": payload["author"]},
+            ),
+            context=request,
+        )
+        button_label = translate(_("Go to mention"), context=request)
+        page_label = translate(_("View page"), context=request)
+        quote = (
+            '<blockquote style="margin:16px 0;padding:8px 16px;'
+            'border-left:3px solid #cbd5e1;">'
+            f"{escape(excerpt)}</blockquote>"
+            if excerpt
+            else ""
+        )
+        return (
+            f'<p style="margin:0 0 10px;">{escape(heading)}</p>'
+            f'<p style="margin:0 0 10px;">{escape(payload["breadcrumbs"])}</p>'
+            f"{quote}"
+            '<table role="presentation" cellpadding="0" cellspacing="0" '
+            'style="margin:16px 0;"><tr><td>'
+            f'<a href="{escape(mention_url)}" style="display:inline-block;'
+            "padding:8px 14px;font-size:14px;background-color:#005ea8;color:#ffffff;"
+            'text-decoration:none;border-radius:4px;font-weight:bold;">'
+            f"{escape(button_label)}</a></td>"
+            '<td style="padding-left:16px;">'
+            f'<a href="{escape(payload["page_url"])}">{escape(page_label)}</a>'
+            "</td></tr></table>"
+            f'<p style="margin:0 0 10px;">{escape(timestamp)}</p>'
+            '<hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0;">'
+            f'<p style="margin:0 0 10px;">{escape(footer)}</p>'
+            f'<p style="margin:0;">{escape(payload["site_name"])}</p>'
+        )
 
     def send_notifications(
         self,
@@ -326,14 +340,25 @@ class Mentions:
                 ),
                 context=self.get_request(),
             )
+            subject = translate(
+                _(
+                    "mention_notification_subject",
+                    default='${author} mentioned you in "${page_title}"',
+                    mapping={
+                        "author": payload["author"],
+                        "page_title": payload["page_title"],
+                    },
+                ),
+                context=self.get_request(),
+            )
+            html_message = self._render_html(payload, excerpt, url)
             try:
                 self._send_email(
                     message=message,
                     recipient=recipient,
                     sender=payload["from_address"],
-                    site_name=payload["site_name"],
-                    mention_url=url,
-                    page_url=payload["page_url"],
+                    subject=subject,
+                    html_message=html_message,
                 )
             except ValueError:
                 logger.exception("Unable to send Plate mention notification")

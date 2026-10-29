@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-28 11:28+0000\n"
+"POT-Creation-Date: 2026-10-29 09:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: kitconcept/plate/mentions/utility.py:212
+#: kitconcept/plate/mentions/utility.py:243
 msgid "Go to mention"
 msgstr ""
 
@@ -48,7 +48,7 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: kitconcept/plate/mentions/utility.py:220
+#: kitconcept/plate/mentions/utility.py:244
 msgid "View page"
 msgstr ""
 
@@ -73,11 +73,26 @@ msgid "kitconcept.plate: Uninstall"
 msgstr ""
 
 #. Default: "${author} mentioned you on '${page_title}'.\n\n${breadcrumbs}\n\n${excerpt}Open the mention: ${mention_url}\nView page: ${page_url}\n\nMentioned ${timestamp}\n\nYou received this email because ${author} mentioned you.\n${site_name}\n"
-#: kitconcept/plate/mentions/utility.py:288
+#: kitconcept/plate/mentions/utility.py:311
 msgid "mention_notification_body"
 msgstr ""
 
-#. Default: "You were mentioned on ${site_name}"
-#: kitconcept/plate/mentions/utility.py:238
+#. Default: "You received this email because ${author} mentioned you."
+#: kitconcept/plate/mentions/utility.py:236
+msgid "mention_notification_footer"
+msgstr ""
+
+#. Default: "${author} mentioned you on '${page_title}'."
+#: kitconcept/plate/mentions/utility.py:223
+msgid "mention_notification_heading"
+msgstr ""
+
+#. Default: "${author} mentioned you in \"${page_title}\""
+#: kitconcept/plate/mentions/utility.py:337
 msgid "mention_notification_subject"
+msgstr ""
+
+#. Default: "Mentioned ${timestamp}"
+#: kitconcept/plate/mentions/utility.py:231
+msgid "mention_notification_timestamp"
 msgstr ""

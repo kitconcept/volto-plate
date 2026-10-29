@@ -181,8 +181,20 @@ def test_email_alternatives_escape_html(portal, monkeypatch):
     sent = {}
     monkeypatch.setattr(api.portal, "send_email", lambda **kwargs: sent.update(kwargs))
     text = 'Grüße <script>alert("test")</script> & review\n\nNext line'
-    mentions_utility()._send_email(
-        text, "recipient@example.com", "sender@example.com", "Site"
+    utility = mentions_utility()
+    payload = {
+        "author": "Anna",
+        "page_title": "Notes",
+        "breadcrumbs": "Space › Notes",
+        "timestamp": "2026-10-29",
+        "site_name": "Site",
+        "page_url": 'https://example.com/page?x=1&y="two"',
+    }
+    rendered = utility._render_html(
+        payload, text, "https://example.com/page?mention=abc"
+    )
+    utility._send_email(
+        text, "recipient@example.com", "sender@example.com", "Subject", rendered
     )
     msg = sent["body"]
     assert msg.get_content_type() == "multipart/alternative"
@@ -191,4 +203,10 @@ def test_email_alternatives_escape_html(portal, monkeypatch):
     rendered = html.get_payload(decode=True).decode("utf-8")
     assert "Grüße &lt;script&gt;" in rendered
     assert "<script>" not in rendered
-    assert '&amp; review</p><p style="margin:0 0 10px;">Next line</p>' in rendered
+    assert "&amp; review" in rendered
+    assert "<blockquote " in rendered
+    assert "border-left:3px solid" in rendered
+    assert "<hr " in rendered
+    assert 'href="https://example.com/page?x=1&amp;y=&quot;two&quot;"' in rendered
+    assert "Open the mention:" not in rendered
+    assert "View page:" not in rendered
