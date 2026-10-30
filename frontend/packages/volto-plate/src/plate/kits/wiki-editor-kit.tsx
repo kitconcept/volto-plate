@@ -85,9 +85,9 @@ export const WikiEditorKit = [
   ...BlockWidthKit,
 
   // Collaboration
+  ...SuggestionKit,
   discussionPlugin.configure({ render: discussionSlotRender(BlockDiscussion) }),
   voltoCommentPlugin,
-  ...SuggestionKit,
 
   // Editing
   ...WikiSlashKit,

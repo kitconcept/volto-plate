@@ -92,10 +92,12 @@ export const readOnlyDiscussionPlugin = createPlatePlugin({
 // The renderer registers the interactive comment and suggestion plugins so the
 // read-only popover can resolve persisted metadata (comment ids, suggestion
 // paths) through the same plugin options the editor uses.
+// suggestionPlugin must come before readOnlyDiscussionPlugin so its line-break
+// indicator renders inside the discussion wrapper, after the text.
 export const BaseCommentKit = [
+  suggestionPlugin,
   readOnlyDiscussionPlugin,
   voltoCommentPlugin,
-  suggestionPlugin,
 ];
 
 const hasMentionId = (value: unknown, mentionId: string): boolean => {
