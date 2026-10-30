@@ -76,8 +76,11 @@ core/packages/registry/dist: $(shell find core/packages/registry/src -type f)
 core/packages/components/dist: $(shell find core/packages/components/src -type f)
 	pnpm --filter @plone/components build
 
+# TODO: Build the type declarations again (`pnpm --filter @plone/helpers build`)
+# once Volto's @plone/types has `schemaEnhancer` in `BlockExtension`, which
+# Aurora's @plone/helpers needs: https://github.com/plone/volto/pull/8498
 aurora/packages/helpers/dist: $(shell find aurora/packages/helpers/src -type f)
-	pnpm --filter @plone/helpers build
+	pnpm --filter @plone/helpers exec tsup --no-dts
 
 aurora/packages/icons/dist: $(shell find aurora/packages/icons/src -type f)
 	pnpm --filter @plone/icons build
