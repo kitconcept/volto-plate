@@ -13,7 +13,8 @@ import { CalloutKit } from '@plone/plate/components/editor/plugins/callout-kit';
 import { CodeBlockKit } from '@plone/plate/components/editor/plugins/code-block-kit';
 import { ColumnKit } from '@plone/plate/components/editor/plugins/column-kit';
 import { CursorOverlayKit } from '@plone/plate/components/editor/plugins/cursor-overlay-kit';
-import { DiscussionKit } from '@plone/plate/components/editor/plugins/discussion-kit';
+import { discussionPlugin } from '@plone/plate/components/editor/plugins/discussion-kit';
+import { BlockDiscussion } from '@plone/plate/components/ui/block-discussion';
 // import { DndKit } from '@plone/plate/components/editor/plugins/dnd-kit';
 import { DocxKit } from '@plone/plate/components/editor/plugins/docx-kit';
 import { ExitBreakKit } from '@plone/plate/components/editor/plugins/exit-break-kit';
@@ -28,6 +29,7 @@ import { SuggestionKit } from '@plone/plate/components/editor/plugins/suggestion
 import { TableKit } from '@plone/plate/components/editor/plugins/table-kit';
 import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
 
+import { discussionSlotRender } from '../discussion-slot';
 import { CodeDrawingKit } from '../plugins/code-drawing-kit';
 import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
 import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image-paste';
@@ -84,7 +86,7 @@ export const WikiEditorKit = [
 
   // Collaboration
   ...SuggestionKit,
-  ...DiscussionKit,
+  discussionPlugin.configure({ render: discussionSlotRender(BlockDiscussion) }),
   voltoCommentPlugin,
 
   // Editing

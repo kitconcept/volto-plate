@@ -269,13 +269,13 @@ function withSomersaultSuggestionFixture({
           },
           ...(includeUsers
             ? {
-                users: {
-                  admin: {
-                    id: 'admin',
-                    fullname: 'Admin',
-                  },
+              users: {
+                admin: {
+                  id: 'admin',
+                  fullname: 'Admin',
                 },
-              }
+              },
+            }
             : {}),
         },
       },
@@ -421,6 +421,104 @@ async function expectLineBreakIndicatorAfterText(page: Page, text: string) {
   expect(indicatorBox.x).toBeGreaterThanOrEqual(textBox.x + textBox.width - 1);
   expect(indicatorBox.y).toBeLessThan(textBox.y + textBox.height);
   expect(indicatorBox.y + indicatorBox.height).toBeGreaterThan(textBox.y);
+}
+
+function commentedLeaf(text: string) {
+  return { text, comment: true, comment_blockdiscussion: true };
+}
+
+const commentedTable = {
+  type: 'table',
+  children: [
+    {
+      type: 'tr',
+      children: [
+        {
+          type: 'td',
+          children: [{ type: 'p', children: [commentedLeaf('Cell one')] }],
+        },
+        {
+          type: 'td',
+          children: [{ type: 'p', children: [{ text: 'Cell two' }] }],
+        },
+      ],
+    },
+    {
+      type: 'tr',
+      children: [
+        {
+          type: 'td',
+          children: [{ type: 'p', children: [{ text: 'Cell three' }] }],
+        },
+        {
+          type: 'td',
+          children: [{ type: 'p', children: [{ text: 'Cell four' }] }],
+        },
+      ],
+    },
+  ],
+};
+
+const commentedCodeBlock = {
+  type: 'code_block',
+  lang: 'javascript',
+  children: [
+    { type: 'code_line', children: [commentedLeaf('const greeting = 1;')] },
+    { type: 'code_line', children: [{ text: 'console.log(greeting);' }] },
+  ],
+};
+
+function withSomersaultBlockDiscussionFixture({
+  block,
+  markText,
+  commentText,
+}: {
+  block: Record<string, unknown>;
+  markText: string;
+  commentText: string;
+}) {
+  return (body: Record<string, unknown>) => {
+    const title = typeof body.title === 'string' ? body.title : '';
+    const existingBlocks =
+      typeof body.blocks === 'object' && body.blocks !== null
+        ? (body.blocks as Record<string, unknown>)
+        : {};
+
+    return {
+      ...body,
+      blocks: {
+        ...existingBlocks,
+        __somersault__: {
+          '@type': '__somersault__',
+          value: [{ type: 'title', children: [{ text: title }] }, block],
+          discussions: {
+            blockdiscussion: {
+              id: 'blockdiscussion',
+              comments: [
+                {
+                  id: 'blockcomment',
+                  contentRich: [
+                    { type: 'p', children: [{ text: commentText }] },
+                  ],
+                  createdAt: '2026-04-17T09:00:00+00:00',
+                  discussionId: 'blockdiscussion',
+                  isEdited: false,
+                  userId: 'admin',
+                },
+              ],
+              createdAt: '2026-04-17T09:00:00+00:00',
+              documentContent: markText,
+              isResolved: false,
+              userId: 'admin',
+            },
+          },
+          users: {
+            admin: { id: 'admin', fullname: 'Admin' },
+          },
+        },
+      },
+    };
+  };
 }
 
 async function openWikiPageEditor(
@@ -1306,5 +1404,55 @@ test.describe('Plate discussions and suggestions', () => {
       page,
       'First line of the paragraph',
     );
+  });
+
+  test('renders a table comment beside the table in edit and view mode', async ({
+    page,
+  }) => {
+    const commentText = 'Comment on a table cell';
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-table',
+      contentTitle: 'Discussion table',
+      bodyModifier: withSomersaultBlockDiscussionFixture({
+        block: commentedTable,
+        markText: 'Cell one',
+        commentText,
+      }),
+    });
+
+    // The comment trigger renders around the inner container, not inside the table.
+    const trigger = page.locator(
+      '.slate-table button:not(.block-inner-container *)',
+      { hasText: '1' },
+    );
+
+    await expect(trigger).toBeVisible();
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await expect(trigger).toBeVisible();
+  });
+
+  test('renders a code block comment beside the code block in edit and view mode', async ({
+    page,
+  }) => {
+    const commentText = 'Comment on a code line';
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-code-block',
+      contentTitle: 'Discussion code block',
+      bodyModifier: withSomersaultBlockDiscussionFixture({
+        block: commentedCodeBlock,
+        markText: 'const greeting = 1;',
+        commentText,
+      }),
+    });
+
+    // The comment trigger renders around the inner container, not inside the code.
+    const trigger = page.locator(
+      '.slate-code_block button:not(.block-inner-container *)',
+      { hasText: '1' },
+    );
+
+    await expect(trigger).toBeVisible();
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await expect(trigger).toBeVisible();
   });
 });
