@@ -1,21 +1,73 @@
 """Named utility for Plate mention extraction and notification."""
 
 from Acquisition import aq_base
+from Acquisition import aq_parent
 from collections.abc import Iterator
+from DateTime import DateTime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from html import escape
+from kitconcept.plate import _
 from kitconcept.plate import logger
 from kitconcept.plate import types as t
 from kitconcept.plate.interfaces import IMentions
 from kitconcept.plate.utils import mail as mail_utils
 from plone import api
+from plone.base.i18nl10n import ulocalized_time
 from plone.dexterity.content import DexterityContent
 from Products.PlonePAS.tools.memberdata import MemberData
 from urllib.parse import urlencode
 from zope.globalrequest import getRequest
+from zope.i18n import translate
 from zope.interface import implementer
 from ZPublisher.HTTPRequest import HTTPRequest
 
 
 PENDING_MENTIONS_KEY = "kitconcept.plate.pending_mention_notifications"
+
+
+def plain_text(value):
+    """Read visible text from Plate nodes, including mention labels."""
+    if isinstance(value, list):
+        return "".join(plain_text(child) for child in value)
+    if not isinstance(value, dict):
+        return ""
+    if value.get("type") == "mention":
+        return f"@{value.get('value', '')}"
+    return value.get("text", "") + plain_text(value.get("children", []))
+
+
+def mention_excerpt(value, mention_id):
+    """Find bounded surrounding text in a document or discussion comment."""
+    if isinstance(value, dict):
+        children = value.get("children", [])
+        for index, child in enumerate(children):
+            if (
+                isinstance(child, dict)
+                and child.get("type") == "mention"
+                and child.get("mentionId") == mention_id
+            ):
+                before = plain_text(children[:index])[-140:]
+                after = plain_text(children[index + 1 :])[:140]
+                text = before + plain_text(child)[:180] + after
+                return " ".join(text.split())
+        value = value.values()
+    elif not isinstance(value, list):
+        return ""
+    for child in value:
+        if excerpt := mention_excerpt(child, mention_id):
+            return excerpt
+    return ""
+
+
+def breadcrumbs(context):
+    """Return parent and page titles, excluding the Plone site."""
+    portal = api.portal.get()
+    titles = []
+    while context is not None and context != portal:
+        titles.append(context.Title())
+        context = aq_parent(context)
+    return " \N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK} ".join(reversed(titles))
 
 
 @implementer(IMentions)
@@ -130,26 +182,97 @@ class Mentions:
         return recipients
 
     def _send_email(
-        self, message: str, recipient: str, sender: str, site_name: str
+        self,
+        message: str,
+        recipient: str,
+        sender: str,
+        subject: str,
+        html_message: str,
     ) -> None:
-        """Send a single mention notification email.
-
-        :param message: The rendered plain-text body.
-        :param recipient: The recipient email address.
-        :param sender: The sender email address.
-        :param site_name: The site name used in the subject line.
-        """
+        """Send translated plain-text and HTML alternatives in one email."""
+        msg = MIMEMultipart("alternative")
+        msg.attach(MIMEText(message, "plain", "utf-8"))
+        html = (
+            '<html><body style="margin:0;padding:24px 12px;background-color:#f3f4f6;">'
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">'
+            '<tr><td align="center">'
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+            'style="max-width:640px;background-color:#ffffff;border:1px solid #e5e7eb;'
+            'border-radius:8px;">'
+            '<tr><td style="padding:32px 24px;font-family:Arial,Helvetica,sans-serif;'
+            'font-size:16px;line-height:1.6;color:#1f2937;overflow-wrap:anywhere;">'
+            f"{html_message}</td></tr></table></td></tr></table></body></html>"
+        )
+        msg.attach(MIMEText(html, "html", "utf-8"))
         # Editors can mention users, but normally cannot invoke MailHost.
         # This server-owned action has already validated both recipients
         # and content, so grant the narrow temporary role needed for
         # delivery.
         with api.env.adopt_roles(["Manager"]):
             api.portal.send_email(
-                body=message,
+                body=msg,
                 recipient=recipient,
                 sender=sender,
-                subject=f"You were mentioned on {site_name}",
+                subject=subject,
             )
+
+    def _render_html(self, payload: dict, excerpt: str, mention_url: str) -> str:
+        """Render HTML from structured values, escaping all dynamic content."""
+        request = self.get_request()
+        heading = translate(
+            _(
+                "mention_notification_heading",
+                default="${author} mentioned you on '${page_title}'.",
+                mapping={
+                    "author": payload["author"],
+                    "page_title": payload["page_title"],
+                },
+            ),
+            context=request,
+        )
+        timestamp = translate(
+            _(
+                "mention_notification_timestamp",
+                default="Mentioned ${timestamp}",
+                mapping={"timestamp": payload["timestamp"]},
+            ),
+            context=request,
+        )
+        footer = translate(
+            _(
+                "mention_notification_footer",
+                default="You received this email because ${author} mentioned you.",
+                mapping={"author": payload["author"]},
+            ),
+            context=request,
+        )
+        button_label = translate(_("Go to mention"), context=request)
+        page_label = translate(_("View page"), context=request)
+        quote = (
+            '<blockquote style="margin:16px 0;padding:8px 16px;'
+            'border-left:3px solid #cbd5e1;">'
+            f"{escape(excerpt)}</blockquote>"
+            if excerpt
+            else ""
+        )
+        return (
+            f'<p style="margin:0 0 10px;">{escape(heading)}</p>'
+            f'<p style="margin:0 0 10px;">{escape(payload["breadcrumbs"])}</p>'
+            f"{quote}"
+            '<table role="presentation" cellpadding="0" cellspacing="0" '
+            'style="margin:16px 0;"><tr><td>'
+            f'<a href="{escape(mention_url)}" style="display:inline-block;'
+            "padding:8px 14px;font-size:14px;background-color:#005ea8;color:#ffffff;"
+            'text-decoration:none;border-radius:4px;font-weight:bold;">'
+            f"{escape(button_label)}</a></td>"
+            '<td style="padding-left:16px;">'
+            f'<a href="{escape(payload["page_url"])}">{escape(page_label)}</a>'
+            "</td></tr></table>"
+            f'<p style="margin:0 0 10px;">{escape(timestamp)}</p>'
+            '<hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0;">'
+            f'<p style="margin:0 0 10px;">{escape(footer)}</p>'
+            f'<p style="margin:0;">{escape(payload["site_name"])}</p>'
+        )
 
     def send_notifications(
         self,
@@ -178,18 +301,64 @@ class Mentions:
             "recipients": recipients,
             "site_name": mail_settings.site_title,
         }
+        timezone = api.portal.get_registry_record("plone.portal_timezone") or "UTC"
+        payload.update({
+            "breadcrumbs": breadcrumbs(context),
+            "timestamp": ulocalized_time(
+                DateTime().toZone(timezone),
+                long_format=True,
+                context=context,
+                request=self.get_request(),
+            ),
+        })
         for _user_id, (recipient, mention_id) in payload["recipients"].items():
+            excerpt = mention_excerpt(getattr(context, "blocks", {}) or {}, mention_id)
             url = f"{payload['page_url']}?{urlencode({'plateMention': mention_id})}"
-            message = (
-                f"{payload['author']} mentioned you on '{payload['page_title']}'.\n\n"
-                f"Open the mention: {url}\n"
+            message = translate(
+                _(
+                    "mention_notification_body",
+                    default=(
+                        "${author} mentioned you on '${page_title}'.\n\n"
+                        "${breadcrumbs}\n\n"
+                        "${excerpt}"
+                        "Open the mention: ${mention_url}\n"
+                        "View page: ${page_url}\n\n"
+                        "Mentioned ${timestamp}\n\n"
+                        "You received this email because ${author} mentioned you.\n"
+                        "${site_name}\n"
+                    ),
+                    mapping={
+                        "author": payload["author"],
+                        "page_title": payload["page_title"],
+                        "breadcrumbs": payload["breadcrumbs"],
+                        "excerpt": f"{excerpt}\n\n" if excerpt else "",
+                        "mention_url": url,
+                        "page_url": payload["page_url"],
+                        "timestamp": payload["timestamp"],
+                        "site_name": payload["site_name"],
+                    },
+                ),
+                context=self.get_request(),
             )
+            subject = translate(
+                _(
+                    "mention_notification_subject",
+                    default='${author} mentioned you in "${page_title}"',
+                    mapping={
+                        "author": payload["author"],
+                        "page_title": payload["page_title"],
+                    },
+                ),
+                context=self.get_request(),
+            )
+            html_message = self._render_html(payload, excerpt, url)
             try:
                 self._send_email(
                     message=message,
                     recipient=recipient,
                     sender=payload["from_address"],
-                    site_name=payload["site_name"],
+                    subject=subject,
+                    html_message=html_message,
                 )
             except ValueError:
                 logger.exception("Unable to send Plate mention notification")
