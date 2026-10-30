@@ -16,6 +16,16 @@ msgstr ""
 msgid "Accept all"
 msgstr "Alle annehmen"
 
+#. Default: "Diagram"
+#: plate/wiki/slash-menu
+msgid "Diagram"
+msgstr "Diagramm"
+
+#. Default: "Image"
+#: plate/wiki/slash-menu
+msgid "Image"
+msgstr "Bild"
+
 #. Default: "Insert date"
 #: plate/plugins/date-picker-panel
 msgid "Insert date"
@@ -30,6 +40,26 @@ msgstr "Nächste Woche"
 #: index
 msgid "Reject all"
 msgstr "Alle ablehnen"
+
+#. Default: "Reopen"
+#: index
+msgid "Reopen"
+msgstr "Wieder öffnen"
+
+#. Default: "Resolve"
+#: index
+msgid "Resolve"
+msgstr "Erledigen"
+
+#. Default: "Resolved"
+#: index
+msgid "Resolved"
+msgstr "Erledigt"
+
+#. Default: "Resolved by {name}"
+#: index
+msgid "Resolved by {name}"
+msgstr "Erledigt von {name}"
 
 #. Default: "Today"
 #: plate/plugins/date-picker-panel
@@ -169,7 +199,7 @@ msgstr "To-do-Liste"
 #. Default: "Toggle"
 #: plate/i18n/plateMessages
 msgid "plate.slashMenu.items.toggle"
-msgstr "Aufklappbarer Abschnitt"
+msgstr "Aufklappbereich"
 
 #. Default: "No results"
 #: plate/i18n/plateMessages

@@ -41,7 +41,6 @@ export const NATIVE_BLOCK_TYPES = [
   'code_block',
   'code_drawing',
   'table',
-  'toggle',
   'toc',
   'callout',
   'column_group',

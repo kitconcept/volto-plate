@@ -9,6 +9,16 @@
  * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/58
  * CHANGELOG:
  *  - Add bulk accept/reject suggestion actions (#58) @iFlameing
+ *  - Remove draft comment on click outside, clear active ids on close,
+ *    anchor popover to a virtual element that survives re-renders @Tishasoumya-02
+ *  - Refocus the editor when a draft comment is dropped, with the cursor at
+ *    the click inside the editor or else at the selection focus; keep the
+ *    draft popover open on pointerdown inside the editor @Tishasoumya-02
+ *  - Keep resolved discussions visible: Resolve/Reopen actions, resolved banner,
+ *    check-circle trigger icon (SID-13) @iFlameing
+ *  - Count comments instead of threads in the trigger and popover header, so
+ *    replies and deletions update the count @iFlameing
+ *  - Position discussion popovers above their selected text anchors.
  *
  */
 import * as React from 'react';
@@ -23,10 +33,12 @@ import {
   type AnyPluginConfig,
   type NodeEntry,
   type Path,
+  type Point,
   type TCommentText,
   type TElement,
   type TSuggestionText,
   PathApi,
+  PointApi,
   TextApi,
 } from 'platejs';
 import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react';
@@ -39,6 +51,14 @@ import { acceptSuggestion, rejectSuggestion } from '@platejs/suggestion';
 import { CheckIcon } from 'lucide-react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { messages } from '../../../../../index';
+import { CircleCheckIcon } from 'lucide-react';
+import {
+  type TArchivableDiscussion,
+  ResolveDiscussionButton,
+  ResolvedDiscussionBanner,
+  useDiscussionResolution,
+} from '../../../../../plate/plugins/comment-resolution';
+import { countDiscussionComments } from '../../../../../plate/discussion-data';
 // === END CUSTOMIZATION ===
 
 import { Button } from '@plone/plate/components/ui/button';
@@ -82,6 +102,10 @@ export const discussionTriggerClassName = `
   hover:bg-muted hover:text-muted-foreground
   data-[active=true]:bg-muted
 `;
+
+// START CUSTOMIZATION
+type VirtualAnchor = { getBoundingClientRect: () => DOMRect };
+// END CUSTOMIZATION
 
 type DiscussionTriggerKind = 'comments' | 'mixed' | 'suggestions';
 
@@ -194,21 +218,32 @@ export const DiscussionTriggerButton = React.forwardRef<
     active: boolean;
     count: number;
     kind: DiscussionTriggerKind;
+    // === START CUSTOMIZATION === Every thread on the block is resolved
+    // (also destructured as `resolved` below)
+    resolved?: boolean;
+    // === END CUSTOMIZATION ===
   }
->(({ active, className, count, kind, ...props }, ref) => (
+>(({ active, className, count, kind, resolved, ...props }, ref) => (
   <Button
     ref={ref}
     variant="ghost"
     className={cn(
       discussionTriggerClassName,
-      active && (kind === 'suggestions' ? 'text-quanta-emerald' : 'text-brand'),
+      // === START CUSTOMIZATION === Resolved threads stay grey
+      active &&
+        !resolved &&
+        (kind === 'suggestions' ? 'text-quanta-emerald' : 'text-brand'),
+      // === END CUSTOMIZATION ===
       className,
     )}
     data-active={active}
     contentEditable={false}
     {...props}
   >
-    {kind === 'comments' ? (
+    {/* === START CUSTOMIZATION === Every thread on the block is resolved. */}
+    {resolved ? (
+      <CircleCheckIcon className="size-5 shrink-0" />
+    ) : /* === END CUSTOMIZATION === */ kind === 'comments' ? (
       <MessageSquareTextIcon className="size-5 shrink-0" />
     ) : (
       <MessagesSquareIcon className="size-5 shrink-0" />
@@ -232,7 +267,9 @@ export function DiscussionPopover({
   triggerAsPopoverTrigger = true,
   wrapperProps,
 }: React.PropsWithChildren<{
-  anchorElement: HTMLElement | null;
+  // START CUSTOMIZATION
+  anchorElement: VirtualAnchor | null;
+  // END CUSTOMIZATION
   content: React.ReactNode;
   onOpenChange: (open: boolean) => void;
   open: boolean;
@@ -263,17 +300,19 @@ export function DiscussionPopover({
           />
         )}
 
+        {/* === START CUSTOMIZATION === Keep the discussion above its text anchor. */}
         <PopoverContent
           className={cn(discussionPopoverContentClassName, contentClassName)}
           collisionPadding={collisionPadding}
           onCloseAutoFocus={(event) => event.preventDefault()}
           onOpenAutoFocus={(event) => event.preventDefault()}
           align="center"
-          side="bottom"
+          side="top"
           {...restContentProps}
         >
           {content}
         </PopoverContent>
+        {/* === END CUSTOMIZATION === */}
 
         {trigger && (
           <div className="relative left-0 size-0 select-none">
@@ -290,10 +329,16 @@ export function DiscussionPopover({
 }
 
 export function DiscussionPopoverHeader({
+  // === START CUSTOMIZATION ===
+  action,
+  // === END CUSTOMIZATION ===
   count,
   onClose,
   title,
 }: {
+  // === START CUSTOMIZATION === e.g. the Resolve button of the active thread
+  action?: React.ReactNode;
+  // === END CUSTOMIZATION ===
   count: number;
   onClose: () => void;
   title: string;
@@ -307,19 +352,26 @@ export function DiscussionPopoverHeader({
       >
         {title} ({count})
       </div>
-      <Button
-        aria-label="Close"
-        className={`
+      {/* === START CUSTOMIZATION === */}
+      <div className="flex shrink-0 items-center gap-[6px]">
+        {action}
+        {/* === END CUSTOMIZATION === */}
+        <Button
+          aria-label="Close"
+          className={`
           size-[22px] rounded-md p-0.5 text-muted-foreground
           hover:bg-muted hover:text-foreground
         `}
-        onClick={onClose}
-        size="icon"
-        type="button"
-        variant="ghost"
-      >
-        <XIcon className="size-[18px] stroke-2" />
-      </Button>
+          onClick={onClose}
+          size="icon"
+          type="button"
+          variant="ghost"
+        >
+          <XIcon className="size-[18px] stroke-2" />
+        </Button>
+        {/* === START CUSTOMIZATION === */}
+      </div>
+      {/* === END CUSTOMIZATION === */}
     </div>
   );
 }
@@ -385,6 +437,7 @@ const BlockCommentContent = ({
   const { api: suggestionApi } = useEditorPlugin(SuggestionPlugin);
   const { currentUserId } = usePlatePlugins();
   const canManageSuggestion = !!currentUserId;
+  const { canResolve, resolve } = useDiscussionResolution();
   // === END CUSTOMIZATION ===
 
   const resolvedSuggestions = useResolveSuggestion(suggestionNodes, blockPath);
@@ -392,7 +445,10 @@ const BlockCommentContent = ({
 
   const suggestionsCount = resolvedSuggestions.length;
   const discussionsCount = resolvedDiscussions.length;
-  const totalCount = suggestionsCount + discussionsCount;
+  // === START CUSTOMIZATION === Count comments, not threads
+  const totalCount =
+    suggestionsCount + countDiscussionComments(resolvedDiscussions);
+  // === END CUSTOMIZATION ===
   const popoverTitle =
     suggestionsCount > 0 && discussionsCount === 0
       ? 'Suggestions'
@@ -413,6 +469,14 @@ const BlockCommentContent = ({
     resolvedDiscussions.find((d) => d.id === activeCommentId);
 
   const noneActive = !activeSuggestion && !activeDiscussion;
+  // === START CUSTOMIZATION ===
+  // The thread shown on its own gets the Resolve button in the header.
+  const singleDiscussion =
+    activeDiscussion ||
+    (noneActive && discussionsCount === 1 && suggestionsCount === 0
+      ? resolvedDiscussions[0]
+      : undefined);
+  // === END CUSTOMIZATION ===
   const popoverHeaderCount = noneActive
     ? totalCount
     : activeDiscussion
@@ -445,17 +509,94 @@ const BlockCommentContent = ({
     selected ||
     (isCommenting && !!draftCommentNode && commentingCurrent);
 
+  // START CUSTOMIZATION
+  // The comment form takes the focus, so when the draft is dropped, focus the
+  // editor again: with the cursor where the user clicked inside it, or else
+  // at the selection focus, unless another field took the focus.
+  const removeDraftComment = React.useCallback(() => {
+    const editorElement = editor.api.toDOMNode(editor);
+    const draftEntries = [
+      ...editor.api.nodes({ at: [], match: (n) => n[getDraftCommentKey()] }),
+    ];
+    const { selection } = editor;
+    const domSelection = window.getSelection();
+
+    const clickedRange = editorElement?.contains(document.activeElement)
+      ? (domSelection?.rangeCount &&
+          editor.api.toSlateRange(domSelection.getRangeAt(0), {
+            exactMatch: false,
+            suppressThrow: true,
+          })) ||
+        selection
+      : null;
+    let draftFocus: Point | undefined;
+
+    if (draftEntries.length > 0 && selection) {
+      const start = editor.api.start(draftEntries[0][1])!;
+      const end = editor.api.end(draftEntries[draftEntries.length - 1][1])!;
+
+      // `setDraft` collapses the selection to its anchor, so the selection
+      // focus is the other edge of the draft.
+      draftFocus = PointApi.equals(selection.anchor, end) ? start : end;
+    }
+
+    const targetRange =
+      clickedRange ?? (draftFocus && { anchor: draftFocus, focus: draftFocus });
+    const targetRangeRef = targetRange
+      ? editor.api.rangeRef(targetRange)
+      : undefined;
+
+    editor.tf.unsetNodes(getDraftCommentKey(), {
+      at: [],
+      mode: 'lowest',
+      match: (n) => n[getDraftCommentKey()],
+    });
+
+    const range = targetRangeRef?.unref();
+
+    if (!range) return;
+
+    const { activeElement } = document;
+    const focusedOtherField =
+      !!activeElement?.matches(
+        'input, textarea, select, [contenteditable="true"]',
+      ) &&
+      !editorElement?.contains(activeElement) &&
+      !activeElement.closest('[data-radix-popper-content-wrapper]');
+
+    editor.tf.select(range);
+
+    if (!focusedOtherField) editor.tf.focus();
+  }, [editor]);
+  // END CUSTOMIZATION
+
   const closePopover = React.useCallback(() => {
     if (isCommenting && draftCommentNode) {
-      editor.tf.unsetNodes(getDraftCommentKey(), {
-        at: [],
-        mode: 'lowest',
-        match: (n) => n[getDraftCommentKey()],
-      });
+      // START CUSTOMIZATION
+      removeDraftComment();
+      // END CUSTOMIZATION
     }
 
     setOpen(false);
-  }, [draftCommentNode, editor.tf, isCommenting]);
+    // START CUSTOMIZATION
+    // The popover stays open while a suggestion is active, so the
+    // close button has to clear the active ids as well.
+    editor.setOption(suggestionPlugin, 'activeId', null);
+    editor.setOption(commentPlugin, 'activeId', null);
+    // END CUSTOMIZATION
+  }, [draftCommentNode, editor, isCommenting, removeDraftComment]);
+
+  // START CUSTOMIZATION
+  // Since @radix-ui/react-popover 1.1.17 a click outside closes the popover
+  // on `click` instead of `pointerdown`. The comment plugin's `onClick`
+  // resets `activeId` first, the popover unmounts and `closePopover` never
+  // runs, so the draft has to be removed when commenting ends.
+  React.useEffect(() => {
+    if (isCommenting || !draftCommentNode) return;
+
+    removeDraftComment();
+  }, [draftCommentNode, isCommenting, removeDraftComment]);
+  // END CUSTOMIZATION
 
   // === START CUSTOMIZATION ===
   const acceptAllSuggestions = () => {
@@ -496,8 +637,15 @@ const BlockCommentContent = ({
     }
 
     if (!activeNode) return null;
+    // START CUSTOMIZATION
+    const node = activeNode[0];
 
-    return editor.api.toDOMNode(activeNode[0])!;
+    return {
+      getBoundingClientRect: () =>
+        editor.api.toDOMNode(node)?.getBoundingClientRect() ?? new DOMRect(),
+    };
+    // END CUSTOMIZATION
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     open,
@@ -517,6 +665,15 @@ const BlockCommentContent = ({
   ) : (
     <React.Fragment>
       <DiscussionPopoverHeader
+        // === START CUSTOMIZATION ===
+        action={
+          singleDiscussion && !singleDiscussion.isResolved && canResolve ? (
+            <ResolveDiscussionButton
+              onClick={() => resolve(singleDiscussion.id)}
+            />
+          ) : null
+        }
+        // === END CUSTOMIZATION ===
         count={popoverHeaderCount}
         onClose={closePopover}
         title={popoverTitle}
@@ -535,6 +692,9 @@ const BlockCommentContent = ({
               key={item.id}
               discussion={item}
               isLast={index === sortedMergedData.length - 1}
+              // === START CUSTOMIZATION ===
+              showResolve={!singleDiscussion}
+              // === END CUSTOMIZATION ===
             />
           ),
         )
@@ -607,6 +767,20 @@ const BlockCommentContent = ({
     <DiscussionPopover
       anchorElement={anchorElement}
       content={popoverContent}
+      // START CUSTOMIZATION
+      // Clicks inside the editor end a draft comment through the comment
+      // plugin's `onClick`, after the browser has placed the caret.
+      contentProps={{
+        onInteractOutside: (event) => {
+          if (
+            isCommenting &&
+            editor.api.toDOMNode(editor)?.contains(event.target as Node)
+          ) {
+            event.preventDefault();
+          }
+        },
+      }}
+      // END CUSTOMIZATION
       onOpenChange={(_open_) => {
         if (!_open_) {
           closePopover();
@@ -617,11 +791,19 @@ const BlockCommentContent = ({
       }}
       open={open}
       trigger={
-        totalCount > 0 ? (
+        // === START CUSTOMIZATION === Show while any thread exists
+        suggestionsCount + discussionsCount > 0 ? (
+          // === END CUSTOMIZATION ===
           <DiscussionTriggerButton
             active={open}
             count={totalCount}
             kind={triggerKind}
+            // === START CUSTOMIZATION ===
+            resolved={
+              suggestionsCount === 0 &&
+              resolvedDiscussions.every((d) => d.isResolved)
+            }
+            // === END CUSTOMIZATION ===
           />
         ) : null
       }
@@ -634,16 +816,37 @@ const BlockCommentContent = ({
 function BlockComment({
   discussion,
   isLast,
+  // === START CUSTOMIZATION ===
+  showResolve = false,
+  // === END CUSTOMIZATION ===
 }: {
-  discussion: TDiscussion;
+  // === START CUSTOMIZATION === Resolution fields; list mode has no header button
+  discussion: TArchivableDiscussion;
+  // === END CUSTOMIZATION ===
   isLast: boolean;
+  // === START CUSTOMIZATION ===
+  showResolve?: boolean;
+  // === END CUSTOMIZATION ===
 }) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const createFormRef = React.useRef<CommentCreateFormHandle>(null);
+  // === START CUSTOMIZATION ===
+  // Resolved threads are archived: shown with a banner, no new replies.
+  const { canResolve, reopen, resolve } = useDiscussionResolution();
+  const isResolved = !!discussion.isResolved;
+  // === END CUSTOMIZATION ===
 
   return (
     <React.Fragment key={discussion.id}>
       <div className="px-4 pt-1 pb-3.5">
+        {/* === START CUSTOMIZATION === */}
+        {isResolved && (
+          <ResolvedDiscussionBanner
+            discussion={discussion}
+            onReopen={canResolve ? () => reopen(discussion.id) : undefined}
+          />
+        )}
+        {/* === END CUSTOMIZATION === */}
         {discussion.comments.map((comment, index) => (
           <Comment
             key={comment.id ?? index}
@@ -652,14 +855,27 @@ function BlockComment({
             documentContent={discussion?.documentContent}
             editingId={editingId}
             index={index}
+            // === START CUSTOMIZATION === No replies or Resolve when resolved
             onReply={
-              index === 0 ? () => createFormRef.current?.focus() : undefined
+              index === 0 && !isResolved
+                ? () => createFormRef.current?.focus()
+                : undefined
             }
+            onResolve={
+              index === 0 && showResolve && !isResolved && canResolve
+                ? () => resolve(discussion.id)
+                : undefined
+            }
+            // === END CUSTOMIZATION ===
             setEditingId={setEditingId}
             showDocumentContent
           />
         ))}
-        <CommentCreateForm ref={createFormRef} discussionId={discussion.id} />
+        {/* === START CUSTOMIZATION === */}
+        {!isResolved && (
+          <CommentCreateForm ref={createFormRef} discussionId={discussion.id} />
+        )}
+        {/* === END CUSTOMIZATION === */}
       </div>
 
       {!isLast && <div className="h-px w-full bg-muted" />}
@@ -714,11 +930,9 @@ const useResolvedDiscussion = (
       if (!firstBlockPath) return false;
       if (!PathApi.equals(firstBlockPath, blockPath)) return false;
 
-      return (
-        api.comment.has({ id: item.id }) &&
-        commentsIds.has(item.id) &&
-        !item.isResolved
-      );
+      // === START CUSTOMIZATION === Resolved threads stay reachable
+      return api.comment.has({ id: item.id }) && commentsIds.has(item.id);
+      // === END CUSTOMIZATION ===
     });
 
   return resolvedDiscussions;

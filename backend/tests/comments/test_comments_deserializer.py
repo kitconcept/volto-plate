@@ -273,3 +273,62 @@ class TestCommentsDeserializer:
                 "discussions": modified_discussions,
             }
             self.deserializer(self.page, {"__somersault__": block_data}, self.request)
+
+    def test_deserializer_allows_deletion_of_own_comments(self):
+        """User can delete their own comments."""
+        user = api.user.get_current()
+
+        # Establish a discussion with a comment
+        existing_discussions = {
+            "discussion1": {
+                "id": "discussion1",
+                "comments": [
+                    {
+                        "id": "comment1",
+                        "contentRich": [
+                            {
+                                "type": "p",
+                                "children": [{"text": "own comment"}],
+                            }
+                        ],
+                        "createdAt": DateTime().ISO8601(),
+                        "discussionId": "discussion1",
+                        "isEdited": False,
+                        "userId": user.getId(),
+                    },
+                ],
+                "createdAt": DateTime().ISO8601(),
+                "isResolved": False,
+                "userId": user.getId(),
+            }
+        }
+        block_data = {
+            "@type": "__somersault__",
+            "value": [
+                {
+                    "type": "p",
+                    "children": [{"text": "Test content"}],
+                    "id": "test-1",
+                }
+            ],
+            "discussions": existing_discussions,
+        }
+        self.page.blocks = {"__somersault__": block_data}
+
+        # Current user deletes their own comment
+        modified_discussions = {}
+        block_data = {
+            "@type": "__somersault__",
+            "value": [
+                {
+                    "type": "p",
+                    "children": [{"text": "Test content"}],
+                    "id": "test-1",
+                }
+            ],
+            "discussions": modified_discussions,
+        }
+
+        # Current user can delete their own comment
+        self.deserializer(self.page, {"__somersault__": block_data}, self.request)
+        assert self.page.blocks["__somersault__"]["discussions"] == modified_discussions

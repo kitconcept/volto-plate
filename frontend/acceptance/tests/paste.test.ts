@@ -506,3 +506,125 @@ test('Pasting a plain URL does not run the markdown parser', async ({
     (await getValue(page, editorHandle)).filter((n) => nodeText(n) !== ''),
   ).toHaveLength(2);
 });
+
+/**
+ * Opens a page with the `blocks` after the title, puts the caret at the end
+ * of the last one and pastes `data`, after pressing `keys` (to toggle marks).
+ * Returns the editor value without the title, once it holds `expected`.
+ */
+async function pasteInto(
+  page: Page,
+  blocks: EditorNode[],
+  data: Record<string, string>,
+  { expected, keys = [] }: { expected: string; keys?: string[] },
+) {
+  const path = await createNativeBlocksPage(page, [], { extra: blocks });
+  const editorHandle = await openInEditor(page, path);
+  await focusBlockStart(page, editorHandle, blocks.length);
+  await page.keyboard.press('End');
+  for (const key of keys) await page.keyboard.press(key);
+
+  await pasteData(page, editorHandle, data);
+
+  await expect
+    .poll(async () => JSON.stringify(await getValue(page, editorHandle)))
+    .toContain(expected);
+  return (await getValue(page, editorHandle)).slice(1);
+}
+
+const emptyHeading: EditorNode = { type: 'h2', children: [{ text: '' }] };
+const listItem = (text: string): EditorNode => ({
+  type: 'p',
+  indent: 1,
+  listStyleType: 'disc',
+  children: [{ text }],
+});
+
+for (const [source, data] of [
+  ['HTML', { 'text/html': '<p>Pasted line</p>', 'text/plain': 'Pasted line' }],
+  ['plain text', { 'text/plain': 'Pasted line' }],
+] as const) {
+  test(`A line of ${source} pasted in an empty heading keeps the heading`, async ({
+    page,
+  }) => {
+    const value = await pasteInto(page, [emptyHeading], data, {
+      expected: 'Pasted line',
+    });
+
+    expect(outline(value)).toEqual(['h2 Pasted line']);
+  });
+}
+
+test('A line of plain text pasted in an empty list item keeps the list item', async ({
+  page,
+}) => {
+  const value = await pasteInto(
+    page,
+    [listItem('')],
+    { 'text/plain': 'Pasted line' },
+    { expected: 'Pasted line' },
+  );
+
+  expect(outline(value)).toEqual(['disc/1 Pasted line']);
+});
+
+test('Pasted plain text takes the marks toggled on', async ({ page }) => {
+  const value = await pasteInto(
+    page,
+    [{ type: 'p', children: [{ text: '' }] }],
+    { 'text/html': '<span>Pasted line</span>', 'text/plain': 'Pasted line' },
+    { expected: 'Pasted line', keys: ['ControlOrMeta+b'] },
+  );
+
+  expect(value[0].children).toEqual([{ text: 'Pasted line', bold: true }]);
+});
+
+test('Each line of plain text pasted in a list becomes a list item', async ({
+  page,
+}) => {
+  const value = await pasteInto(
+    page,
+    [listItem('First'), listItem('')],
+    { 'text/plain': 'Second\nThird\n\nFourth' },
+    { expected: 'Fourth' },
+  );
+
+  expect(outline(value)).toEqual([
+    'disc/1 First',
+    'disc/1 Second',
+    'disc/1 Third',
+    'disc/1 Fourth',
+  ]);
+});
+
+test('Lines of plain text pasted in a heading continue as paragraphs', async ({
+  page,
+}) => {
+  const value = await pasteInto(
+    page,
+    [emptyHeading],
+    { 'text/plain': 'Pasted title\nPasted body' },
+    { expected: 'Pasted body' },
+  );
+
+  expect(outline(value)).toEqual(['h2 Pasted title', 'p Pasted body']);
+});
+
+test('A heading pasted from HTML in a list item stays a heading', async ({
+  page,
+}) => {
+  const value = await pasteInto(
+    page,
+    [listItem('')],
+    {
+      'text/html': '<h2>Pasted heading</h2>',
+      'text/plain': 'Pasted heading',
+    },
+    { expected: 'Pasted heading' },
+  );
+
+  expect(value[0]).toMatchObject({
+    type: 'h2',
+    children: [{ text: 'Pasted heading' }],
+  });
+});

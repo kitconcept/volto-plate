@@ -52,10 +52,6 @@ const blockButtons = [
     name: 'Todo',
     check: (block: Record<string, unknown>) => block.listStyleType === 'todo',
   },
-  {
-    name: 'Toggle',
-    check: (block: Record<string, unknown>) => block.type === 'toggle',
-  },
 ];
 
 for (const { name, check } of blockButtons) {
@@ -99,7 +95,7 @@ for (const { label, type } of turnInto.slice(1)) {
   });
 }
 
-test('Floating toolbar "Turn into" does not offer Heading 1', async ({
+test('Floating toolbar "Turn into" does not offer Heading 1 or Toggle list', async ({
   page,
 }) => {
   const { toolbar } = await openWithSelection(page);
@@ -114,6 +110,9 @@ test('Floating toolbar "Turn into" does not offer Heading 1', async ({
   await expect(
     page.getByRole('menuitemradio', { name: 'Heading 1', exact: true }),
   ).toHaveCount(0);
+  await expect(
+    page.getByRole('menuitemradio', { name: 'Toggle list', exact: true }),
+  ).toHaveCount(0);
 });
 
 test('Floating toolbar does not offer AI commands in the wiki preset', async ({
@@ -123,4 +122,12 @@ test('Floating toolbar does not offer AI commands in the wiki preset', async ({
 
   await expect(toolbar.getByLabel(/AI/)).toHaveCount(0);
   await expect(toolbar.getByText(/Ask AI/)).toHaveCount(0);
+});
+
+test('Floating toolbar does not offer the toggle button in the wiki preset', async ({
+  page,
+}) => {
+  const { toolbar } = await openWithSelection(page);
+
+  await expect(toolbar.getByLabel('Toggle', { exact: true })).toHaveCount(0);
 });

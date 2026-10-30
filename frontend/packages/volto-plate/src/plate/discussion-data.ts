@@ -41,6 +41,16 @@ export const serializeDiscussions = (
   }, {});
 };
 
+// The discussion trigger and popover header show the number of comments,
+// so replies and deletions are reflected, not just the number of threads.
+export const countDiscussionComments = (
+  discussions: Pick<TDiscussion, 'comments'>[],
+): number =>
+  discussions.reduce(
+    (count, discussion) => count + (discussion.comments?.length ?? 0),
+    0,
+  );
+
 export const normalizeUsers = (
   users: Record<string, RawDiscussionUser> | undefined,
 ): Record<string, DiscussionUser> => {

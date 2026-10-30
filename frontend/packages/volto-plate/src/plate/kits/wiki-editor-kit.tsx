@@ -12,7 +12,6 @@ import { BlockAnatomyKit } from '@plone/plate/components/editor/plugins/block-an
 import { CalloutKit } from '@plone/plate/components/editor/plugins/callout-kit';
 import { CodeBlockKit } from '@plone/plate/components/editor/plugins/code-block-kit';
 import { ColumnKit } from '@plone/plate/components/editor/plugins/column-kit';
-import { CommentKit } from '@plone/plate/components/editor/plugins/comment-kit';
 import { CursorOverlayKit } from '@plone/plate/components/editor/plugins/cursor-overlay-kit';
 import { DiscussionKit } from '@plone/plate/components/editor/plugins/discussion-kit';
 // import { DndKit } from '@plone/plate/components/editor/plugins/dnd-kit';
@@ -28,7 +27,6 @@ import { createSlashKit } from '@plone/plate/components/editor/plugins/slash-kit
 import { SuggestionKit } from '@plone/plate/components/editor/plugins/suggestion-kit';
 import { TableKit } from '@plone/plate/components/editor/plugins/table-kit';
 import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
-import { ToggleKit } from '@plone/plate/components/editor/plugins/toggle-kit';
 
 import { CodeDrawingKit } from '../plugins/code-drawing-kit';
 import { VoltoFloatingToolbarKit } from '../plugins/volto-floating-toolbar-kit';
@@ -36,9 +34,11 @@ import { VoltoClipboardImagePastePlugin } from '../plugins/volto-clipboard-image
 import { VoltoHtmlImagePastePlugin } from '../plugins/volto-html-image-paste';
 import { VoltoImageDropPlugin } from '../plugins/volto-image-drop';
 import { VoltoPasteFormattingPlugin } from '../plugins/volto-paste-formatting';
+import { VoltoPastePlainTextPlugin } from '../plugins/volto-paste-plain-text';
 import { VoltoPasteTitlePlugin } from '../plugins/volto-paste-title';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { VoltoMentionKit } from '../plugins/volto-mention-kit';
+import { voltoCommentPlugin } from '../plugins/comment-resolution';
 import { SidebarPlugin } from '../plugins/volto-sidebar';
 import { DateKit } from '../plugins/date-kit';
 import { slashMenu } from '../wiki/slash-menu';
@@ -63,7 +63,6 @@ export const WikiEditorKit = [
   ...CodeBlockKit,
   ...CodeDrawingKit,
   ...TableKit,
-  ...ToggleKit,
   ...TocKit,
   ...CalloutKit,
   ...ColumnKit,
@@ -84,9 +83,9 @@ export const WikiEditorKit = [
   ...BlockWidthKit,
 
   // Collaboration
-  ...DiscussionKit,
-  ...CommentKit,
   ...SuggestionKit,
+  ...DiscussionKit,
+  voltoCommentPlugin,
 
   // Editing
   ...WikiSlashKit,
@@ -104,6 +103,7 @@ export const WikiEditorKit = [
   ...DocxKit,
   ...MarkdownKit,
   VoltoPasteFormattingPlugin,
+  VoltoPastePlainTextPlugin,
   VoltoPasteTitlePlugin,
 
   // UI

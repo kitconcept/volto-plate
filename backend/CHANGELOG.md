@@ -9,6 +9,39 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a38 (2026-10-22)
+
+
+### New features:
+
+- Add the ``@inline-comments`` REST service for creating, replying to, editing,
+  deleting, resolving, and reopening Plate comments outside the edit form, with
+  lock enforcement and rich mention support. 
+
+## 1.0.0a37 (2026-10-13)
+
+
+### Bug fixes:
+
+- Fix checks for whether the current user can delete a comment. @davisagli 
+
+## 1.0.0a36 (2026-10-08)
+
+No significant changes.
+
+
+## 1.0.0a35 (2026-10-08)
+
+
+### New features:
+
+- Resolving an inline comment thread archives it instead of removing it: the server records who resolved it and when, and clears that again when the thread is reopened. @iFlameing 
+
+
+### Bug fixes:
+
+- Allow anonymous users to retrieve user info for mentions. @davisagli 
+
 ## 1.0.0a34 (2026-10-06)
 
 No significant changes.

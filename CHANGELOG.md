@@ -7,6 +7,148 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a38 (2026-10-22)
+
+### Backend
+
+
+#### New features:
+
+- Add the ``@inline-comments`` REST service for creating, replying to, editing,
+  deleting, resolving, and reopening Plate comments outside the edit form, with
+  lock enforcement and rich mention support. 
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Add view-mode inline commenting with text-selection UX, rich mention-enabled
+  comments, and persisted thread actions through ``@inline-comments``. 
+
+
+#### Bugfix
+
+- Fix overlapping hover frames on table of contents entries in the wiki page. @Tishasoumya-02 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a37 (2026-10-13)
+
+### Backend
+
+
+#### Bug fixes:
+
+- Fix checks for whether the current user can delete a comment. @davisagli 
+
+
+
+### Frontend
+
+
+#### Bugfix
+
+- Fix wiki images alignment when changing their size to medium or small. @iRohitSingh 
+- Fixed the inline comment count so it counts comments instead of threads and updates when replying or deleting a comment. @iFlameing 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a36 (2026-10-08)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Bugfix
+
+- Pasting unformatted text keeps the style of where it lands: an empty heading or list item is no longer turned into a paragraph, toggled marks like bold apply to the pasted text, and each line pasted in a list becomes a list item. Pasted content with its own formatting, like a heading, keeps it. @sneridagh 
+- The "Image" and "Diagram" items of the wiki slash menu are now translated, and the missing German translations were added. @sneridagh 
+
+
+#### Internal
+
+- Add acceptance for mention portraits loading for anonymous @iRohitSingh 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a35 (2026-10-08)
+
+### Backend
+
+
+#### New features:
+
+- Resolving an inline comment thread archives it instead of removing it: the server records who resolved it and when, and clears that again when the thread is reopened. @iFlameing 
+
+
+#### Bug fixes:
+
+- Allow anonymous users to retrieve user info for mentions. @davisagli 
+
+
+
+### Frontend
+
+
+#### Breaking
+
+- Removed the toggle plugin from the wiki editor: it is no longer offered in the slash menu, the floating toolbar or the "Turn into" menu, and the `@platejs/toggle` dependency was dropped. @sneridagh 
+
+
+#### Feature
+
+- Resolved comment threads stay in the text and can be reopened: a "Resolve" button in the thread header, a "Resolved by …" banner with "Reopen", a muted highlight and a check icon on blocks whose threads are all resolved. @iFlameing 
+
+
+#### Bugfix
+
+- Fix comment and suggestion popovers: drop the draft comment highlight on click outside, clear the active suggestion when closing the popover, and keep the popover anchored after the block re-renders. @Tishasoumya-02 
+- Remove the Mermaid "Syntax error in text" graphics that leaked onto the page when a diagram had invalid source. @sneridagh 
+- Restore the editor focus when a draft comment is dropped: the cursor goes to the click position inside the editor, or to the end of the commented selection when clicking outside it or pressing Escape. @Tishasoumya-02 
+- Simplify loading of portraits in PersonPill component.
+  (Assume it is correctly passed the portrait URL, instead of trying to detect
+  whether it loaded.)
+  @davisagli 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a34 (2026-10-06)
 
 ### Backend

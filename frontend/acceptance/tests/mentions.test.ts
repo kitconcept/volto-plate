@@ -1,6 +1,9 @@
 import { getEditorHandle, setSelection } from '@platejs/playwright';
 import type { APIRequestContext } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
+import { createNativeBlocksPage } from '../fixtures/pages';
 import { createWikiPage } from './content';
 import { login } from './login';
 import { waitForPlateEditorReady } from './plate';
@@ -16,7 +19,15 @@ const adminAuth = `Basic ${Buffer.from('admin:secret').toString('base64')}`;
 
 async function createMentionableUser(
   request: APIRequestContext,
-  { username, fullname }: { username: string; fullname: string },
+  {
+    username,
+    fullname,
+    portrait,
+  }: {
+    username: string;
+    fullname: string;
+    portrait?: string;
+  },
 ) {
   const response = await request.post(`${apiURL}/@users`, {
     data: {
@@ -39,7 +50,17 @@ async function createMentionableUser(
   }
 
   const update = await request.patch(`${apiURL}/@users/${username}`, {
-    data: { fullname },
+    data: {
+      fullname,
+      ...(portrait && {
+        portrait: {
+          'content-type': 'image/png',
+          filename: path.basename(portrait),
+          encoding: 'base64',
+          data: readFileSync(portrait).toString('base64'),
+        },
+      }),
+    },
     headers: {
       Accept: 'application/json',
       Authorization: adminAuth,
@@ -138,6 +159,7 @@ test.describe('Plate mentions', () => {
     await createMentionableUser(request, {
       fullname: 'Mention Target',
       username: 'mention-target',
+      portrait: path.join(__dirname, '../fixtures/mention-portrait.png'),
     });
     await createMentionableUser(request, {
       fullname: 'Mention Second',
@@ -303,6 +325,55 @@ test.describe('Plate mentions', () => {
     await expect(page.getByRole('button', { name: '1' })).toBeVisible();
   });
 
+  test('selects a mention while composing a comment in view mode', async ({
+    page,
+  }) => {
+    const bodyText = 'Comment on this from view mode';
+    const { contentPath } = await createWikiPage(page, {
+      bodyModifier: withSomersaultBody(bodyText),
+      contentId: 'view-comment-mention',
+      contentTitle: 'View comment mention',
+      transition: 'publish',
+      wikiId: 'wiki-view-comment-mention',
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await page.getByText(bodyText, { exact: true }).evaluate((element) => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+    });
+    await page
+      .getByRole('button', { name: 'Comment on selected text' })
+      .click();
+
+    const composer = page.locator('[data-inline-comment-composer]');
+    const commentInput = composer.getByRole('textbox');
+    await commentInput.click();
+    await page.keyboard.type('@');
+    const searchRequest = page.waitForRequest(
+      (value) =>
+        value.url().includes('/@mentions') &&
+        value.url().includes('search=Mention'),
+    );
+    await page.keyboard.type('Mention');
+    await searchRequest;
+    await page.getByRole('option', { name: 'Mention Target' }).click();
+    await expect(
+      commentInput.getByText('Mention Target', { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByRole('listbox')).toBeHidden();
+    await page.keyboard.press('Enter');
+
+    await page.locator('[data-comment-id]').first().click();
+    await expect(
+      page.getByRole('dialog').getByText('Mention Target', { exact: true }),
+    ).toBeVisible();
+  });
+
   test('selects the second match with arrow keys and Enter in the document editor', async ({
     page,
   }) => {
@@ -441,5 +512,51 @@ test.describe('Plate mentions', () => {
     const mention = page.locator('#plate-mention-comment-mention');
     await expect(mention).toBeVisible();
     await expect(mention).toContainText('Mention Target');
+  });
+
+  test('loads mention portraits for anonymous visitors', async ({ page }) => {
+    const contentPath = await createNativeBlocksPage(page, [], {
+      title: 'Anonymous mention portrait',
+      extra: [
+        {
+          type: 'p',
+          children: [
+            { text: 'Hello ' },
+            {
+              type: 'mention',
+              key: 'mention-target',
+              mentionId: 'anonymous-portrait',
+              value: 'Mention Target',
+              children: [{ text: '' }],
+            },
+            { text: '!' },
+          ],
+        },
+      ],
+    });
+
+    await page.context().clearCookies();
+    await page.goto(contentPath);
+    await expect(
+      page.getByRole('link', { name: 'login', exact: true }),
+    ).toBeVisible();
+
+    const portrait = page.locator(
+      '#plate-mention-anonymous-portrait img.person-pill-portrait',
+    );
+    await expect(portrait).toBeVisible();
+    await expect(portrait).toHaveAttribute('src', /\/@portrait\//);
+    await expect
+      .poll(() =>
+        portrait.evaluate((image: HTMLImageElement) => {
+          const url = new URL(image.src);
+          return (
+            url.origin === window.location.origin &&
+            image.complete &&
+            image.naturalWidth > 0
+          );
+        }),
+      )
+      .toBe(true);
   });
 });

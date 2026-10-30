@@ -23,6 +23,16 @@ msgstr ""
 msgid "Accept all"
 msgstr ""
 
+#. Default: "Diagram"
+#: plate/wiki/slash-menu
+msgid "Diagram"
+msgstr ""
+
+#. Default: "Image"
+#: plate/wiki/slash-menu
+msgid "Image"
+msgstr ""
+
 #. Default: "Insert date"
 #: plate/plugins/date-picker-panel
 msgid "Insert date"
@@ -36,6 +46,26 @@ msgstr ""
 #. Default: "Reject all"
 #: index
 msgid "Reject all"
+msgstr ""
+
+#. Default: "Reopen"
+#: index
+msgid "Reopen"
+msgstr ""
+
+#. Default: "Resolve"
+#: index
+msgid "Resolve"
+msgstr ""
+
+#. Default: "Resolved"
+#: index
+msgid "Resolved"
+msgstr ""
+
+#. Default: "Resolved by {name}"
+#: index
+msgid "Resolved by {name}"
 msgstr ""
 
 #. Default: "Today"

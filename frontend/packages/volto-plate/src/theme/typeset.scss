@@ -477,6 +477,9 @@
       margin-block-start: var(--typeset-flow);
       margin-inline: 0;
     }
+    &:where(.block-plateimage[data-style-align='center'] figure) {
+      margin-inline: auto;
+    }
     &:where(figcaption, caption) {
       color: var(--typeset-muted);
       font-size: 0.875em;
@@ -614,6 +617,12 @@
   #page-document .typeset blockquote {
     padding-block: 10px;
     padding-inline-start: 20px;
+  }
+
+  /* TOC entries carry Tailwind's `block` utility, so Volto's  
+     `.block .block:not(.inner)::before` selection frame (9px outset) matches. We have to override it. */
+  .slate-editor .block .block:hover::before {
+    border: none;
   }
 
   /* Callout: #ECEBEB, 10px padding, box hugging its content.
