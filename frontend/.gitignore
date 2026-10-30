@@ -15,3 +15,7 @@ yarn.lock
 
 /aurora
 !/seven/packages/plate
+
+# Visual regression baseline: machine specific, taken locally around upgrades
+acceptance/visual/__screenshots__
+/playwright/visual-*
