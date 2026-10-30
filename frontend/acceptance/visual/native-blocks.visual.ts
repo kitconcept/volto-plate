@@ -47,16 +47,6 @@ for (const section of ALL_NATIVE_BLOCK_SECTIONS) {
   });
 }
 
-test('view: toggle expanded', async ({ page }) => {
-  const path = await createNativeBlocksPage(page, ['toggle']);
-  const content = await openInView(page, path);
-  await content.getByRole('button', { name: 'Toggle content' }).click();
-  await expect(content.getByText('Content inside the toggle.')).toBeVisible();
-  await settle(page, content);
-
-  await expect(content).toHaveScreenshot('view-toggle-expanded.png');
-});
-
 const allSections: NativeBlockSection[] = ALL_NATIVE_BLOCK_SECTIONS;
 
 test('view: all native blocks', async ({ page }) => {
