@@ -8,6 +8,16 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.39 (2026-10-30)
+
+
+### Bugfix
+
+- Fixed broken person pill portraits on deployed sites: server-rendered images pointed to the internal backend URL, and mentions stored the full URL of the host they were created on. @iFlameing 
+- Fixed comment text overflowing the comment popover: long quoted text and author names now wrap. @Tishasoumya-02 
+- Fixed the comment popover of tables and code blocks breaking their layout: it now renders around the block content instead of inside the table or code. @Tishasoumya-02 
+- Fixed the green line-break suggestion indicator showing on top of the text instead of after it. @iFlameing 
+
 ## 1.0.0-alpha.38 (2026-10-22)
 
 

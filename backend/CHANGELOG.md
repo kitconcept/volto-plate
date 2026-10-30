@@ -9,6 +9,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a39 (2026-10-30)
+
+
+### New features:
+
+- Add email notifications for @mentions on wiki pages @iRohitSingh 
+
 ## 1.0.0a38 (2026-10-22)
 
 

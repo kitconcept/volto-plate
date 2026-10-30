@@ -1,1 +1,0 @@
-Fixed broken person pill portraits on deployed sites: server-rendered images pointed to the internal backend URL, and mentions stored the full URL of the host they were created on. @iFlameing
