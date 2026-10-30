@@ -3,6 +3,9 @@ import type { apiExpandersType } from '@plone/types/src/config/Settings';
 
 export default function install(config: ConfigType) {
   config.settings.PlateEditorContentTypes = ['WikiPage'];
+  // The Plone blocks a Plate document can hold, as `ploneBlock` nodes. The
+  // `@blocks-schema` endpoint lists them for the PlateEditorContentTypes.
+  config.settings.PlateEditorPloneBlocks = ['plateimage'];
   const EXPANDERS_INHERIT_BEHAVIORS = 'kitconcept.plate.workspace';
 
   config.settings.apiExpanders = [
