@@ -1,6 +1,7 @@
 ---
 element: code_drawing
 title: Diagram
+document_model: plone.plate
 ---
 
 A diagram drawn from code, such as a flowchart or a sequence diagram, with Mermaid, PlantUML, Graphviz or Flowchart syntax.
