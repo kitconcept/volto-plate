@@ -148,12 +148,15 @@ Update the `pyproject.toml` and `package.json` on your project to use the latest
 
 ### Blocks for agents (`@blocks-schema`)
 
-Volto's `@blocks-schema` endpoint describes a site's blocks for agents, such as MCP servers, so they can create content. A `WikiPage` doesn't store blocks in `blocks`/`blocks_layout`, though. It stores a Plate document in the `__somersault__` block. volto-plate shadows the endpoint so it describes that document for the `PlateEditorContentTypes`:
+Volto's `@blocks-schema` endpoint describes a site's blocks for agents, such as MCP servers, so they can create content. It also says how content stores its blocks, as a document model. A `WikiPage` doesn't store blocks in `blocks`/`blocks_layout`. It stores one Plate document in the `__somersault__` block, which is the `plone.plate` document model. volto-plate registers it as a `documentModel` utility (`src/config/documentModel.ts`):
 
-- `/<path>/@blocks-schema`, for a `WikiPage`, or `/@blocks-schema?type=WikiPage`, before it exists: the format of the document (`document`), its native elements and the Plone blocks it can hold (`config.settings.PlateEditorPloneBlocks`), each with a `kind` (`element` or `block`).
-- `/@blocks-schema`: Volto's list of blocks, plus the content types that store a Plate document (`plate_content_types`).
+- `types()`: the content types that use it, `config.settings.PlateEditorContentTypes`.
+- `elements()`: the native elements of the wiki editor, the keys of `config.blocks.plateBlocksConfig`. `@plone/plate`'s `toggle`, which the wiki editor leaves out, isn't listed.
+- `blocks()`: the Plone blocks a Plate document can hold, as `ploneBlock` nodes. For now only `plateimage`.
 
-The docs come from `*.block.md` files. The document and most elements are documented by `@plone/plate`, and volto-plate documents `code_drawing` and `plateimage`. Only the elements in `config.blocks.plateBlocksConfig` are listed.
+`/<path>/@blocks-schema`, for a `WikiPage`, or `/@blocks-schema?type=WikiPage`, before it exists, returns `document_model: { id: "plone.plate", version: 1 }`, the format of the document (`document`), and its elements, then its blocks, each with a `kind` (`element` or `block`). `/@blocks-schema` alone lists the site's document models in `document_models`.
+
+The docs come from `*.block.md` files. The document and most elements are documented by `@plone/plate`. volto-plate documents the `code_drawing` element (`document_model: plone.plate` in its frontmatter) and the `plateimage` block.
 
 ## Repository layout
 
