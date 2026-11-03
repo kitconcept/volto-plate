@@ -36,8 +36,60 @@
     object-fit: cover;
   }
 
-  .person-pill-avatar {
-    background: var(--accent-color, #e0e0e0);
+  // Initials shown when there is no portrait; colored by .avatar-tone-N.
+  .person-pill-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: none;
+  }
+}
+
+// Fixed initials-avatar palette, shared by every initials avatar
+// (person pills, and any add-on that uses avatarToneClass() from
+// helpers/avatar.ts). Themes can re-color a tone by overriding
+// --avatar-tone-N-background / --avatar-tone-N-color.
+$avatar-tones: (
+  0: (
+    #d9ecdb,
+    #256b32,
+  ),
+  1: (
+    #dbe7f6,
+    #1f4f8f,
+  ),
+  2: (
+    #fbe7d4,
+    #8a4b12,
+  ),
+  3: (
+    #ecdff5,
+    #5f3689,
+  ),
+  4: (
+    #fadbe2,
+    #8f2743,
+  ),
+  5: (
+    #dff2f0,
+    #1d6a62,
+  ),
+);
+
+:root {
+  @each $tone, $colors in $avatar-tones {
+    --avatar-tone-#{$tone}-background: #{nth($colors, 1)};
+    --avatar-tone-#{$tone}-color: #{nth($colors, 2)};
+  }
+}
+
+@each $tone, $colors in $avatar-tones {
+  .avatar-tone-#{$tone} {
+    background: var(--avatar-tone-#{$tone}-background);
+    color: var(--avatar-tone-#{$tone}-color);
   }
 }
 
@@ -87,6 +139,10 @@
   .person-pill-avatar {
     width: 24px;
     height: 24px;
+  }
+
+  .person-pill-initials {
+    font-size: 11px;
   }
 
   .person-pill-name {
