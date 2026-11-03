@@ -347,6 +347,7 @@ class Mentions:
                     mapping={
                         "author": payload["author"],
                         "page_title": payload["page_title"],
+                        "site_name": payload["site_name"],
                     },
                 ),
                 context=self.get_request(),
