@@ -143,7 +143,31 @@ type DiscussionThreadFixture = {
   markText: string;
   restText: string;
   comments: { id: string; text: string; userId: string }[];
+  isResolved?: boolean;
 };
+
+function threadDiscussions(threads: DiscussionThreadFixture[]) {
+  return Object.fromEntries(
+    threads.map((thread) => [
+      thread.id,
+      {
+        id: thread.id,
+        comments: thread.comments.map((comment) => ({
+          id: comment.id,
+          contentRich: [{ type: 'p', children: [{ text: comment.text }] }],
+          createdAt: '2026-04-17T09:00:00+00:00',
+          discussionId: thread.id,
+          isEdited: false,
+          userId: comment.userId,
+        })),
+        createdAt: '2026-04-17T09:00:00+00:00',
+        documentContent: thread.markText,
+        isResolved: thread.isResolved ?? false,
+        userId: thread.comments[0]?.userId ?? 'admin',
+      },
+    ]),
+  );
+}
 
 // One paragraph per thread, each with its own comment mark, so every
 // thread gets its own discussion trigger.
@@ -175,28 +199,52 @@ function withSomersaultThreadsFixture(threads: DiscussionThreadFixture[]) {
               ],
             })),
           ],
-          discussions: Object.fromEntries(
-            threads.map((thread) => [
-              thread.id,
-              {
-                id: thread.id,
-                comments: thread.comments.map((comment) => ({
-                  id: comment.id,
-                  contentRich: [
-                    { type: 'p', children: [{ text: comment.text }] },
-                  ],
-                  createdAt: '2026-04-17T09:00:00+00:00',
-                  discussionId: thread.id,
-                  isEdited: false,
-                  userId: comment.userId,
-                })),
-                createdAt: '2026-04-17T09:00:00+00:00',
-                documentContent: thread.markText,
-                isResolved: false,
-                userId: thread.comments[0]?.userId ?? 'admin',
-              },
-            ]),
-          ),
+          discussions: threadDiscussions(threads),
+          users: {
+            admin: { id: 'admin', fullname: 'Admin' },
+            alok: { id: 'alok', fullname: 'Alok' },
+          },
+        },
+      },
+    };
+  };
+}
+
+// All threads on the same text, so a single leaf carries every comment key.
+function withOverlappingThreadsFixture(
+  threads: DiscussionThreadFixture[],
+  { markText, restText }: { markText: string; restText: string },
+) {
+  return (body: Record<string, unknown>) => {
+    const title = typeof body.title === 'string' ? body.title : '';
+    const existingBlocks =
+      typeof body.blocks === 'object' && body.blocks !== null
+        ? (body.blocks as Record<string, unknown>)
+        : {};
+
+    return {
+      ...body,
+      blocks: {
+        ...existingBlocks,
+        __somersault__: {
+          '@type': '__somersault__',
+          value: [
+            { type: 'title', children: [{ text: title }] },
+            {
+              type: 'p',
+              children: [
+                {
+                  text: markText,
+                  comment: true,
+                  ...Object.fromEntries(
+                    threads.map((thread) => [`comment_${thread.id}`, true]),
+                  ),
+                },
+                { text: restText },
+              ],
+            },
+          ],
+          discussions: threadDiscussions(threads),
           users: {
             admin: { id: 'admin', fullname: 'Admin' },
             alok: { id: 'alok', fullname: 'Alok' },
@@ -1188,6 +1236,97 @@ test.describe('Plate discussions and suggestions', () => {
     const dialog = page.getByRole('dialog');
     await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
     await expect(dialog.getByText(commentText)).toBeVisible();
+  });
+
+  test('lists every discussion on overlapping comments', async ({ page }) => {
+    test.setTimeout(60_000);
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-overlap',
+      contentTitle: 'Discussion overlap',
+      bodyModifier: withOverlappingThreadsFixture(
+        [
+          {
+            id: 'discussionA',
+            markText: 'Overlap',
+            restText: '',
+            comments: [{ id: 'commentA', text: 'Comment A', userId: 'admin' }],
+          },
+          {
+            id: 'discussionB',
+            markText: 'Overlap',
+            restText: '',
+            comments: [{ id: 'commentB', text: 'Comment B', userId: 'admin' }],
+          },
+        ],
+        { markText: 'Overlap', restText: ' this paragraph' },
+      ),
+    });
+    const dialog = page.getByRole('dialog');
+
+    await page.getByRole('button', { name: '2' }).click();
+    await expect(
+      dialog.getByRole('heading', { name: 'Comments (2)' }),
+    ).toBeVisible();
+    await expect(dialog.getByText('Comment A')).toBeVisible();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+
+    // Deleting one keeps the other listed
+    await deleteComment(page, 'Comment A');
+    await expect(dialog.getByText('Comment A')).toBeHidden();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await page.locator('#toolbar-save').click();
+    await page.waitForURL(contentPath, { waitUntil: 'load', timeout: 30_000 });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: '1' }).click();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+    await expect(dialog.getByText('Comment A')).toBeHidden();
+  });
+
+  test('shows every resolved discussion on overlapping comments as resolved', async ({
+    page,
+  }) => {
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'discussion-overlap-resolved',
+      contentTitle: 'Discussion overlap resolved',
+      wikiId: 'wiki-discussion-overlap-resolved',
+      transition: 'publish',
+      bodyModifier: withOverlappingThreadsFixture(
+        [
+          {
+            id: 'discussionA',
+            markText: 'Overlap',
+            restText: '',
+            comments: [{ id: 'commentA', text: 'Comment A', userId: 'admin' }],
+            isResolved: true,
+          },
+          {
+            id: 'discussionB',
+            markText: 'Overlap',
+            restText: '',
+            comments: [{ id: 'commentB', text: 'Comment B', userId: 'admin' }],
+            isResolved: true,
+          },
+        ],
+        { markText: 'Overlap', restText: ' this paragraph' },
+      ),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const trigger = page.getByRole('button', { name: '2' });
+    await expect(trigger.locator('svg.lucide-circle-check')).toBeVisible();
+    await expect(page.locator('[data-comment-resolved="true"]')).toBeVisible();
+
+    await trigger.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.getByText('Comment A')).toBeVisible();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+    await expect(dialog.getByTestId('resolved-discussion-banner')).toHaveCount(
+      2,
+    );
   });
 
   test('hydrates persisted suggestions in edit mode and renders them in view mode', async ({
