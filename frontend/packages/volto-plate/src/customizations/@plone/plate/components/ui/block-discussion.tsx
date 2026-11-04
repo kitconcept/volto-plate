@@ -19,6 +19,8 @@
  *  - Count comments instead of threads in the trigger and popover header, so
  *    replies and deletions update the count @iFlameing
  *  - Position discussion popovers above their selected text anchors.
+ *  - Show every discussion on overlapping comment leaves, not only the last
+ *    id `api.comment.nodeId` returns @Tishasoumya-02
  *
  */
 import * as React from 'react';
@@ -59,6 +61,9 @@ import {
   useDiscussionResolution,
 } from '../../../../../plate/plugins/comment-resolution';
 import { countDiscussionComments } from '../../../../../plate/discussion-data';
+// Overlapping comments: read every comment id on a leaf, not just the last.
+import { isCommentNodeById } from '@platejs/comment';
+import { getCommentIds } from '../../../../../plate/plugins/comment-resolution';
 // === END CUSTOMIZATION ===
 
 import { Button } from '@plone/plate/components/ui/button';
@@ -628,11 +633,11 @@ const BlockCommentContent = ({
       if (activeCommentId === getDraftCommentKey()) {
         activeNode = draftCommentNode;
       } else {
-        activeNode = commentNodes.find(
-          ([node]) =>
-            editor.getApi(commentPlugin).comment.nodeId(node) ===
-            activeCommentId,
+        // START CUSTOMIZATION
+        activeNode = commentNodes.find(([node]) =>
+          isCommentNodeById(node, activeCommentId),
         );
+        // END CUSTOMIZATION
       }
     }
 
@@ -890,32 +895,31 @@ const useResolvedDiscussion = (
   const { api, getOption, setOption } = useEditorPlugin(commentPlugin);
   const { discussions } = usePlatePlugins();
 
+  // === START CUSTOMIZATION ===
   commentNodes.forEach(([node]) => {
-    const id = api.comment.nodeId(node);
-    const map = getOption('uniquePathMap');
+    getCommentIds(node).forEach((id) => {
+      const map = getOption('uniquePathMap');
+      const previousPath = map.get(id);
 
-    if (!id) return;
+      // If there are no comment nodes in the corresponding path in the map, then update it.
+      if (PathApi.isPath(previousPath)) {
+        const nodes = api.comment.node({ id, at: previousPath });
 
-    const previousPath = map.get(id);
+        if (!nodes) {
+          setOption('uniquePathMap', new Map(map).set(id, blockPath));
+        }
 
-    // If there are no comment nodes in the corresponding path in the map, then update it.
-    if (PathApi.isPath(previousPath)) {
-      const nodes = api.comment.node({ id, at: previousPath });
-
-      if (!nodes) {
-        setOption('uniquePathMap', new Map(map).set(id, blockPath));
         return;
       }
-
-      return;
-    }
-    // TODO: fix throw error
-    setOption('uniquePathMap', new Map(map).set(id, blockPath));
+      // TODO: fix throw error
+      setOption('uniquePathMap', new Map(map).set(id, blockPath));
+    });
   });
 
   const commentsIds = new Set(
-    commentNodes.map(([node]) => api.comment.nodeId(node)).filter(Boolean),
+    commentNodes.flatMap(([node]) => getCommentIds(node)),
   );
+  // === END CUSTOMIZATION ===
 
   const resolvedDiscussions = discussions
     .map((d: TDiscussion) => ({
