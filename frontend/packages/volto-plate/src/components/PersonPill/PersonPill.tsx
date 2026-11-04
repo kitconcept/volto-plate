@@ -2,9 +2,8 @@ import type { CSSProperties } from 'react';
 import { useSelector } from 'react-redux';
 import cx from 'classnames';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
-import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
-import AvatarFallback from '../../icons/avatar-fallback-silhouette.svg';
+import { avatarToneClass, getInitials } from '../../helpers/avatar';
 
 type PersonPillProps = {
   id: string;
@@ -23,6 +22,7 @@ type SiteState = {
 };
 
 const PersonPill = ({
+  id,
   fullname,
   name,
   portrait,
@@ -37,19 +37,19 @@ const PersonPill = ({
       state.site?.data?.['kitconcept.clickable_profile_links'],
   );
 
+  const initials = getInitials(
+    [fullname, name, id].map((value) => value?.trim()).find(Boolean),
+  );
+
   const avatar = (
     <>
       {!portrait && (
-        <Icon
-          className="person-pill-avatar"
-          name={AvatarFallback}
-          size={compact ? '24px' : '40px'}
-          style={{
-            width: compact ? '24px' : '40px',
-            height: compact ? '24px' : '40px',
-          }}
-          ariaHidden
-        />
+        <span
+          className={`person-pill-avatar person-pill-initials ${avatarToneClass(id || initials)}`}
+          aria-hidden="true"
+        >
+          {initials}
+        </span>
       )}
       {portrait && (
         <img
