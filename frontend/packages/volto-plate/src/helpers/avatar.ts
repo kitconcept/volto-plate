@@ -1,4 +1,4 @@
-// Initials avatar helpers: the same initials always get the same color
+// Initials avatar helpers: the same user id always gets the same color
 // from a fixed palette (see .avatar-tone-N in theme/_person-pill.scss).
 
 export const AVATAR_TONE_COUNT = 6;
@@ -13,16 +13,16 @@ export function getInitials(name?: string | null): string {
   return (first + last).toUpperCase();
 }
 
-// Add up the letter codes, weighting each by its position so that
-// "AB" and "BA" can get different colors, then pick one of the tones.
-export function avatarTone(initials: string): number {
-  let sum = 0;
-  for (let i = 0; i < initials.length; i += 1) {
-    sum += initials.charCodeAt(i) * (i + 1);
+// Hash the whole key (a user id) into one of the tones, so the same id
+// always gets the same color and different ids are spread over the palette.
+export function avatarTone(key: string): number {
+  let hash = 0;
+  for (const char of key) {
+    hash = (hash * 31 + char.codePointAt(0)!) >>> 0;
   }
-  return sum % AVATAR_TONE_COUNT;
+  return hash % AVATAR_TONE_COUNT;
 }
 
-export function avatarToneClass(initials: string): string {
-  return `avatar-tone-${avatarTone(initials)}`;
+export function avatarToneClass(key: string): string {
+  return `avatar-tone-${avatarTone(key)}`;
 }

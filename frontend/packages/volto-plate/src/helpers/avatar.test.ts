@@ -32,25 +32,24 @@ describe('getInitials', () => {
 });
 
 describe('avatarTone', () => {
-  it('gives the same tone to the same initials', () => {
-    expect(avatarTone(getInitials('Max Mustermann'))).toBe(
-      avatarTone(getInitials('Maria Müller')),
-    );
+  it('gives the same tone to the same id', () => {
+    expect(avatarTone('max.mustermann')).toBe(avatarTone('max.mustermann'));
   });
 
-  it('depends on the order of the initials', () => {
-    expect(avatarTone('AB')).not.toBe(avatarTone('BA'));
+  it('can tell apart ids that share initials', () => {
+    expect(getInitials('admin')).toBe(getInitials('alok'));
+    expect(avatarTone('admin')).not.toBe(avatarTone('alok'));
   });
 
   it('stays within the palette', () => {
-    for (const initials of ['A', 'MM', 'ZZ', '?', 'ÄÖ']) {
-      const tone = avatarTone(initials);
+    for (const key of ['', 'a', 'admin', 'max.mustermann', 'jürgen', '?']) {
+      const tone = avatarTone(key);
       expect(tone).toBeGreaterThanOrEqual(0);
       expect(tone).toBeLessThan(AVATAR_TONE_COUNT);
     }
   });
 
   it('builds the utility class name', () => {
-    expect(avatarToneClass('MM')).toBe(`avatar-tone-${avatarTone('MM')}`);
+    expect(avatarToneClass('admin')).toBe(`avatar-tone-${avatarTone('admin')}`);
   });
 });

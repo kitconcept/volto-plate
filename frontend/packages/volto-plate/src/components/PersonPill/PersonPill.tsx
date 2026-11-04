@@ -45,7 +45,7 @@ const PersonPill = ({
     <>
       {!portrait && (
         <span
-          className={`person-pill-avatar person-pill-initials ${avatarToneClass(initials)}`}
+          className={`person-pill-avatar person-pill-initials ${avatarToneClass(id || initials)}`}
           aria-hidden="true"
         >
           {initials}

@@ -49,7 +49,7 @@
 }
 
 // Fixed initials-avatar palette, shared by every initials avatar
-// (person pills, and any add-on that uses avatarToneClass() from
+// (person pills, and any add-on that uses avatarToneClass(userId) from
 // helpers/avatar.ts). Themes can re-color a tone by overriding
 // --avatar-tone-N-background / --avatar-tone-N-color.
 $avatar-tones: (
