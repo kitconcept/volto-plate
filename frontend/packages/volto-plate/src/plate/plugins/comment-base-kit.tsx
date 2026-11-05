@@ -43,8 +43,11 @@ import {
   suggestionPlugin,
 } from '@plone/plate/components/editor/plugins/suggestion-kit';
 
+import { isCommentNodeById } from '@platejs/comment';
+
 import {
   type TArchivableDiscussion,
+  getCommentIds,
   ResolveDiscussionButton,
   ResolvedDiscussionBanner,
   useDiscussionResolution,
@@ -234,9 +237,8 @@ const ReadOnlyBlockDiscussionContent = ({
     }
 
     if (activeCommentId) {
-      activeNode = commentNodes.find(
-        ([node]) =>
-          editor.getApi(commentPlugin).comment.nodeId(node) === activeCommentId,
+      activeNode = commentNodes.find(([node]) =>
+        isCommentNodeById(node, activeCommentId),
       );
     }
 
@@ -482,28 +484,26 @@ const useResolvedDiscussion = (
   const { discussions } = usePlatePlugins();
 
   commentNodes.forEach(([node]) => {
-    const id = api.comment.nodeId(node);
-    const map = getOption('uniquePathMap');
+    getCommentIds(node).forEach((id) => {
+      const map = getOption('uniquePathMap');
+      const previousPath = map.get(id);
 
-    if (!id) return;
+      if (PathApi.isPath(previousPath)) {
+        const nodes = api.comment.node({ id, at: previousPath });
 
-    const previousPath = map.get(id);
+        if (!nodes) {
+          setOption('uniquePathMap', new Map(map).set(id, blockPath));
+        }
 
-    if (PathApi.isPath(previousPath)) {
-      const nodes = api.comment.node({ id, at: previousPath });
-
-      if (!nodes) {
-        setOption('uniquePathMap', new Map(map).set(id, blockPath));
+        return;
       }
 
-      return;
-    }
-
-    setOption('uniquePathMap', new Map(map).set(id, blockPath));
+      setOption('uniquePathMap', new Map(map).set(id, blockPath));
+    });
   });
 
   const commentIds = new Set(
-    commentNodes.map(([node]) => api.comment.nodeId(node)).filter(Boolean),
+    commentNodes.flatMap(([node]) => getCommentIds(node)),
   );
 
   return discussions

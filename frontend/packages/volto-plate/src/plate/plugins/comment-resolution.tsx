@@ -7,6 +7,7 @@ import {
   getCommentCount,
   getCommentKeyId,
   getCommentKeys,
+  getDraftCommentKey,
 } from '@platejs/comment';
 import { CheckIcon } from 'lucide-react';
 import { PlateLeaf, useEditorPlugin, usePluginOption } from 'platejs/react';
@@ -29,6 +30,14 @@ export type TArchivableDiscussion = TDiscussion & {
   resolvedAt?: string;
   resolvedBy?: string;
 };
+
+/**
+ * All discussion ids on a leaf excluding the draft comment key.
+ */
+export const getCommentIds = (leaf: TCommentText) =>
+  getCommentKeys(leaf)
+    .filter((key) => key !== getDraftCommentKey())
+    .map(getCommentKeyId);
 
 export const useDiscussionResolution = () => {
   const { currentUserId, setDiscussions } = usePlatePlugins();
