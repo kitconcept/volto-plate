@@ -8,6 +8,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.40 (2026-11-04)
+
+
+### Feature
+
+- Show colored initials instead of the silhouette in the person pill when there is no portrait. @iFlameing 
+
 ## 1.0.0-alpha.39 (2026-10-30)
 
 

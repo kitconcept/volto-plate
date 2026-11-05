@@ -7,6 +7,33 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a40 (2026-11-04)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Show colored initials instead of the silhouette in the person pill when there is no portrait. @iFlameing 
+
+
+
+### Project
+
+
+#### Bugfix
+
+- Fix outdated locale .mo files in release. @davisagli 
+
+
+
 ## 1.0.0a39 (2026-10-30)
 
 ### Backend
