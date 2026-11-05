@@ -1,0 +1,1 @@
+Added support for the wiki pages (`PlateEditorContentTypes`) to the `@blocks-schema` endpoint, so agents like the MCP servers know how to write their Plate document: its format, its native elements, and the Plone blocks it can hold. @sneridagh
