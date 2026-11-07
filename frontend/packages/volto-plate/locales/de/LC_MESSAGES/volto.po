@@ -16,6 +16,11 @@ msgstr ""
 msgid "Accept all"
 msgstr "Alle annehmen"
 
+#. Default: "Close"
+#: customizations/@plone/plate/components/ui/block-discussion
+msgid "Close"
+msgstr "Schließen"
+
 #. Default: "Diagram"
 #: plate/wiki/slash-menu
 msgid "Diagram"
