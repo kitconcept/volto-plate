@@ -108,9 +108,31 @@ class TestSendNotifications(TestBaseMentionsService):
         assert len(messages) == 1
         msg = messages[0]
         assert msg["To"] == "mentioned-user@example.com"
+        assert str(msg["Subject"]) == 'Mentioning User mentioned you in "My Workspace"'
         body = get_msg_body(msg, "text/plain")
         assert "Mentioning User mentioned you on 'My Workspace'." in body
         assert "plateMention=abc" in body
+        assert msg.get_content_type() == "multipart/alternative"
+        assert [part.get_content_type() for part in msg.get_payload()] == [
+            "text/plain",
+            "text/html",
+        ]
+        html = get_msg_body(msg, "text/html")
+        assert "Mentioning User mentioned you on &#x27;My Workspace&#x27;." in html
+        assert "plateMention=abc" in html
+        assert '<table role="presentation"' in html
+        assert f'href="{self.workspace.absolute_url()}?plateMention=abc"' in html
+        assert ">Go to mention</a>" in html
+        assert "Open the mention:" not in html
+        assert "View page:" not in html
+        assert "</a></td><td" in html
+        assert "<hr " in html
+        assert f'href="{self.workspace.absolute_url()}">View page</a>' in html
+        assert "Mentioned " in body
+        assert "You received this email because Mentioning User mentioned you." in body
+        site_name = api.portal.get_registry_record("plone.site_title")
+        assert site_name in body
+        assert f"View page: {self.workspace.absolute_url()}" in body
 
     def test_wiki_page_creation_sends_notification(
         self, make_plate_mention, get_messages, get_msg_body
