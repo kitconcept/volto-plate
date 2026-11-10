@@ -210,7 +210,6 @@ export function VoltoCommentLeaf(props: PlateLeafProps<TCommentText>) {
   );
 }
 
-
 export const voltoCommentPlugin = commentPlugin
   .extend({
     // Every comment id on the clicked text, so overlapping threads open
