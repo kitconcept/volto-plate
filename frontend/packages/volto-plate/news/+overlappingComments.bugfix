@@ -1,1 +1,1 @@
-Fixed overlapping comments on the same text: every discussion now shows in the popover, and clicking the shared text opens all of its threads, not only the latest one. @Tishasoumya-02
+Fixed overlapping comments and suggestions on the same text: clicking the shared text now opens every discussion and suggestion on it together, in edit and view mode, not only the latest one. @Tishasoumya-02
