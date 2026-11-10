@@ -51,8 +51,10 @@ import {
   ResolveDiscussionButton,
   ResolvedDiscussionBanner,
   useActiveDiscussions,
+  useActiveSuggestions,
   useDiscussionResolution,
   voltoCommentPlugin,
+  voltoSuggestionPlugin,
 } from './comment-resolution';
 import { countDiscussionComments } from '../discussion-data';
 import { discussionSlotRender } from '../discussion-slot';
@@ -96,10 +98,10 @@ export const readOnlyDiscussionPlugin = createPlatePlugin({
 // The renderer registers the interactive comment and suggestion plugins so the
 // read-only popover can resolve persisted metadata (comment ids, suggestion
 // paths) through the same plugin options the editor uses.
-// suggestionPlugin must come before readOnlyDiscussionPlugin so its line-break
-// indicator renders inside the discussion wrapper, after the text.
+// voltoSuggestionPlugin must come before readOnlyDiscussionPlugin so its
+// line-break indicator renders inside the discussion wrapper, after the text.
 export const BaseCommentKit = [
-  suggestionPlugin,
+  voltoSuggestionPlugin,
   readOnlyDiscussionPlugin,
   voltoCommentPlugin,
 ];
@@ -137,15 +139,18 @@ const ReadOnlyBlockDiscussionContent = ({
   const activeCommentId = usePluginOption(commentPlugin, 'activeId');
   const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId');
 
-  // Clicking text with overlapping comments opens every thread on it
   const activeDiscussions = useActiveDiscussions(
     resolvedDiscussions,
     activeCommentId,
   );
   const hasActiveDiscussion = activeDiscussions.length > 0;
-  const activeSuggestion =
-    activeSuggestionId &&
-    resolvedSuggestions.find((s) => s.suggestionId === activeSuggestionId);
+  const activeSuggestions = useActiveSuggestions(
+    resolvedSuggestions,
+    activeSuggestionId,
+  );
+  const activeSuggestion = activeSuggestions.find(
+    (s) => s.suggestionId === activeSuggestionId,
+  );
 
   const suggestionsCount = resolvedSuggestions.length;
   const discussionsCount = resolvedDiscussions.length;
@@ -159,14 +164,21 @@ const ReadOnlyBlockDiscussionContent = ({
       : discussionsCount > 0 && suggestionsCount === 0
         ? 'comments'
         : 'mixed';
-  const popoverTitle =
-    triggerKind === 'suggestions'
-      ? 'Suggestions'
-      : triggerKind === 'comments'
-        ? 'Comments'
-        : 'Comments & Suggestions';
 
   const noneActive = !hasActiveDiscussion && !activeSuggestion;
+
+  const shownSuggestionsCount = noneActive
+    ? suggestionsCount
+    : activeSuggestions.length;
+  const shownDiscussionsCount = noneActive
+    ? discussionsCount
+    : activeDiscussions.length;
+  const popoverTitle =
+    shownSuggestionsCount > 0 && shownDiscussionsCount === 0
+      ? 'Suggestions'
+      : shownDiscussionsCount > 0 && shownSuggestionsCount === 0
+        ? 'Comments'
+        : 'Comments & Suggestions';
   // As in edit mode, the thread shown on its own gets the Resolve button in
   // the header; several threads keep a Resolve link each.
   const singleDiscussion =
@@ -178,9 +190,7 @@ const ReadOnlyBlockDiscussionContent = ({
   const { canResolve, resolve } = useDiscussionResolution();
   const popoverHeaderCount = noneActive
     ? totalCount
-    : hasActiveDiscussion
-      ? countDiscussionComments(activeDiscussions)
-      : 1;
+    : activeSuggestions.length + countDiscussionComments(activeDiscussions);
 
   const sortedMergedData = [
     ...resolvedDiscussions,
@@ -264,6 +274,7 @@ const ReadOnlyBlockDiscussionContent = ({
     setCommentOption('activeId', null);
     setSuggestionOption('activeId', null);
     editor.setOption(voltoCommentPlugin, 'activeIds', null);
+    editor.setOption(voltoSuggestionPlugin, 'activeIds', null);
   }, [editor, setCommentOption, setSuggestionOption]);
 
   if (suggestionsCount + discussionsCount === 0) {
@@ -293,40 +304,36 @@ const ReadOnlyBlockDiscussionContent = ({
     if (!(target instanceof HTMLElement)) return;
 
     const commentElement = target.closest('.slate-comment');
-
-    if (commentElement instanceof HTMLElement) {
-      const id = findClickedMarkId(commentElement, 'data-comment-id', (value) =>
-        resolvedDiscussions.some((discussion) => discussion.id === value),
-      );
-
-      flushSync(() => {
-        setClickedAnchorElement(commentElement);
-        setTriggerAnchorElement(null);
-        setOpen(!!id);
-      });
-      setSuggestionOption('activeId', null);
-      setCommentOption('activeId', id);
-
-      return;
-    }
-
     const suggestionElement = target.closest('.slate-suggestion');
+    const markElement =
+      commentElement instanceof HTMLElement
+        ? commentElement
+        : suggestionElement instanceof HTMLElement
+          ? suggestionElement
+          : null;
 
-    if (suggestionElement instanceof HTMLElement) {
-      const id = findClickedMarkId(
-        suggestionElement,
-        'data-suggestion-id',
-        (value) => resolvedSuggestions.some((s) => s.suggestionId === value),
-      );
+    if (!markElement) return;
 
-      flushSync(() => {
-        setClickedAnchorElement(suggestionElement);
-        setTriggerAnchorElement(null);
-        setOpen(!!id);
-      });
-      setCommentOption('activeId', null);
-      setSuggestionOption('activeId', id);
-    }
+    const commentId =
+      commentElement instanceof HTMLElement
+        ? findClickedMarkId(commentElement, 'data-comment-id', (value) =>
+            resolvedDiscussions.some((discussion) => discussion.id === value),
+          )
+        : null;
+    const suggestionId =
+      suggestionElement instanceof HTMLElement
+        ? findClickedMarkId(suggestionElement, 'data-suggestion-id', (value) =>
+            resolvedSuggestions.some((s) => s.suggestionId === value),
+          )
+        : null;
+
+    flushSync(() => {
+      setClickedAnchorElement(markElement);
+      setTriggerAnchorElement(null);
+      setOpen(!!commentId || !!suggestionId);
+    });
+    setCommentOption('activeId', commentId);
+    setSuggestionOption('activeId', suggestionId);
   };
 
   const closePopover = () => {
@@ -376,15 +383,10 @@ const ReadOnlyBlockDiscussionContent = ({
         ? sortedMergedData.map((item, index) =>
             renderCard(item, index, index === sortedMergedData.length - 1),
           )
-        : activeSuggestion
-          ? renderCard(activeSuggestion, 0, true)
-          : activeDiscussions.map((discussion, index) =>
-              renderCard(
-                discussion,
-                index,
-                index === activeDiscussions.length - 1,
-              ),
-            )}
+        : [...activeSuggestions, ...activeDiscussions].map(
+            (item, index, items) =>
+              renderCard(item, index, index === items.length - 1),
+          )}
     </React.Fragment>
   );
 

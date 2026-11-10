@@ -23,6 +23,8 @@
  *    id `api.comment.nodeId` returns @Tishasoumya-02
  *  - Clicking text with overlapping comments opens every thread on it
  *    @Tishasoumya-02
+ *  - Clicking text with overlapping suggestions opens every suggestion on it,
+ *    alongside its comment threads @Tishasoumya-02
  *
  */
 import * as React from 'react';
@@ -68,7 +70,9 @@ import { isCommentNodeById } from '@platejs/comment';
 import {
   getCommentIds,
   useActiveDiscussions,
+  useActiveSuggestions,
   voltoCommentPlugin,
+  voltoSuggestionPlugin,
 } from '../../../../../plate/plugins/comment-resolution';
 // === END CUSTOMIZATION ===
 
@@ -460,17 +464,17 @@ const BlockCommentContent = ({
   const totalCount =
     suggestionsCount + countDiscussionComments(resolvedDiscussions);
   // === END CUSTOMIZATION ===
-  const popoverTitle =
-    suggestionsCount > 0 && discussionsCount === 0
-      ? 'Suggestions'
-      : discussionsCount > 0 && suggestionsCount === 0
-        ? 'Comments'
-        : 'Comments & Suggestions';
 
   const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId');
-  const activeSuggestion =
-    activeSuggestionId &&
-    resolvedSuggestions.find((s) => s.suggestionId === activeSuggestionId);
+  // === START CUSTOMIZATION ===
+  const activeSuggestions = useActiveSuggestions(
+    resolvedSuggestions,
+    activeSuggestionId,
+  );
+  const activeSuggestion = activeSuggestions.find(
+    (s) => s.suggestionId === activeSuggestionId,
+  );
+  // === END CUSTOMIZATION ===
 
   const commentingBlock = usePluginOption(commentPlugin, 'commentingBlock');
   const activeCommentId = usePluginOption(commentPlugin, 'activeId');
@@ -485,6 +489,19 @@ const BlockCommentContent = ({
   const hasActiveDiscussion = activeDiscussions.length > 0;
 
   const noneActive = !activeSuggestion && !hasActiveDiscussion;
+
+  const shownSuggestionsCount = noneActive
+    ? suggestionsCount
+    : activeSuggestions.length;
+  const shownDiscussionsCount = noneActive
+    ? discussionsCount
+    : activeDiscussions.length;
+  const popoverTitle =
+    shownSuggestionsCount > 0 && shownDiscussionsCount === 0
+      ? 'Suggestions'
+      : shownDiscussionsCount > 0 && shownSuggestionsCount === 0
+        ? 'Comments'
+        : 'Comments & Suggestions';
   // The thread shown on its own gets the Resolve button in the header.
   const singleDiscussion =
     activeDiscussions.length === 1
@@ -494,9 +511,7 @@ const BlockCommentContent = ({
         : undefined;
   const popoverHeaderCount = noneActive
     ? totalCount
-    : hasActiveDiscussion
-      ? countDiscussionComments(activeDiscussions)
-      : 1;
+    : activeSuggestions.length + countDiscussionComments(activeDiscussions);
   // === END CUSTOMIZATION ===
   const triggerKind: DiscussionTriggerKind =
     suggestionsCount > 0 && discussionsCount === 0
@@ -600,6 +615,7 @@ const BlockCommentContent = ({
     editor.setOption(suggestionPlugin, 'activeId', null);
     editor.setOption(commentPlugin, 'activeId', null);
     editor.setOption(voltoCommentPlugin, 'activeIds', null);
+    editor.setOption(voltoSuggestionPlugin, 'activeIds', null);
     // END CUSTOMIZATION
   }, [draftCommentNode, editor, isCommenting, removeDraftComment]);
 
@@ -717,16 +733,19 @@ const BlockCommentContent = ({
         )
       ) : (
         <React.Fragment>
-          {activeSuggestion && (
-            <BlockSuggestionCard
-              key={activeSuggestion.suggestionId}
-              idx={0}
-              isLast={true}
-              suggestion={activeSuggestion}
-            />
-          )}
-
           {/* === START CUSTOMIZATION === */}
+          {activeSuggestions.map((suggestion, index) => (
+            <BlockSuggestionCard
+              key={suggestion.suggestionId}
+              idx={index}
+              isLast={
+                index === activeSuggestions.length - 1 &&
+                activeDiscussions.length === 0
+              }
+              suggestion={suggestion}
+            />
+          ))}
+
           {activeDiscussions.map((discussion, index) => (
             <BlockComment
               key={discussion.id}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type { TCommentText } from 'platejs';
+import type { TCommentText, TSuggestionText } from 'platejs';
 import type { PlateLeafProps } from 'platejs/react';
 
 import {
@@ -17,6 +17,8 @@ import { Button } from '@plone/plate/components/ui/button';
 import { usePlatePlugins } from '@plone/plate/components/editor/plate-plugins-context';
 import { commentPlugin } from '@plone/plate/components/editor/plugins/comment-kit';
 import type { TDiscussion } from '@plone/plate/components/editor/plugins/discussion-kit';
+import { suggestionPlugin } from '@plone/plate/components/editor/plugins/suggestion-kit';
+import { SuggestionLeaf } from '@plone/plate/components/ui/suggestion-node';
 import { cn } from '@plone/plate/lib/utils';
 
 import { messages } from '../../index';
@@ -234,4 +236,51 @@ export const useActiveDiscussions = <T extends { id: string }>(
   const ids = activeIds?.includes(activeId) ? activeIds : [activeId];
 
   return discussions.filter((discussion) => ids.includes(discussion.id));
+};
+
+/**
+ * Suggestion mark that records every suggestion id on the clicked text, as
+ * `api.suggestion.nodeId` only returns the last one.
+ */
+export function VoltoSuggestionLeaf(props: PlateLeafProps<TSuggestionText>) {
+  const { api, setOption } = useEditorPlugin(voltoSuggestionPlugin);
+
+  return (
+    <SuggestionLeaf
+      {...props}
+      attributes={{
+        ...props.attributes,
+        onClick: () =>
+          setOption(
+            'activeIds',
+            api.suggestion.dataList(props.leaf).map((data) => data.id),
+          ),
+      }}
+    />
+  );
+}
+
+export const voltoSuggestionPlugin = suggestionPlugin
+  .extend({
+    options: { activeIds: null as string[] | null },
+  })
+  .extend(() => ({ render: { node: VoltoSuggestionLeaf } }));
+
+/**
+ * Suggestions to show for the active suggestion: every suggestion on the
+ * clicked text when it carries several, otherwise the active one alone.
+ */
+export const useActiveSuggestions = <T extends { suggestionId: string }>(
+  suggestions: T[],
+  activeId: string | null,
+) => {
+  const activeIds = usePluginOption(voltoSuggestionPlugin, 'activeIds');
+
+  if (!activeId) return [];
+
+  const ids = activeIds?.includes(activeId) ? activeIds : [activeId];
+
+  return suggestions.filter((suggestion) =>
+    ids.includes(suggestion.suggestionId),
+  );
 };
