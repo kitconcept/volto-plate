@@ -143,7 +143,31 @@ type DiscussionThreadFixture = {
   markText: string;
   restText: string;
   comments: { id: string; text: string; userId: string }[];
+  isResolved?: boolean;
 };
+
+function threadDiscussions(threads: DiscussionThreadFixture[]) {
+  return Object.fromEntries(
+    threads.map((thread) => [
+      thread.id,
+      {
+        id: thread.id,
+        comments: thread.comments.map((comment) => ({
+          id: comment.id,
+          contentRich: [{ type: 'p', children: [{ text: comment.text }] }],
+          createdAt: '2026-04-17T09:00:00+00:00',
+          discussionId: thread.id,
+          isEdited: false,
+          userId: comment.userId,
+        })),
+        createdAt: '2026-04-17T09:00:00+00:00',
+        documentContent: thread.markText,
+        isResolved: thread.isResolved ?? false,
+        userId: thread.comments[0]?.userId ?? 'admin',
+      },
+    ]),
+  );
+}
 
 // One paragraph per thread, each with its own comment mark, so every
 // thread gets its own discussion trigger.
@@ -175,28 +199,7 @@ function withSomersaultThreadsFixture(threads: DiscussionThreadFixture[]) {
               ],
             })),
           ],
-          discussions: Object.fromEntries(
-            threads.map((thread) => [
-              thread.id,
-              {
-                id: thread.id,
-                comments: thread.comments.map((comment) => ({
-                  id: comment.id,
-                  contentRich: [
-                    { type: 'p', children: [{ text: comment.text }] },
-                  ],
-                  createdAt: '2026-04-17T09:00:00+00:00',
-                  discussionId: thread.id,
-                  isEdited: false,
-                  userId: comment.userId,
-                })),
-                createdAt: '2026-04-17T09:00:00+00:00',
-                documentContent: thread.markText,
-                isResolved: false,
-                userId: thread.comments[0]?.userId ?? 'admin',
-              },
-            ]),
-          ),
+          discussions: threadDiscussions(threads),
           users: {
             admin: { id: 'admin', fullname: 'Admin' },
             alok: { id: 'alok', fullname: 'Alok' },
@@ -205,6 +208,153 @@ function withSomersaultThreadsFixture(threads: DiscussionThreadFixture[]) {
       },
     };
   };
+}
+
+// All threads on the same text, so a single leaf carries every comment key.
+function withOverlappingThreadsFixture(
+  threads: DiscussionThreadFixture[],
+  { markText, restText }: { markText: string; restText: string },
+) {
+  return (body: Record<string, unknown>) => {
+    const title = typeof body.title === 'string' ? body.title : '';
+    const existingBlocks =
+      typeof body.blocks === 'object' && body.blocks !== null
+        ? (body.blocks as Record<string, unknown>)
+        : {};
+
+    return {
+      ...body,
+      blocks: {
+        ...existingBlocks,
+        __somersault__: {
+          '@type': '__somersault__',
+          value: [
+            { type: 'title', children: [{ text: title }] },
+            {
+              type: 'p',
+              children: [
+                {
+                  text: markText,
+                  comment: true,
+                  ...Object.fromEntries(
+                    threads.map((thread) => [`comment_${thread.id}`, true]),
+                  ),
+                },
+                { text: restText },
+              ],
+            },
+          ],
+          discussions: threadDiscussions(threads),
+          users: {
+            admin: { id: 'admin', fullname: 'Admin' },
+            alok: { id: 'alok', fullname: 'Alok' },
+          },
+        },
+      },
+    };
+  };
+}
+
+// Two insert suggestions that overlap on "drafted": the first adds
+// "Quickly drafted", the second "drafted notes". Optional comment threads sit
+// on the overlapping text too.
+function withOverlappingSuggestionsFixture(
+  threads: DiscussionThreadFixture[] = [],
+) {
+  const insertion = (id: string, createdAt: number, userId: string) => ({
+    [`suggestion_${id}`]: { createdAt, id, type: 'insert', userId },
+  });
+  const suggestionA = insertion('suggestionA', 1760691600000, 'admin');
+  const suggestionB = insertion('suggestionB', 1760695200000, 'alok');
+  const comments = Object.fromEntries([
+    ...(threads.length > 0 ? [['comment', true]] : []),
+    ...threads.map((thread) => [`comment_${thread.id}`, true]),
+  ]);
+
+  return (body: Record<string, unknown>) => {
+    const title = typeof body.title === 'string' ? body.title : '';
+
+    return {
+      ...body,
+      blocks: {
+        __somersault__: {
+          '@type': '__somersault__',
+          value: [
+            { type: 'title', children: [{ text: title }] },
+            {
+              type: 'p',
+              children: [
+                { text: 'Quickly ', suggestion: true, ...suggestionA },
+                {
+                  text: 'drafted',
+                  suggestion: true,
+                  ...suggestionA,
+                  ...suggestionB,
+                  ...comments,
+                },
+                { text: ' notes', suggestion: true, ...suggestionB },
+                { text: ' for review' },
+              ],
+            },
+          ],
+          discussions: {
+            ...threadDiscussions(threads),
+            suggestionA: {
+              id: 'suggestionA',
+              comments: [],
+              createdAt: '2026-04-17T09:00:00+00:00',
+              isResolved: false,
+              userId: 'admin',
+            },
+            suggestionB: {
+              id: 'suggestionB',
+              comments: [],
+              createdAt: '2026-04-17T10:00:00+00:00',
+              isResolved: false,
+              userId: 'alok',
+            },
+          },
+          users: {
+            admin: { id: 'admin', fullname: 'Admin' },
+            alok: { id: 'alok', fullname: 'Alok' },
+          },
+        },
+      },
+      blocks_layout: {
+        items: ['__somersault__'],
+      },
+    };
+  };
+}
+
+async function expectOverlapPopover(
+  page: Page,
+  contentPath: string,
+  { heading, texts }: { heading: string; texts: string[] },
+) {
+  const dialog = page.getByRole('dialog');
+  const expectAllShown = async () => {
+    await page.locator('ins', { hasText: 'drafted' }).first().click();
+    await expect(dialog.getByRole('heading', { name: heading })).toBeVisible();
+    await expect(dialog.getByText('Suggested adding')).toHaveCount(2);
+    for (const text of texts) {
+      await expect(dialog.getByText(text)).toBeVisible();
+    }
+  };
+
+  await page.goto(contentPath, { waitUntil: 'networkidle' });
+  await expectAllShown();
+  await dialog.getByRole('button', { name: 'Close' }).click();
+
+  await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
+  await waitForPlateEditorReady(page);
+  const editable = page.locator('.slate-editor[data-slate-editor]');
+  const editorHandle = await getEditorHandle(page, editable);
+  await setSelection(page, editorHandle, {
+    anchor: { path: [1, 1], offset: 2 },
+    focus: { path: [1, 1], offset: 2 },
+  });
+  await expectAllShown();
 }
 
 function withSomersaultSuggestionFixture({
@@ -1188,6 +1338,146 @@ test.describe('Plate discussions and suggestions', () => {
     const dialog = page.getByRole('dialog');
     await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
     await expect(dialog.getByText(commentText)).toBeVisible();
+  });
+
+  test('lists every discussion on overlapping comments', async ({ page }) => {
+    test.setTimeout(60_000);
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-overlap',
+      contentTitle: 'Discussion overlap',
+      bodyModifier: withOverlappingThreadsFixture(
+        [
+          {
+            id: 'discussionA',
+            markText: 'Overlap',
+            restText: '',
+            comments: [{ id: 'commentA', text: 'Comment A', userId: 'admin' }],
+          },
+          {
+            id: 'discussionB',
+            markText: 'Overlap',
+            restText: '',
+            comments: [{ id: 'commentB', text: 'Comment B', userId: 'admin' }],
+          },
+        ],
+        { markText: 'Overlap', restText: ' this paragraph' },
+      ),
+    });
+    const dialog = page.getByRole('dialog');
+
+    await page.getByRole('button', { name: '2' }).click();
+    await expect(
+      dialog.getByRole('heading', { name: 'Comments (2)' }),
+    ).toBeVisible();
+    await expect(dialog.getByText('Comment A')).toBeVisible();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+
+    // Deleting one keeps the other listed
+    await deleteComment(page, 'Comment A');
+    await expect(dialog.getByText('Comment A')).toBeHidden();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await page.locator('#toolbar-save').click();
+    await page.waitForURL(contentPath, { waitUntil: 'load', timeout: 30_000 });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: '1' }).click();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+    await expect(dialog.getByText('Comment A')).toBeHidden();
+  });
+
+  test('shows every resolved discussion on overlapping comments as resolved', async ({
+    page,
+  }) => {
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'discussion-overlap-resolved',
+      contentTitle: 'Discussion overlap resolved',
+      wikiId: 'wiki-discussion-overlap-resolved',
+      transition: 'publish',
+      bodyModifier: withOverlappingThreadsFixture(
+        [
+          {
+            id: 'discussionA',
+            markText: 'Overlap',
+            restText: '',
+            comments: [{ id: 'commentA', text: 'Comment A', userId: 'admin' }],
+            isResolved: true,
+          },
+          {
+            id: 'discussionB',
+            markText: 'Overlap',
+            restText: '',
+            comments: [{ id: 'commentB', text: 'Comment B', userId: 'admin' }],
+            isResolved: true,
+          },
+        ],
+        { markText: 'Overlap', restText: ' this paragraph' },
+      ),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const trigger = page.getByRole('button', { name: '2' });
+    await expect(trigger.locator('svg.lucide-circle-check')).toBeVisible();
+    await expect(page.locator('[data-comment-resolved="true"]')).toBeVisible();
+
+    await trigger.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.getByText('Comment A')).toBeVisible();
+    await expect(dialog.getByText('Comment B')).toBeVisible();
+    await expect(dialog.getByTestId('resolved-discussion-banner')).toHaveCount(
+      2,
+    );
+  });
+
+  test('clicking overlapping suggestions lists every suggestion on the text', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'suggestion-overlap',
+      contentTitle: 'Suggestion overlap',
+      wikiId: 'wiki-suggestion-overlap',
+      transition: 'publish',
+      bodyModifier: withOverlappingSuggestionsFixture(),
+    });
+
+    await expectOverlapPopover(page, contentPath, {
+      heading: 'Suggestions (2)',
+      texts: ['Quickly drafted', 'drafted notes'],
+    });
+  });
+
+  test('clicking text with overlapping comments and suggestions lists them all', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'discussion-suggestion-overlap',
+      contentTitle: 'Discussion suggestion overlap',
+      wikiId: 'wiki-discussion-suggestion-overlap',
+      transition: 'publish',
+      bodyModifier: withOverlappingSuggestionsFixture([
+        {
+          id: 'discussionA',
+          markText: 'drafted',
+          restText: '',
+          comments: [{ id: 'commentA', text: 'Comment A', userId: 'admin' }],
+        },
+        {
+          id: 'discussionB',
+          markText: 'drafted',
+          restText: '',
+          comments: [{ id: 'commentB', text: 'Comment B', userId: 'alok' }],
+        },
+      ]),
+    });
+
+    await expectOverlapPopover(page, contentPath, {
+      heading: 'Comments & Suggestions (4)',
+      texts: ['Quickly drafted', 'drafted notes', 'Comment A', 'Comment B'],
+    });
   });
 
   test('hydrates persisted suggestions in edit mode and renders them in view mode', async ({

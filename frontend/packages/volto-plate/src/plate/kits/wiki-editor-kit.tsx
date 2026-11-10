@@ -25,7 +25,6 @@ import { MarkdownKit } from '@plone/plate/components/editor/plugins/markdown-kit
 import { BlockWidthKit } from '@plone/plate/components/editor/plugins/block-width-kit';
 import { StyleFieldsKit } from '@plone/plate/components/editor/plugins/style-fields-kit';
 import { createSlashKit } from '@plone/plate/components/editor/plugins/slash-kit';
-import { SuggestionKit } from '@plone/plate/components/editor/plugins/suggestion-kit';
 import { TableKit } from '@plone/plate/components/editor/plugins/table-kit';
 import { TocKit } from '@plone/plate/components/editor/plugins/toc-kit';
 
@@ -40,7 +39,10 @@ import { VoltoPastePlainTextPlugin } from '../plugins/volto-paste-plain-text';
 import { VoltoPasteTitlePlugin } from '../plugins/volto-paste-title';
 import { VoltoLinkKit } from '../plugins/volto-link-kit';
 import { VoltoMentionKit } from '../plugins/volto-mention-kit';
-import { voltoCommentPlugin } from '../plugins/comment-resolution';
+import {
+  voltoCommentPlugin,
+  voltoSuggestionPlugin,
+} from '../plugins/comment-resolution';
 import { SidebarPlugin } from '../plugins/volto-sidebar';
 import { DateKit } from '../plugins/date-kit';
 import { slashMenu } from '../wiki/slash-menu';
@@ -85,7 +87,7 @@ export const WikiEditorKit = [
   ...BlockWidthKit,
 
   // Collaboration
-  ...SuggestionKit,
+  voltoSuggestionPlugin,
   discussionPlugin.configure({ render: discussionSlotRender(BlockDiscussion) }),
   voltoCommentPlugin,
 
