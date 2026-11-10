@@ -55,7 +55,7 @@ import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react';
 // shown when the group has more than one open suggestion.
 import { acceptSuggestion, rejectSuggestion } from '@platejs/suggestion';
 import { CheckIcon } from 'lucide-react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { messages } from '../../../../../index';
 import { CircleCheckIcon } from 'lucide-react';
 import {
@@ -123,6 +123,15 @@ type VirtualAnchor = { getBoundingClientRect: () => DOMRect };
 // END CUSTOMIZATION
 
 type DiscussionTriggerKind = 'comments' | 'mixed' | 'suggestions';
+
+// === START CUSTOMIZATION ===
+const discussionMessages = defineMessages({
+  close: {
+    id: 'Close',
+    defaultMessage: 'Close',
+  },
+});
+// === END CUSTOMIZATION ===
 
 const DISCUSSION_POPOVER_COLLISION_PADDING = 12;
 
@@ -358,6 +367,10 @@ export function DiscussionPopoverHeader({
   onClose: () => void;
   title: string;
 }) {
+  // === START CUSTOMIZATION ===
+  const intl = useIntl();
+  const closeLabel = intl.formatMessage(discussionMessages.close);
+  // === END CUSTOMIZATION ===
   return (
     <div className="flex items-start justify-between gap-3 px-4 pt-3.5 pb-2">
       <div
@@ -370,9 +383,9 @@ export function DiscussionPopoverHeader({
       {/* === START CUSTOMIZATION === */}
       <div className="flex shrink-0 items-center gap-[6px]">
         {action}
-        {/* === END CUSTOMIZATION === */}
         <Button
-          aria-label="Close"
+          aria-label={closeLabel}
+          title={closeLabel}
           className={`
           size-[22px] rounded-md p-0.5 text-muted-foreground
           hover:bg-muted hover:text-foreground
@@ -384,7 +397,6 @@ export function DiscussionPopoverHeader({
         >
           <XIcon className="size-[18px] stroke-2" />
         </Button>
-        {/* === START CUSTOMIZATION === */}
       </div>
       {/* === END CUSTOMIZATION === */}
     </div>
