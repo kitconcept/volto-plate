@@ -210,9 +210,7 @@ export function VoltoCommentLeaf(props: PlateLeafProps<TCommentText>) {
   );
 }
 
-// `extend`, not `configure`, so the new `activeIds` option is typed. The leaf
-// goes in a function extension: comment-kit's `configure` sets `CommentLeaf`
-// and runs after object extensions, so it would win over them.
+
 export const voltoCommentPlugin = commentPlugin
   .extend({
     // Every comment id on the clicked text, so overlapping threads open
