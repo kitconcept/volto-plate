@@ -21,6 +21,8 @@
  *  - Position discussion popovers above their selected text anchors.
  *  - Show every discussion on overlapping comment leaves, not only the last
  *    id `api.comment.nodeId` returns @Tishasoumya-02
+ *  - Clicking text with overlapping comments opens every thread on it
+ *    @Tishasoumya-02
  *
  */
 import * as React from 'react';
@@ -63,7 +65,11 @@ import {
 import { countDiscussionComments } from '../../../../../plate/discussion-data';
 // Overlapping comments: read every comment id on a leaf, not just the last.
 import { isCommentNodeById } from '@platejs/comment';
-import { getCommentIds } from '../../../../../plate/plugins/comment-resolution';
+import {
+  getCommentIds,
+  useActiveDiscussions,
+  voltoCommentPlugin,
+} from '../../../../../plate/plugins/comment-resolution';
 // === END CUSTOMIZATION ===
 
 import { Button } from '@plone/plate/components/ui/button';
@@ -469,24 +475,29 @@ const BlockCommentContent = ({
   const commentingBlock = usePluginOption(commentPlugin, 'commentingBlock');
   const activeCommentId = usePluginOption(commentPlugin, 'activeId');
   const isCommenting = activeCommentId === getDraftCommentKey();
-  const activeDiscussion =
-    activeCommentId &&
-    resolvedDiscussions.find((d) => d.id === activeCommentId);
-
-  const noneActive = !activeSuggestion && !activeDiscussion;
   // === START CUSTOMIZATION ===
+  // Overlapping comments: clicking text opens every thread on it, not only
+  // the last id `api.comment.nodeId` returns.
+  const activeDiscussions = useActiveDiscussions(
+    resolvedDiscussions,
+    activeCommentId,
+  );
+  const hasActiveDiscussion = activeDiscussions.length > 0;
+
+  const noneActive = !activeSuggestion && !hasActiveDiscussion;
   // The thread shown on its own gets the Resolve button in the header.
   const singleDiscussion =
-    activeDiscussion ||
-    (noneActive && discussionsCount === 1 && suggestionsCount === 0
-      ? resolvedDiscussions[0]
-      : undefined);
-  // === END CUSTOMIZATION ===
+    activeDiscussions.length === 1
+      ? activeDiscussions[0]
+      : noneActive && discussionsCount === 1 && suggestionsCount === 0
+        ? resolvedDiscussions[0]
+        : undefined;
   const popoverHeaderCount = noneActive
     ? totalCount
-    : activeDiscussion
-      ? activeDiscussion.comments.length
+    : hasActiveDiscussion
+      ? countDiscussionComments(activeDiscussions)
       : 1;
+  // === END CUSTOMIZATION ===
   const triggerKind: DiscussionTriggerKind =
     suggestionsCount > 0 && discussionsCount === 0
       ? 'suggestions'
@@ -588,6 +599,7 @@ const BlockCommentContent = ({
     // close button has to clear the active ids as well.
     editor.setOption(suggestionPlugin, 'activeId', null);
     editor.setOption(commentPlugin, 'activeId', null);
+    editor.setOption(voltoCommentPlugin, 'activeIds', null);
     // END CUSTOMIZATION
   }, [draftCommentNode, editor, isCommenting, removeDraftComment]);
 
@@ -714,9 +726,16 @@ const BlockCommentContent = ({
             />
           )}
 
-          {activeDiscussion && (
-            <BlockComment discussion={activeDiscussion} isLast={true} />
-          )}
+          {/* === START CUSTOMIZATION === */}
+          {activeDiscussions.map((discussion, index) => (
+            <BlockComment
+              key={discussion.id}
+              discussion={discussion}
+              isLast={index === activeDiscussions.length - 1}
+              showResolve={!singleDiscussion}
+            />
+          ))}
+          {/* === END CUSTOMIZATION === */}
         </React.Fragment>
       )}
       {/* === START CUSTOMIZATION ===

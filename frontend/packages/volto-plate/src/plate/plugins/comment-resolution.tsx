@@ -156,7 +156,7 @@ export function ResolvedDiscussionBanner({
 export function VoltoCommentLeaf(props: PlateLeafProps<TCommentText>) {
   const { children, leaf } = props;
 
-  const { api, setOption } = useEditorPlugin(commentPlugin);
+  const { api, setOption } = useEditorPlugin(voltoCommentPlugin);
   const { discussions } = usePlatePlugins();
   const hoverId = usePluginOption(commentPlugin, 'hoverId');
   const activeId = usePluginOption(commentPlugin, 'activeId');
@@ -195,7 +195,10 @@ export function VoltoCommentLeaf(props: PlateLeafProps<TCommentText>) {
         ...props.attributes,
         'data-comment-id': currentId ?? undefined,
         'data-comment-resolved': isResolved || undefined,
-        onClick: () => setOption('activeId', currentId ?? null),
+        onClick: () => {
+          setOption('activeIds', getCommentIds(leaf));
+          setOption('activeId', currentId ?? null);
+        },
         onMouseEnter: () => setOption('hoverId', currentId ?? null),
         onMouseLeave: () => setOption('hoverId', null),
       }}
@@ -205,6 +208,30 @@ export function VoltoCommentLeaf(props: PlateLeafProps<TCommentText>) {
   );
 }
 
-export const voltoCommentPlugin = commentPlugin.configure({
-  node: { component: VoltoCommentLeaf },
-});
+// `extend`, not `configure`, so the new `activeIds` option is typed. The leaf
+// goes in a function extension: comment-kit's `configure` sets `CommentLeaf`
+// and runs after object extensions, so it would win over them.
+export const voltoCommentPlugin = commentPlugin
+  .extend({
+    // Every comment id on the clicked text, so overlapping threads open
+    // together instead of only the last one.
+    options: { activeIds: null as string[] | null },
+  })
+  .extend(() => ({ node: { component: VoltoCommentLeaf } }));
+
+/**
+ * Discussions to show for the active comment: every thread on the clicked
+ * text when it carries several, otherwise the active one alone.
+ */
+export const useActiveDiscussions = <T extends { id: string }>(
+  discussions: T[],
+  activeId: string | null,
+) => {
+  const activeIds = usePluginOption(voltoCommentPlugin, 'activeIds');
+
+  if (!activeId) return [];
+
+  const ids = activeIds?.includes(activeId) ? activeIds : [activeId];
+
+  return discussions.filter((discussion) => ids.includes(discussion.id));
+};

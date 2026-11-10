@@ -50,6 +50,7 @@ import {
   getCommentIds,
   ResolveDiscussionButton,
   ResolvedDiscussionBanner,
+  useActiveDiscussions,
   useDiscussionResolution,
   voltoCommentPlugin,
 } from './comment-resolution';
@@ -136,9 +137,12 @@ const ReadOnlyBlockDiscussionContent = ({
   const activeCommentId = usePluginOption(commentPlugin, 'activeId');
   const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId');
 
-  const activeDiscussion =
-    activeCommentId &&
-    resolvedDiscussions.find((discussion) => discussion.id === activeCommentId);
+  // Clicking text with overlapping comments opens every thread on it
+  const activeDiscussions = useActiveDiscussions(
+    resolvedDiscussions,
+    activeCommentId,
+  );
+  const hasActiveDiscussion = activeDiscussions.length > 0;
   const activeSuggestion =
     activeSuggestionId &&
     resolvedSuggestions.find((s) => s.suggestionId === activeSuggestionId);
@@ -162,19 +166,20 @@ const ReadOnlyBlockDiscussionContent = ({
         ? 'Comments'
         : 'Comments & Suggestions';
 
-  const noneActive = !activeDiscussion && !activeSuggestion;
+  const noneActive = !hasActiveDiscussion && !activeSuggestion;
   // As in edit mode, the thread shown on its own gets the Resolve button in
   // the header; several threads keep a Resolve link each.
   const singleDiscussion =
-    activeDiscussion ||
-    (noneActive && discussionsCount === 1 && suggestionsCount === 0
-      ? resolvedDiscussions[0]
-      : undefined);
+    activeDiscussions.length === 1
+      ? activeDiscussions[0]
+      : noneActive && discussionsCount === 1 && suggestionsCount === 0
+        ? resolvedDiscussions[0]
+        : undefined;
   const { canResolve, resolve } = useDiscussionResolution();
   const popoverHeaderCount = noneActive
     ? totalCount
-    : activeDiscussion
-      ? activeDiscussion.comments.length
+    : hasActiveDiscussion
+      ? countDiscussionComments(activeDiscussions)
       : 1;
 
   const sortedMergedData = [
@@ -258,7 +263,8 @@ const ReadOnlyBlockDiscussionContent = ({
   const resetActive = React.useCallback(() => {
     setCommentOption('activeId', null);
     setSuggestionOption('activeId', null);
-  }, [setCommentOption, setSuggestionOption]);
+    editor.setOption(voltoCommentPlugin, 'activeIds', null);
+  }, [editor, setCommentOption, setSuggestionOption]);
 
   if (suggestionsCount + discussionsCount === 0) {
     return <div className="w-full">{children}</div>;
@@ -372,9 +378,13 @@ const ReadOnlyBlockDiscussionContent = ({
           )
         : activeSuggestion
           ? renderCard(activeSuggestion, 0, true)
-          : activeDiscussion
-            ? renderCard(activeDiscussion, 0, true)
-            : null}
+          : activeDiscussions.map((discussion, index) =>
+              renderCard(
+                discussion,
+                index,
+                index === activeDiscussions.length - 1,
+              ),
+            )}
     </React.Fragment>
   );
 
