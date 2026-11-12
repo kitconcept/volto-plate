@@ -146,6 +146,15 @@ Update the `pyproject.toml` and `package.json` on your project to use the latest
 - permission `kitconcept.plate: Discuss content` for editing own discussion comments
 - upgrade steps for the evolving workspace/wiki model
 
+### Blocks for agents (`@blocks-schema`)
+
+Volto's `@blocks-schema` endpoint describes a site's blocks for agents, such as MCP servers, so they can create content. A `WikiPage` doesn't store blocks in `blocks`/`blocks_layout`, though. It stores a Plate document in the `__somersault__` block. volto-plate shadows the endpoint so it describes that document for the `PlateEditorContentTypes`:
+
+- `/<path>/@blocks-schema`, for a `WikiPage`, or `/@blocks-schema?type=WikiPage`, before it exists: the format of the document (`document`), its native elements and the Plone blocks it can hold (`config.settings.PlateEditorPloneBlocks`), each with a `kind` (`element` or `block`).
+- `/@blocks-schema`: Volto's list of blocks, plus the content types that store a Plate document (`plate_content_types`).
+
+The docs come from `*.block.md` files. The document and most elements are documented by `@plone/plate`, and volto-plate documents `code_drawing` and `plateimage`. Only the elements in `config.blocks.plateBlocksConfig` are listed.
+
 ## Repository layout
 
 - `backend/`: Plone package `kitconcept.plate`, site bootstrap, example content, upgrades, and tests

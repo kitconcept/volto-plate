@@ -9,13 +9,14 @@
  *   the old `withSaveAsDraft` local-storage draft-recovery HOC was disabled
  *   for this project rather than adapted, so its call sites are commented
  *   out instead of removed outright.
- * FILE: https://github.com/plone/volto/blob/19.3.0/packages/volto/src/components/manage/Form/Form.jsx
- * FILE VERSION: @plone/volto 19.3.0
+ * FILE: https://github.com/plone/volto/blob/19.6.0/packages/volto/src/components/manage/Form/Form.jsx
+ * FILE VERSION: @plone/volto 19.6.0
  * DATE: 2026-08-25
  * DEVELOPER: @sneridagh
  * CHANGELOG:
  *  - Render PlateEditorForm for PlateEditorContentTypes instead of BlocksForm @sneridagh
  *  - Disable withSaveAsDraft wiring (commented out, not removed) @sneridagh
+ *  - Sync with @plone/volto 19.6.0 @sneridagh
  *
  */
 
@@ -620,7 +621,7 @@ class Form extends Component {
             intl: this.props.intl,
             blocksConfig: config.blocks.blocksConfig,
             navRoot: this.props.navRoot,
-            contentType: this.props.content['@type'],
+            contentType: this.props.content?.['@type'],
           });
         }
 
