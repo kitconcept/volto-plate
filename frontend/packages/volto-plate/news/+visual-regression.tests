@@ -1,0 +1,1 @@
+Added on-demand visual regression snapshots of the native blocks in view and edit mode (`make visual-baseline` / `make visual-compare`), for checking upgrades. @sneridagh

@@ -76,8 +76,11 @@ core/packages/registry/dist: $(shell find core/packages/registry/src -type f)
 core/packages/components/dist: $(shell find core/packages/components/src -type f)
 	pnpm --filter @plone/components build
 
+# TODO: Build the type declarations again (`pnpm --filter @plone/helpers build`)
+# once Volto's @plone/types has `schemaEnhancer` in `BlockExtension`, which
+# Aurora's @plone/helpers needs: https://github.com/plone/volto/pull/8498
 aurora/packages/helpers/dist: $(shell find aurora/packages/helpers/src -type f)
-	pnpm --filter @plone/helpers build
+	pnpm --filter @plone/helpers exec tsup --no-dts
 
 aurora/packages/icons/dist: $(shell find aurora/packages/icons/src -type f)
 	pnpm --filter @plone/icons build
@@ -164,6 +167,19 @@ acceptance-test: ## Start Cypress in interactive mode
 .PHONY: ci-acceptance-test
 ci-acceptance-test: ## Run cypress tests in headless mode for CI
 	pnpm --filter @plone/volto exec cypress run --config-file $(CURRENT_DIR)/cypress.config.js --config specPattern=$(CURRENT_DIR)'/cypress/tests/**/*.{js,jsx,ts,tsx}' --env API_PATH="$(API_PATH)"
+
+## Visual regression (on demand, e.g. around an upgrade; not run in CI)
+.PHONY: visual-baseline
+visual-baseline: ## Take the baseline screenshots of the native blocks (before an upgrade)
+	pnpm exec playwright test --config playwright-visual.config.ts --update-snapshots=all
+
+.PHONY: visual-compare
+visual-compare: ## Compare the native blocks against the baseline screenshots (after an upgrade)
+	pnpm exec playwright test --config playwright-visual.config.ts
+
+.PHONY: visual-report
+visual-report: ## Open the report of the last visual comparison, with the diffs
+	pnpm exec playwright show-report playwright/visual-report
 
 .PHONY: build-image
 build-image:  ## Build Docker Image
