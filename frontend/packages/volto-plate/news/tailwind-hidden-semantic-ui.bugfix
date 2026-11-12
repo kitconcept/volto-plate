@@ -1,0 +1,1 @@
+Fix Semantic UI checkboxes, radios and hidden dividers being removed from the page by the Tailwind `hidden` utility @sneridagh

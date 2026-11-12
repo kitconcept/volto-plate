@@ -3,3 +3,19 @@
 /* For now, I won't make it a dependency */
 @import './colors.css';
 @source '../**/*.{ts,tsx,js,jsx}';
+
+/*
+ * Tailwind's `hidden` utility (`display: none`) collides with Semantic UI,
+ * which uses `hidden` as a "laid out but invisible" state. Plate needs the
+ * utility, so restore Semantic UI's behaviour for the elements Volto renders:
+ * the real input behind every Checkbox and Radio, and the spacer of
+ * `<Divider hidden />`. These rules are unlayered, so they win over Tailwind's
+ * `@layer utilities` regardless of specificity.
+ */
+.ui.checkbox input.hidden {
+  display: inline-block;
+}
+
+.ui.hidden.divider {
+  display: block;
+}
