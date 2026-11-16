@@ -148,7 +148,7 @@ Update the `pyproject.toml` and `package.json` on your project to use the latest
 
 ### Blocks for agents (`@blocks-schema`)
 
-Volto's `@blocks-schema` endpoint describes a site's blocks for agents, such as MCP servers, so they can create content. It also says how content stores its blocks, as a document model. A `WikiPage` doesn't store blocks in `blocks`/`blocks_layout`. It stores one Plate document in the `__somersault__` block, which is the `plone.plate` document model. volto-plate registers it as a `documentModel` utility (`src/config/documentModel.ts`):
+Volto's `@blocks-schema` endpoint describes a site's blocks for agents, such as MCP servers, so they can create content. It also says how content stores its blocks, as a document model. A `WikiPage` doesn't store blocks in `blocks`/`blocks_layout`. It stores one Plate document in the `main` region, a `blocks` entry whose `@type` is `plate`. That is the `plone.plate` document model. volto-plate registers it as a `documentModel` utility (`src/config/documentModel.ts`):
 
 - `types()`: the content types that use it, `config.settings.PlateEditorContentTypes`.
 - `elements()`: the native elements of the wiki editor, the keys of `config.blocks.plateBlocksConfig`. `@plone/plate`'s `toggle`, which the wiki editor leaves out, isn't listed.

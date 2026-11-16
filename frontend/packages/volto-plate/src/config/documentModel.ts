@@ -9,9 +9,9 @@ declare module '@plone/types' {
 export const PLATE_DOCUMENT_MODEL = 'plone.plate';
 
 // How the `PlateEditorContentTypes` store their blocks, as Volto's
-// `@blocks-schema` endpoint announces it: one Plate document in the
-// `__somersault__` block. Its docs and those of its elements come from
-// `@plone/plate`, and volto-plate documents `code_drawing`.
+// `@blocks-schema` endpoint announces it: one Plate document in the `main`
+// region, whose `@type` is `plate`. Its docs and those of its elements come
+// from `@plone/plate`, and volto-plate documents `code_drawing`.
 export default function install(config: ConfigType) {
   config.registerUtility({
     name: PLATE_DOCUMENT_MODEL,
