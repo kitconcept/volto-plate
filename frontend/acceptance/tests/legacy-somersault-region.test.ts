@@ -1,7 +1,7 @@
 import { createWikiPage } from './content';
 import { login } from './login';
 import { expect, test } from './test';
-import { editable, focusBlockStart } from '../fixtures/editor';
+import { editable, focusBlockEnd } from '../fixtures/editor';
 import {
   getStoredContent,
   openInEditor,
@@ -85,8 +85,7 @@ test.describe('Legacy __somersault__ content', () => {
     const editorHandle = await openInEditor(page, contentPath);
     await expect(editable(page)).toContainText('Discuss the legacy body');
 
-    await focusBlockStart(page, editorHandle, 1);
-    await page.keyboard.press('End');
+    await focusBlockEnd(page, editorHandle, 1);
     await page.keyboard.type(' was migrated');
     await savePage(page, contentPath);
 
