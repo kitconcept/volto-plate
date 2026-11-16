@@ -1,16 +1,24 @@
-<configure xmlns="http://namespaces.zope.org/zope">
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    >
 
   <!-- Handle Plate regions with "@type": "plate" like plone.restapi handles
-       the legacy "@type": "__somersault__" -->
+       the legacy "@type": "__somersault__". Not needed with plone.restapi
+       versions that provide the "plonerestapi-plate-regions" feature, which
+       handle "plate" themselves. -->
+  <configure zcml:condition="not-have plonerestapi-plate-regions">
 
-  <subscriber
-      factory=".PlateRegionVisitor"
-      provides="plone.restapi.interfaces.IBlockVisitor"
-      />
+    <subscriber
+        factory=".PlateRegionVisitor"
+        provides="plone.restapi.interfaces.IBlockVisitor"
+        />
 
-  <subscriber
-      factory=".PlateRegionLinksRetriever"
-      provides="plone.restapi.interfaces.IBlockFieldLinkIntegrityRetriever"
-      />
+    <subscriber
+        factory=".PlateRegionLinksRetriever"
+        provides="plone.restapi.interfaces.IBlockFieldLinkIntegrityRetriever"
+        />
+
+  </configure>
 
 </configure>

@@ -5,14 +5,19 @@ Legacy shape: ``blocks["__somersault__"] = {"@type": "__somersault__", ...}``.
 """
 
 from kitconcept.plate import regions
-from kitconcept.plate.blocks import restapi_visits_plate_regions
+from kitconcept.plate.blocks import PlateRegionVisitor
 from plone import api
 from plone.app.linkintegrity.interfaces import IRetriever
 from plone.restapi.blocks import visit_blocks
+from plone.restapi.interfaces import IBlockSearchableText
+from plone.restapi.interfaces import IBlockVisitor
 from plone.restapi.interfaces import IDeserializeFromJson
 from zope.component import getMultiAdapter
+from zope.component import queryMultiAdapter
+from zope.component import subscribers
 
 import json
+import plone.restapi.blocks
 import pytest
 
 
@@ -86,13 +91,21 @@ class TestRegionsHelpers:
 
 
 class TestPlateRegionHandlers:
-    def test_installed_restapi_needs_our_visitor(self):
-        """Documents why kitconcept.plate registers its own ``plate`` visitor.
+    def test_own_handlers_only_without_restapi_support(self, fixture):
+        """kitconcept.plate registers its ``plate`` handlers only when
+        plone.restapi doesn't, that is, when plone.restapi doesn't provide
+        the ``plonerestapi-plate-regions`` ZCML feature.
 
-        If this fails, plone.restapi now visits ``plate`` values itself and
-        ``PlateRegionVisitor`` steps aside.
+        Registering the ``plate`` indexer twice would be a ZCML conflict.
         """
-        assert restapi_visits_plate_regions() is False
+        page, _ = fixture
+        request = page.REQUEST
+        restapi_handles_plate = hasattr(plone.restapi.blocks, "PLATE_BLOCK_TYPES")
+        visitors = subscribers((page, request), IBlockVisitor)
+        own = [v for v in visitors if isinstance(v, PlateRegionVisitor)]
+        assert bool(own) is not restapi_handles_plate
+        indexer = queryMultiAdapter((page, request), IBlockSearchableText, name="plate")
+        assert indexer is not None
 
     @pytest.mark.parametrize("key,type_", SHAPES)
     def test_nested_blocks_are_visited_once(self, fixture, key, type_):
