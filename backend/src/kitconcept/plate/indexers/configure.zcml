@@ -2,6 +2,14 @@
 
   <!-- Indexers/Metadata -->
 
+  <!-- SearchableText of Plate regions with "@type": "plate".
+       plone.restapi registers the same indexer for the legacy
+       "@type": "__somersault__" only. -->
+  <adapter
+      factory="plone.restapi.indexers.PlateTextIndexer"
+      name="plate"
+      />
+
   <!-- -*- extra stuff goes here -*- -->
 
 </configure>

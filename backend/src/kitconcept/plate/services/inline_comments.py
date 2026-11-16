@@ -4,6 +4,7 @@ from copy import deepcopy
 from datetime import datetime
 from datetime import UTC
 from kitconcept.plate.mentions import mentions_utility
+from kitconcept.plate.regions import get_plate_region
 from plone import api
 from plone.locking.interfaces import ILockable
 from plone.restapi.behaviors import IBlocks
@@ -27,7 +28,6 @@ import json
 import plone.protect.interfaces
 
 
-SOMERSAULT_KEY = "__somersault__"
 DISCUSS_PERMISSION = "kitconcept.plate: Discuss content"
 MAX_COMMENT_BYTES = 50_000
 MAX_COMMENT_NODES = 500
@@ -280,6 +280,7 @@ class InlineCommentsBase(Service):
     """Shared traversal and mutation helpers."""
 
     segments = None
+    region_key = None
 
     def publishTraverse(self, request, name):
         if name:
@@ -295,10 +296,16 @@ class InlineCommentsBase(Service):
         return [*segments, None, None][:2]
 
     def _block(self):
-        blocks = getattr(self.context, "blocks", None) or {}
-        block = blocks.get(SOMERSAULT_KEY)
-        if not isinstance(block, dict) or not isinstance(block.get("value"), list):
+        """Return a copy of the page body Plate region.
+
+        Accepts both ``blocks["main"]`` (``"@type": "plate"``) and the legacy
+        ``blocks["__somersault__"]``, and remembers the key so ``_save``
+        writes the region back where it was found.
+        """
+        key, block = get_plate_region(getattr(self.context, "blocks", None))
+        if block is None or not isinstance(block.get("value"), list):
             raise NotFound("This content does not contain a Plate document")
+        self.region_key = key
         return deepcopy(block)
 
     def _discussion(self, block, discussion_id):
@@ -341,7 +348,7 @@ class InlineCommentsBase(Service):
         )
 
         blocks = deepcopy(self.context.blocks or {})
-        blocks[SOMERSAULT_KEY] = block
+        blocks[self.region_key] = block
         self.context.blocks = blocks
         notify(ObjectModifiedEvent(self.context, Attributes(IBlocks, "blocks")))
         return self._capabilities()

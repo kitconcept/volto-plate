@@ -42,8 +42,8 @@ class TestPlateImageResolveuidDeserializer:
         result = self._deserialize(
             page,
             {
-                "__somersault__": {
-                    "@type": "__somersault__",
+                "main": {
+                    "@type": "plate",
                     "value": [
                         {
                             "type": "ploneBlock",
@@ -58,7 +58,7 @@ class TestPlateImageResolveuidDeserializer:
             },
         )
 
-        image_node = result.blocks["__somersault__"]["value"][0]
+        image_node = result.blocks["main"]["value"][0]
         assert image_node["type"] == "ploneBlock"
         assert image_node["@type"] == "plateimage"
         assert "resolveuid" in image_node["url"]
@@ -106,8 +106,8 @@ class TestPlateImageLinkIntegrity:
         resolveuid = f"../resolveuid/{image.UID()}"
 
         page.blocks = {
-            "__somersault__": {
-                "@type": "__somersault__",
+            "main": {
+                "@type": "plate",
                 "value": [
                     {
                         "type": "ploneBlock",
@@ -132,8 +132,8 @@ class TestPlateImageLinkIntegrity:
         assert self._get_back_references(image) == []
 
         page.blocks = {
-            "__somersault__": {
-                "@type": "__somersault__",
+            "main": {
+                "@type": "plate",
                 "value": [
                     {
                         "type": "ploneBlock",
@@ -154,5 +154,5 @@ class TestPlateImageLinkIntegrity:
             api.content.rename(obj=image, new_id="target-image-moved")
         modifiedContent(page, None)
 
-        assert page.blocks["__somersault__"]["value"][0]["url"] == resolveuid
+        assert page.blocks["main"]["value"][0]["url"] == resolveuid
         assert self._get_back_references(image) == [page]

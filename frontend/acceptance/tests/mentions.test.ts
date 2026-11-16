@@ -84,15 +84,15 @@ function withSomersaultBody(text: string) {
     return {
       ...body,
       blocks: {
-        __somersault__: {
-          '@type': '__somersault__',
+        ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             { type: 'p', children: [{ text }] },
           ],
         },
       },
-      blocks_layout: { items: ['__somersault__'] },
     };
   };
 }
@@ -103,8 +103,9 @@ function withCommentMention(body: Record<string, unknown>) {
   return {
     ...body,
     blocks: {
-      __somersault__: {
-        '@type': '__somersault__',
+      ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+      main: {
+        '@type': 'plate',
         value: [
           { type: 'title', children: [{ text: title }] },
           {
@@ -149,7 +150,6 @@ function withCommentMention(body: Record<string, unknown>) {
         users: { admin: { fullname: 'Admin', id: 'admin' } },
       },
     },
-    blocks_layout: { items: ['__somersault__'] },
   };
 }
 

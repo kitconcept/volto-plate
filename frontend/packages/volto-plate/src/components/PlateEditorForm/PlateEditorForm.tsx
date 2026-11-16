@@ -17,10 +17,14 @@ import {
   TITLE_BLOCK_TYPE,
   TitleMetadataContext,
 } from '../../plate/plugins/volto-title';
-import { SOMERSAULT_KEY } from '../../constants';
+import { MAIN_REGION, PLATE_TYPE } from '../../constants';
+import {
+  getPlateRegion,
+  migrateSomersaultRegion,
+} from '../../helpers/plateRegion';
 import { ErrorBoundary } from '../Blocks/ErrorBoundary';
 
-const getDefaultSomersaultValue = (title = ''): Value => [
+const getDefaultPlateValue = (title = ''): Value => [
   {
     type: TITLE_BLOCK_TYPE,
     children: [{ text: title }],
@@ -35,6 +39,7 @@ type PlateEditorFormProps = {
   content?: {
     title?: string;
     blocks?: Record<string, { value?: Value; [key: string]: unknown }>;
+    blocks_layout?: { items?: string[]; [key: string]: unknown };
     [key: string]: unknown;
   };
   intl?: Parameters<typeof translationFromIntl>[0];
@@ -70,13 +75,17 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
     [intl],
   );
   const dispatch = useDispatch();
-  const somersaultBlock = content?.blocks?.[SOMERSAULT_KEY];
+  // Reads the `main` region, or the legacy `__somersault__` block of content
+  // not migrated yet. The first change saves it as `main`.
+  const plateRegion = getPlateRegion<{ value?: Value; [key: string]: unknown }>(
+    content?.blocks,
+  );
   const metadataTitle = content?.title ?? '';
   const stableInitialValueRef = React.useRef<Value | null>(null);
   const latestValueRef = React.useRef<Value>([]);
   const latestDiscussionsRef = React.useRef(
     normalizeDiscussions(
-      somersaultBlock?.discussions as Record<string, unknown> | undefined,
+      plateRegion?.discussions as Record<string, unknown> | undefined,
     ),
   );
   const latestContentRef = React.useRef(content);
@@ -94,11 +103,11 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
   }, [dispatch]);
 
   if (!stableInitialValueRef.current) {
-    const somersaultValue = somersaultBlock?.value;
+    const plateValue = plateRegion?.value;
 
-    stableInitialValueRef.current = somersaultValue?.length
-      ? somersaultValue
-      : getDefaultSomersaultValue(metadataTitle);
+    stableInitialValueRef.current = plateValue?.length
+      ? plateValue
+      : getDefaultPlateValue(metadataTitle);
   }
 
   if (latestValueRef.current.length === 0) {
@@ -108,21 +117,21 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
   const initialDiscussions = React.useMemo(
     () =>
       normalizeDiscussions(
-        somersaultBlock?.discussions as Record<string, unknown> | undefined,
+        plateRegion?.discussions as Record<string, unknown> | undefined,
       ),
-    [somersaultBlock?.discussions],
+    [plateRegion?.discussions],
   );
   const initialUsers = React.useMemo(
     () =>
       normalizeUsers(
-        somersaultBlock?.users as
+        plateRegion?.users as
           | Record<string, { id: string; fullname?: string; portrait?: string }>
           | undefined,
       ),
-    [somersaultBlock?.users],
+    [plateRegion?.users],
   );
 
-  const persistSomersaultBlock = React.useCallback(
+  const persistPlateRegion = React.useCallback(
     ({
       discussions = latestDiscussionsRef.current,
       value = latestValueRef.current,
@@ -131,18 +140,25 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
       value?: Value;
     }) => {
       const currentContent = latestContentRef.current;
-      const currentSomersaultBlock = currentContent?.blocks?.[SOMERSAULT_KEY];
+      // Content stored before the `main` region is renamed on the first save.
+      const { blocks, blocksLayout } = migrateSomersaultRegion(
+        currentContent?.blocks ?? {},
+        currentContent?.blocks_layout,
+      );
 
       latestOnChangeFormDataRef.current?.({
         blocks: {
-          ...(currentContent?.blocks ?? {}),
-          [SOMERSAULT_KEY]: {
-            ...(currentSomersaultBlock ?? {}),
-            '@type': SOMERSAULT_KEY,
+          ...blocks,
+          [MAIN_REGION]: {
+            ...(blocks[MAIN_REGION] ?? {}),
+            '@type': PLATE_TYPE,
             discussions: serializeDiscussions(discussions),
             value,
           },
         },
+        ...(blocksLayout !== currentContent?.blocks_layout && {
+          blocks_layout: blocksLayout,
+        }),
       });
     },
     [],
@@ -157,13 +173,13 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
       <BodyClass className="plate-editor" />
       <TitleMetadataContext.Provider value={metadataTitle}>
         {/* Hydrate Plate from persisted block discussions/users, then persist
-            discussion changes back into the somersault block on edit. */}
+            discussion changes back into the `main` region on edit. */}
         <PlatePluginsProvider
           initialDiscussions={initialDiscussions}
           initialUsers={initialUsers}
           onDiscussionsChange={(discussions) => {
             latestDiscussionsRef.current = discussions;
-            persistSomersaultBlock({ discussions });
+            persistPlateRegion({ discussions });
           }}
         >
           <PlateEditor
@@ -174,7 +190,7 @@ const PlateEditorForm = (props: PlateEditorFormProps) => {
             className="typeset"
             onChange={(options) => {
               latestValueRef.current = options.value as Value;
-              persistSomersaultBlock({
+              persistPlateRegion({
                 discussions: latestDiscussionsRef.current,
                 value: options.value as Value,
               });
