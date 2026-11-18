@@ -9,6 +9,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a43 (2026-11-18)
+
+
+### Internal:
+
+- Re-releasing, since some deps were not updated. @sneridagh 
+
 ## 1.0.0a42 (2026-11-18)
 
 No significant changes.

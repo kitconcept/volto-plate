@@ -8,6 +8,11 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.43 (2026-11-18)
+
+No significant changes.
+
+
 ## 1.0.0-alpha.42 (2026-11-18)
 
 

@@ -7,6 +7,31 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a43 (2026-11-18)
+
+### Backend
+
+
+#### Internal:
+
+- Re-releasing, since some deps were not updated. @sneridagh 
+
+
+
+### Frontend
+
+No significant changes.
+
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a42 (2026-11-18)
 
 ### Backend
