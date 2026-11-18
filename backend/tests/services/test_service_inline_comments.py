@@ -13,7 +13,7 @@ CONTENT_RICH = [{"type": "p", "children": [{"text": "Looks good"}]}]
 
 def make_block():
     return {
-        "@type": "__somersault__",
+        "@type": "plate",
         "value": [
             {
                 "type": "p",
@@ -56,7 +56,7 @@ class TestInlineCommentsService:
     def _setup(self, functional_portal, manager_request):
         self.portal = functional_portal
         self.page = self.portal["comments-workspace"]["comments-page"]
-        self.page.blocks = {"__somersault__": make_block()}
+        self.page.blocks = {"main": make_block()}
         self.session = manager_request
         self.content_path = "/comments-workspace/comments-page"
         self.path = f"{self.content_path}/@inline-comments"
@@ -72,7 +72,7 @@ class TestInlineCommentsService:
     def content_block(self):
         response = self.session.get(self.content_path)
         assert response.status_code == 200, response.text
-        return response.json()["blocks"]["__somersault__"]
+        return response.json()["blocks"]["main"]
 
     def create_thread(self, content_rich=None, anchor=None):
         response = self.session.post(
@@ -107,8 +107,8 @@ class TestInlineCommentsService:
                 title="Inline comments image",
             )
         self.page.blocks = {
-            "__somersault__": {
-                "@type": "__somersault__",
+            "main": {
+                "@type": "plate",
                 "value": [
                     {
                         "type": "ploneBlock",
@@ -166,7 +166,7 @@ class TestInlineCommentsService:
         # "🎉" is one Python code point but two JavaScript UTF-16 code units.
         block = make_block()
         block["value"][0]["children"][0]["text"] = "🎉 Alpha beta"
-        self.page.blocks = {"__somersault__": block}
+        self.page.blocks = {"main": block}
         transaction.commit()
 
         block, _discussion = self.create_thread(
@@ -182,7 +182,7 @@ class TestInlineCommentsService:
             "id": "paragraph-2",
             "children": [{"text": "Delta epsilon"}],
         })
-        self.page.blocks = {"__somersault__": block}
+        self.page.blocks = {"main": block}
         transaction.commit()
 
         anchor = {
@@ -206,7 +206,7 @@ class TestInlineCommentsService:
     def test_anchor_offset_inside_surrogate_pair_is_stale(self):
         block = make_block()
         block["value"][0]["children"][0]["text"] = "🎉 Alpha beta"
-        self.page.blocks = {"__somersault__": block}
+        self.page.blocks = {"main": block}
         transaction.commit()
 
         response = self.session.post(
@@ -302,6 +302,25 @@ class TestInlineCommentsService:
         assert "comment" not in leaf
         assert f"comment_{discussion_id}" not in leaf
 
+    def test_legacy_somersault_region_is_kept_in_place(self):
+        """Content stored in the legacy shape keeps it when commented on."""
+        legacy_block = {**make_block(), "@type": "__somersault__"}
+        self.page.blocks = {"__somersault__": legacy_block}
+        transaction.commit()
+
+        response = self.session.post(
+            self.path,
+            json={"anchor": make_anchor(), "contentRich": deepcopy(CONTENT_RICH)},
+        )
+        assert response.status_code == 201, response.text
+
+        transaction.begin()
+        page = self.portal["comments-workspace"]["comments-page"]
+        assert list(page.blocks) == ["__somersault__"]
+        block = page.blocks["__somersault__"]
+        assert block["@type"] == "__somersault__"
+        assert len(block["discussions"]) == 1
+
     def test_stale_anchor_returns_conflict_without_mutating_content(self):
         response = self.session.post(
             self.path,
@@ -315,7 +334,7 @@ class TestInlineCommentsService:
 
         transaction.begin()
         page = self.portal["comments-workspace"]["comments-page"]
-        assert page.blocks["__somersault__"]["discussions"] == {}
+        assert page.blocks["main"]["discussions"] == {}
 
     def test_every_mutation_is_rejected_while_locked(self):
         _block, discussion = self.create_thread()

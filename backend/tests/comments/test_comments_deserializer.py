@@ -45,7 +45,7 @@ class TestCommentsDeserializer:
 
         # Prepare block data with discussions
         block_data = {
-            "@type": "__somersault__",
+            "@type": "plate",
             "value": [
                 {
                     "type": "p",
@@ -83,19 +83,19 @@ class TestCommentsDeserializer:
                 }
             },
         }
-        self.deserializer(self.page, {"__somersault__": block_data}, self.request)
+        self.deserializer(self.page, {"main": block_data}, self.request)
 
         # Verify block data is stored
-        assert "discussion1" in self.page.blocks["__somersault__"]["discussions"]
+        assert "discussion1" in self.page.blocks["main"]["discussions"]
         # Verify user details are not stored
-        assert "users" not in self.page.blocks["__somersault__"]
+        assert "users" not in self.page.blocks["main"]
 
     def test_deserializer_without_permission_rejects_new_discussions(self):
         """User without permission cannot add new discussions."""
 
         # Try to set discussions without permission
         block_data = {
-            "@type": "__somersault__",
+            "@type": "plate",
             "value": [
                 {
                     "type": "p",
@@ -130,7 +130,7 @@ class TestCommentsDeserializer:
 
         # This should raise Unauthorized during deserialization
         with api.env.adopt_user(self.member_user_id), pytest.raises(Unauthorized):
-            self.deserializer(self.page, {"__somersault__": block_data}, self.request)
+            self.deserializer(self.page, {"main": block_data}, self.request)
 
     def test_deserializer_without_permission_preserves_existing_comments(self):
         """User without permission preserves existing discussions if not modifying."""
@@ -160,7 +160,7 @@ class TestCommentsDeserializer:
             }
         }
         block_data = {
-            "@type": "__somersault__",
+            "@type": "plate",
             "value": [
                 {
                     "type": "p",
@@ -170,11 +170,11 @@ class TestCommentsDeserializer:
             ],
             "discussions": existing_discussions,
         }
-        self.page.blocks = {"__somersault__": block_data}
+        self.page.blocks = {"main": block_data}
 
         # Now, update the page without discussions (simulating a user without permission)
         updated_block = {
-            "@type": "__somersault__",
+            "@type": "plate",
             "value": [
                 {
                     "type": "p",
@@ -185,12 +185,10 @@ class TestCommentsDeserializer:
             # No discussions or users
         }
         with api.env.adopt_user(self.member_user_id):
-            self.deserializer(
-                self.page, {"__somersault__": updated_block}, self.request
-            )
+            self.deserializer(self.page, {"main": updated_block}, self.request)
 
         # Discussions should be preserved
-        assert self.page.blocks["__somersault__"]["discussions"] == existing_discussions
+        assert self.page.blocks["main"]["discussions"] == existing_discussions
 
     def test_deserializer_validates_unchanged_comments_from_other_users(self):
         """Cannot modify comments created by other users."""
@@ -220,7 +218,7 @@ class TestCommentsDeserializer:
             }
         }
         block_data = {
-            "@type": "__somersault__",
+            "@type": "plate",
             "value": [
                 {
                     "type": "p",
@@ -230,7 +228,7 @@ class TestCommentsDeserializer:
             ],
             "discussions": existing_discussions,
         }
-        self.page.blocks = {"__somersault__": block_data}
+        self.page.blocks = {"main": block_data}
 
         # Current user tries to modify user 1's comment - this should fail
         modified_discussions = {
@@ -262,7 +260,7 @@ class TestCommentsDeserializer:
         # This should raise BadRequest
         with pytest.raises(BadRequest, match="Cannot modify comment"):
             block_data = {
-                "@type": "__somersault__",
+                "@type": "plate",
                 "value": [
                     {
                         "type": "p",
@@ -272,7 +270,7 @@ class TestCommentsDeserializer:
                 ],
                 "discussions": modified_discussions,
             }
-            self.deserializer(self.page, {"__somersault__": block_data}, self.request)
+            self.deserializer(self.page, {"main": block_data}, self.request)
 
     def test_deserializer_allows_deletion_of_own_comments(self):
         """User can delete their own comments."""
@@ -303,7 +301,7 @@ class TestCommentsDeserializer:
             }
         }
         block_data = {
-            "@type": "__somersault__",
+            "@type": "plate",
             "value": [
                 {
                     "type": "p",
@@ -313,12 +311,12 @@ class TestCommentsDeserializer:
             ],
             "discussions": existing_discussions,
         }
-        self.page.blocks = {"__somersault__": block_data}
+        self.page.blocks = {"main": block_data}
 
         # Current user deletes their own comment
         modified_discussions = {}
         block_data = {
-            "@type": "__somersault__",
+            "@type": "plate",
             "value": [
                 {
                     "type": "p",
@@ -330,5 +328,5 @@ class TestCommentsDeserializer:
         }
 
         # Current user can delete their own comment
-        self.deserializer(self.page, {"__somersault__": block_data}, self.request)
-        assert self.page.blocks["__somersault__"]["discussions"] == modified_discussions
+        self.deserializer(self.page, {"main": block_data}, self.request)
+        assert self.page.blocks["main"]["discussions"] == modified_discussions
