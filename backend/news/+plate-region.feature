@@ -1,1 +1,0 @@
-Accept the new Plate region shape `blocks.main` with `"@type": "plate"` next to the legacy `blocks.__somersault__`, and add an upgrade step and a `bin/instance run` script that migrate `__somersault__` to `main` without changing the modification date, see plone/aurora#379. @sneridagh

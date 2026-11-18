@@ -1,1 +1,0 @@
-Store the Plate document in the `main` region with `"@type": "plate"` instead of the `__somersault__` block. Content not migrated yet by the backend upgrade step is still read, and the editor saves it as `main` and drops `__somersault__` from `blocks` and `blocks_layout`, see plone/aurora#379. @sneridagh
