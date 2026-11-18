@@ -11,8 +11,8 @@ import { expect, test } from './test';
 const legacyBlockquoteBody = (body: Record<string, unknown>) => ({
   ...body,
   blocks: {
-    __somersault__: {
-      '@type': '__somersault__',
+    main: {
+      '@type': 'plate',
       value: [
         { type: 'title', children: [{ text: 'Legacy blockquote' }] },
         { type: 'blockquote', children: [{ text: 'Legacy quote' }] },

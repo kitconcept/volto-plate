@@ -141,8 +141,8 @@ class TestSendNotifications(TestBaseMentionsService):
         payload = {
             "@type": "WikiPage",
             "blocks": {
-                "__somersault__": {
-                    "@type": "__somersault__",
+                "main": {
+                    "@type": "plate",
                     "value": [
                         {
                             "type": "p",

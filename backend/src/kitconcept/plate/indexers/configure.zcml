@@ -1,6 +1,20 @@
-<configure xmlns="http://namespaces.zope.org/zope">
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    >
 
   <!-- Indexers/Metadata -->
+
+  <!-- SearchableText of Plate regions with "@type": "plate", for plone.restapi
+       versions that handle only the legacy "@type": "__somersault__".
+       Newer versions provide the "plonerestapi-plate-regions" feature and
+       register this indexer themselves: registering it here too would be a
+       ZCML conflict. -->
+  <adapter
+      factory="plone.restapi.indexers.PlateTextIndexer"
+      name="plate"
+      zcml:condition="not-have plonerestapi-plate-regions"
+      />
 
   <!-- -*- extra stuff goes here -*- -->
 

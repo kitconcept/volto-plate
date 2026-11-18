@@ -1,7 +1,8 @@
 /**
  * OVERRIDE RenderBlocks.jsx
  * REASON: Aurora pages authored with the Plate.js editor store their content
- *   under a single `somersault` block rather than the standard blocks/blocks_layout
+ *   under a single `main` region (`"@type": "plate"`, or the legacy
+ *   `__somersault__` block) rather than the standard blocks/blocks_layout
  *   pair, so the stock renderer never sees Plate content. This shadow detects that
  *   case up front and hands rendering off to `PlateEditorRenderer` instead of
  *   falling through to the normal per-block loop.
@@ -11,6 +12,8 @@
  * DEVELOPER: @sneridagh
  * CHANGELOG:
  *  - Add SOMERSAULT_KEY detection and PlateEditorRenderer branch @sneridagh
+ *  - Detect the `main` Plate region, and the legacy `__somersault__` block
+ *    (plone/aurora#379) @sneridagh
  *
  */
 import React from 'react';
@@ -33,7 +36,7 @@ import ErrorBoundary from '@kitconcept/volto-light-theme/components/Blocks/Block
 import StyleWrapperV3 from '@kitconcept/volto-light-theme/components/Theme/StyleWrapperV3';
 import RenderBlocksV2 from '@kitconcept/volto-light-theme/components/Theme/RenderBlocksV2';
 // === START CUSTOMIZATION ===
-import { SOMERSAULT_KEY } from '../../../../../constants';
+import { hasPlateRegion } from '../../../../../helpers/plateRegion';
 // === END CUSTOMIZATION ===
 
 const messages = defineMessages({
@@ -62,12 +65,7 @@ const RenderBlocks = (props) => {
   const blocksConfig = props.blocksConfig || config.blocks.blocksConfig;
   const CustomTag = props.as || React.Fragment;
   // === START CUSTOMIZATION ===
-  const shouldRenderSomersault = Object.hasOwn(
-    content?.[blocksFieldname] ?? {},
-    SOMERSAULT_KEY,
-  );
-
-  if (shouldRenderSomersault) {
+  if (hasPlateRegion(content?.[blocksFieldname])) {
     return (
       <CustomTag>
         <PlateEditorRenderer content={content} />

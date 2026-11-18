@@ -6,5 +6,9 @@
       factory=".comments.CommentsDeserializer"
       provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"
       />
+  <subscriber
+      factory=".comments.LegacyCommentsDeserializer"
+      provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"
+      />
 
 </configure>

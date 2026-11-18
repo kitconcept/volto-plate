@@ -29,8 +29,8 @@ export function withSomersaultBody(bodyText: string | string[]) {
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             ...paragraphs.map((text) => ({
@@ -65,8 +65,8 @@ export function withSomersaultLinkedBody({
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             {

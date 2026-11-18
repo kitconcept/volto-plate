@@ -1,11 +1,13 @@
 from copy import deepcopy
+from kitconcept.plate.regions import LEGACY_SOMERSAULT
 from plone import api
 
 
 LEGACY_IMAGE_TYPE = "img"
 PLONE_BLOCK_TYPE = "ploneBlock"
 PLATE_IMAGE_TYPE = "plateimage"
-SOMERSAULT_BLOCK = "__somersault__"
+# This step ran before the rename to ``main``, on the legacy key.
+SOMERSAULT_BLOCK = LEGACY_SOMERSAULT
 WIKI_PAGE_TYPE = "WikiPage"
 
 

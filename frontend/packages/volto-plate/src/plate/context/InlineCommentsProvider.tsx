@@ -4,7 +4,7 @@ import type { Value } from 'platejs';
 import Api from '@plone/volto/helpers/Api/Api';
 import { useSelector } from 'react-redux';
 
-import { SOMERSAULT_KEY } from '../../constants';
+import { getPlateRegion } from '../../helpers/plateRegion';
 import { getCurrentUserFromToken } from './PlatePluginsProvider';
 
 export type InlineCommentAnchor = {
@@ -145,7 +145,7 @@ export function InlineCommentsProvider({
           const content = (await api.get(contentPath)) as {
             blocks?: Record<string, Record<string, unknown>>;
           };
-          const block = content.blocks?.[SOMERSAULT_KEY];
+          const block = getPlateRegion(content.blocks);
           if (!block)
             throw new Error('The content does not contain a Plate document.');
           onBlockChange(block);
