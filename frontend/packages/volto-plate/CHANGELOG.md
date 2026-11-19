@@ -8,6 +8,29 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.43 (2026-11-18)
+
+No significant changes.
+
+
+## 1.0.0-alpha.42 (2026-11-18)
+
+
+### Feature
+
+- Added support for the wiki pages (`PlateEditorContentTypes`) to Volto's `@blocks-schema` endpoint, by registering their document model, `plone.plate`, so agents like the MCP servers know how to write their Plate document: its format, its native elements, and the Plone blocks it can hold. @sneridagh [#112](https://github.com/kitconcept/volto-plate/issues/112)
+
+
+### Internal
+
+- Upgraded to Plone Aurora 1.0.0-alpha.24, and loaded the block content styles of `@plone/plate` (`styles/content.css`) in the new `plone-content` cascade layer, since its blocks are no longer styled with Tailwind utilities. @sneridagh 
+- Upgraded to Volto 19.8.0, which brings the `@blocks-schema` endpoint and its document models. @sneridagh 
+
+
+### Tests
+
+- Added on-demand visual regression snapshots of the native blocks in view and edit mode (`make visual-baseline` / `make visual-compare`), for checking upgrades. @sneridagh 
+
 ## 1.0.0-alpha.41 (2026-11-18)
 
 
