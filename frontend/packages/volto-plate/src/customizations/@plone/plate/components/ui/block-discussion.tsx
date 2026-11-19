@@ -25,6 +25,8 @@
  *    @Tishasoumya-02
  *  - Clicking text with overlapping suggestions opens every suggestion on it,
  *    alongside its comment threads @Tishasoumya-02
+ *  - Order overlapping comments and suggestions by creation time
+ *    @Tishasoumya-02
  *
  */
 import * as React from 'react';
@@ -536,6 +538,14 @@ const BlockCommentContent = ({
     ...resolvedDiscussions,
     ...resolvedSuggestions,
   ].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  // === START CUSTOMIZATION ===
+  // Overlapping comments and suggestions on clicked text, oldest first.
+  const shownData = noneActive
+    ? sortedMergedData
+    : [...activeDiscussions, ...activeSuggestions].sort(
+        (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+      );
+  // === END CUSTOMIZATION ===
 
   const selected =
     resolvedDiscussions.some((d) => d.id === activeCommentId) ||
@@ -723,52 +733,25 @@ const BlockCommentContent = ({
         onClose={closePopover}
         title={popoverTitle}
       />
-      {noneActive ? (
-        sortedMergedData.map((item, index) =>
-          isResolvedSuggestion(item) ? (
-            <BlockSuggestionCard
-              key={item.suggestionId}
-              idx={index}
-              isLast={index === sortedMergedData.length - 1}
-              suggestion={item}
-            />
-          ) : (
-            <BlockComment
-              key={item.id}
-              discussion={item}
-              isLast={index === sortedMergedData.length - 1}
-              // === START CUSTOMIZATION ===
-              showResolve={!singleDiscussion}
-              // === END CUSTOMIZATION ===
-            />
-          ),
-        )
-      ) : (
-        <React.Fragment>
-          {/* === START CUSTOMIZATION === */}
-          {activeSuggestions.map((suggestion, index) => (
-            <BlockSuggestionCard
-              key={suggestion.suggestionId}
-              idx={index}
-              isLast={
-                index === activeSuggestions.length - 1 &&
-                activeDiscussions.length === 0
-              }
-              suggestion={suggestion}
-            />
-          ))}
-
-          {activeDiscussions.map((discussion, index) => (
-            <BlockComment
-              key={discussion.id}
-              discussion={discussion}
-              isLast={index === activeDiscussions.length - 1}
-              showResolve={!singleDiscussion}
-            />
-          ))}
-          {/* === END CUSTOMIZATION === */}
-        </React.Fragment>
+      {/* === START CUSTOMIZATION === */}
+      {shownData.map((item, index) =>
+        isResolvedSuggestion(item) ? (
+          <BlockSuggestionCard
+            key={item.suggestionId}
+            idx={index}
+            isLast={index === shownData.length - 1}
+            suggestion={item}
+          />
+        ) : (
+          <BlockComment
+            key={item.id}
+            discussion={item}
+            isLast={index === shownData.length - 1}
+            showResolve={!singleDiscussion}
+          />
+        ),
       )}
+      {/* === END CUSTOMIZATION === */}
       {/* === START CUSTOMIZATION ===
           Bulk "Accept all" / "Reject all" footer, shown only when viewing the
           full list and there is more than one open suggestion to act on. */}

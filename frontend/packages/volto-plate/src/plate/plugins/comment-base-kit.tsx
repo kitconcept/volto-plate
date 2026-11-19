@@ -383,10 +383,11 @@ const ReadOnlyBlockDiscussionContent = ({
         ? sortedMergedData.map((item, index) =>
             renderCard(item, index, index === sortedMergedData.length - 1),
           )
-        : [...activeSuggestions, ...activeDiscussions].map(
-            (item, index, items) =>
+        : [...activeDiscussions, ...activeSuggestions]
+            .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+            .map((item, index, items) =>
               renderCard(item, index, index === items.length - 1),
-          )}
+            )}
     </React.Fragment>
   );
 
