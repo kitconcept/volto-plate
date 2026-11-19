@@ -16,7 +16,7 @@ type CreatePageOptions = {
 };
 
 /**
- * Creates one published wiki page whose somersault value contains the title
+ * Creates one published wiki page whose `main` Plate region contains the title
  * block (unless `withTitle` is false) followed by the requested fixture
  * sections, in order. Returns the page path.
  *
@@ -45,8 +45,8 @@ export async function createNativeBlocksPage(
       // the edit form fails to save without them.
       blocks: {
         ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             ...(withTitle
               ? [{ type: 'title', children: [{ text: title }] }]
@@ -97,8 +97,8 @@ export async function savePage(page: Page, contentPath: string) {
   await page.waitForURL(contentPath, { waitUntil: 'load' });
 }
 
-/** Reads the somersault value of a page straight from the REST API. */
-export async function getStoredValue(page: Page, contentPath: string) {
+/** Reads the stored content of a page straight from the REST API. */
+export async function getStoredContent(page: Page, contentPath: string) {
   const hostname = process.env.BACKEND_HOST || '127.0.0.1';
   const siteId = process.env.SITE_ID || 'plone';
   const apiURL = process.env.API_PATH || `http://${hostname}:55001/${siteId}`;
@@ -108,7 +108,16 @@ export async function getStoredValue(page: Page, contentPath: string) {
       Authorization: `Basic ${Buffer.from('admin:secret').toString('base64')}`,
     },
   });
-  const content = await response.json();
 
-  return content.blocks.__somersault__.value as Record<string, unknown>[];
+  return (await response.json()) as {
+    blocks: Record<string, Record<string, unknown>>;
+    blocks_layout?: { items?: string[] };
+  };
+}
+
+/** Reads the `main` Plate value of a page straight from the REST API. */
+export async function getStoredValue(page: Page, contentPath: string) {
+  const content = await getStoredContent(page, contentPath);
+
+  return content.blocks.main.value as Record<string, unknown>[];
 }

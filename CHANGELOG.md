@@ -7,6 +7,44 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a41 (2026-11-18)
+
+### Backend
+
+
+#### New features:
+
+- Accept the new Plate region shape `blocks.main` with `"@type": "plate"` next to the legacy `blocks.__somersault__`, and add an upgrade step and a `bin/instance run` script that migrate `__somersault__` to `main` without changing the modification date, see plone/aurora#379. @sneridagh 
+
+
+#### Internal:
+
+- Test against Plone 6.2.3, the version kitconcept.core uses. @sneridagh 
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Store the Plate document in the `main` region with `"@type": "plate"` instead of the `__somersault__` block. Content not migrated yet by the backend upgrade step is still read, and the editor saves it as `main` and drops `__somersault__` from `blocks` and `blocks_layout`, see plone/aurora#379. @sneridagh [#plate-region](https://github.com/kitconcept/volto-plate/issues/plate-region)
+
+
+#### Bugfix
+
+- Add tooltip to the inline comments close button @iRohitSingh [#comment-tooltip](https://github.com/kitconcept/volto-plate/issues/comment-tooltip)
+- Fix Semantic UI checkboxes, radios and hidden dividers being removed from the page by the Tailwind `hidden` utility @sneridagh [#tailwind-hidden-semantic-ui](https://github.com/kitconcept/volto-plate/issues/tailwind-hidden-semantic-ui)
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a40 (2026-11-04)
 
 ### Backend

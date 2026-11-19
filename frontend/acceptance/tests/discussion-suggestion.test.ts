@@ -27,8 +27,8 @@ function withSomersaultDiscussionFixture({
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             {
@@ -96,8 +96,8 @@ function withLongSomersaultBody(targetText: string) {
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             {
               id: 'selection-title',
@@ -183,8 +183,8 @@ function withSomersaultThreadsFixture(threads: DiscussionThreadFixture[]) {
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             ...threads.map((thread) => ({
@@ -377,8 +377,9 @@ function withSomersaultSuggestionFixture({
     return {
       ...body,
       blocks: {
-        __somersault__: {
-          '@type': '__somersault__',
+        ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             {
@@ -419,18 +420,15 @@ function withSomersaultSuggestionFixture({
           },
           ...(includeUsers
             ? {
-              users: {
-                admin: {
-                  id: 'admin',
-                  fullname: 'Admin',
+                users: {
+                  admin: {
+                    id: 'admin',
+                    fullname: 'Admin',
+                  },
                 },
-              },
-            }
+              }
             : {}),
         },
-      },
-      blocks_layout: {
-        items: ['__somersault__'],
       },
     };
   };
@@ -445,8 +443,9 @@ function withTwoSuggestionsFixture(body: Record<string, unknown>) {
   return {
     ...body,
     blocks: {
-      __somersault__: {
-        '@type': '__somersault__',
+      ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+      main: {
+        '@type': 'plate',
         value: [
           { type: 'title', children: [{ text: title }] },
           {
@@ -499,9 +498,6 @@ function withTwoSuggestionsFixture(body: Record<string, unknown>) {
         },
       },
     },
-    blocks_layout: {
-      items: ['__somersault__'],
-    },
   };
 }
 
@@ -514,8 +510,9 @@ function withLineBreakSuggestionFixture(body: Record<string, unknown>) {
   return {
     ...body,
     blocks: {
-      __somersault__: {
-        '@type': '__somersault__',
+      ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+      main: {
+        '@type': 'plate',
         value: [
           { type: 'title', children: [{ text: title }] },
           {
@@ -544,9 +541,6 @@ function withLineBreakSuggestionFixture(body: Record<string, unknown>) {
           admin: { id: 'admin', fullname: 'Admin' },
         },
       },
-    },
-    blocks_layout: {
-      items: ['__somersault__'],
     },
   };
 }
@@ -638,8 +632,8 @@ function withSomersaultBlockDiscussionFixture({
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [{ type: 'title', children: [{ text: title }] }, block],
           discussions: {
             blockdiscussion: {
@@ -738,7 +732,7 @@ test.describe('Plate discussions and suggestions', () => {
     await login(page);
   });
 
-  test('hydrates persisted discussions from the somersault block', async ({
+  test('hydrates persisted discussions from the main region', async ({
     page,
   }) => {
     const commentText = 'Stored comment from acceptance test';

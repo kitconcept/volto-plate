@@ -45,6 +45,35 @@ The Plone backend support for [`@kitconcept/volto-plate`](https://www.npmjs.com/
 
 - a `@mentions` REST API endpoint backing the editor's user mentions
 
+### Plate regions
+
+The Plate editor stores each part of a page as one Plate value in `blocks`, keyed by the region name, with `"@type": "plate"`.
+The page body is the `main` region ([plone/aurora#379](https://github.com/plone/aurora/issues/379)):
+
+```json
+{"blocks": {"main": {"@type": "plate", "value": []}}}
+```
+
+Older content stores the page body in `blocks.__somersault__`, with `"@type": "__somersault__"`.
+The backend accepts both shapes: `SearchableText`, link integrity, the nested blocks visitor, discussions and the `@inline-comments` service work for either.
+
+The upgrade step to profile version `20261112001` migrates `blocks.__somersault__` to `blocks.main` in place, on the site root, every `WikiPage` and every object whose `block_types` index lists `__somersault__`.
+It reindexes `SearchableText` and `block_types` and keeps the modification date.
+If an object has both `__somersault__` and `main`, it is left alone and a warning is logged.
+
+You can also run the migration with the instance script, for example to preview it or to migrate other portal types:
+
+```shell
+bin/instance run path/to/kitconcept/plate/scripts/migrate_plate_regions.py Plone --dry-run
+bin/instance run path/to/kitconcept/plate/scripts/migrate_plate_regions.py Plone
+bin/instance run path/to/kitconcept/plate/scripts/migrate_plate_regions.py Plone --portal-type Document
+```
+
+`zconsole run instance/etc/zope.conf <script> Plone` works too.
+The script migrates `WikiPage` objects by default; `--portal-type` (repeatable) picks other types, and `--all` selects the same objects as the upgrade step.
+It commits every `--batch-size` objects (default 250), except with `--dry-run`.
+From Python, call `kitconcept.plate.migration.migrate_somersault_blocks(obj)` or `kitconcept.plate.migration.migrate_site(portal)`.
+
 ### Other
 
 - an install profile depending on `plone.volto`, plus an uninstall profile

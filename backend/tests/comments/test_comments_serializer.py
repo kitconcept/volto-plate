@@ -83,8 +83,8 @@ def users(member_user_id) -> list[dict[str, Any]]:
             "id": "test-page",
             "title": "Test Page",
             "blocks": {
-                "__somersault__": {
-                    "@type": "__somersault__",
+                "main": {
+                    "@type": "plate",
                     "value": [
                         {
                             "type": "p",

@@ -1,3 +1,4 @@
+from kitconcept.plate.regions import get_plate_region
 from plone import api
 from plone.dexterity.content import DexterityContent
 from typing import Any
@@ -75,6 +76,7 @@ def serialized_block(site_owner_name):
                 result = serializer()
         else:
             result = serializer()
-        return result.get("blocks", {}).get("__somersault__", {})
+        _key, block = get_plate_region(result.get("blocks"))
+        return block or {}
 
     return _func

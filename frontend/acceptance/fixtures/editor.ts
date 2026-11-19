@@ -64,6 +64,34 @@ export async function focusBlockStart(
   });
 }
 
+/**
+ * Places the caret at the end of the top-level block at `index`, after its
+ * last text node. It sets the selection instead of pressing `End`, which
+ * doesn't move the caret when it starts in commented text.
+ */
+export async function focusBlockEnd(
+  page: Page,
+  editorHandle: EditorHandle,
+  index: number,
+) {
+  await clickAtPath(page, editorHandle, [index]);
+  const end = await page.evaluate(
+    ([editor, i]) => {
+      type Node = { children?: Node[]; text?: string };
+      let path = [i];
+      let node = editor.children[i] as Node;
+      while (node.children?.length) {
+        const last = node.children.length - 1;
+        path = [...path, last];
+        node = node.children[last];
+      }
+      return { path, offset: node.text?.length ?? 0 };
+    },
+    [editorHandle, index] as const,
+  );
+  await setSelection(page, editorHandle, { anchor: end, focus: end });
+}
+
 /** Selects the whole text of the top-level text block at `index`. */
 export async function selectBlockText(
   page: Page,

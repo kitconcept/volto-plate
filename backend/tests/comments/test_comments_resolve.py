@@ -29,7 +29,7 @@ def make_discussion(user_id: str, text: str = "Raise the deadline", **extra):
 
 def make_block(discussion: dict) -> dict:
     return {
-        "@type": "__somersault__",
+        "@type": "plate",
         "value": [
             {
                 "type": "p",
@@ -77,10 +77,10 @@ class TestResolveDiscussion:
     def save(self, discussion: dict) -> dict:
         self.deserializer(
             self.page,
-            {"__somersault__": make_block(deepcopy(discussion))},
+            {"main": make_block(deepcopy(discussion))},
             self.request,
         )
-        return self.page.blocks["__somersault__"]["discussions"]["discussion1"]
+        return self.page.blocks["main"]["discussions"]["discussion1"]
 
     def test_open_discussion_has_no_resolution_keys(self):
         stored = self.save(make_discussion(self.user_id))
@@ -96,7 +96,7 @@ class TestResolveDiscussion:
         assert stored["resolvedAt"]
         assert stored["comments"][0]["id"] == "comment1"
         # The text anchor is kept, so the thread stays reachable
-        leaf = self.page.blocks["__somersault__"]["value"][0]["children"][0]
+        leaf = self.page.blocks["main"]["value"][0]["children"][0]
         assert leaf["comment_discussion1"] is True
 
     def test_resolution_is_not_restamped_on_later_saves(self):
