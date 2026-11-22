@@ -13,5 +13,9 @@
       factory=".comments.CommentsSerializer"
       provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
       />
+  <subscriber
+      factory=".comments.LegacyCommentsSerializer"
+      provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
+      />
 
 </configure>

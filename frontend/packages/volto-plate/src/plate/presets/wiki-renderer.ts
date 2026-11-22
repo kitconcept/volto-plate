@@ -3,11 +3,13 @@ import { PloneBlockAdapterRendererPlugin } from '@plone/plate/components/editor/
 import { wikiBaseEditorKit } from '../kits/wiki-base-kit';
 
 import { TitleRendererBlock } from '../plugins/volto-title-renderer';
+import { ViewCommentKit } from '../plugins/view-comment-kit';
 
 const wikiEditorRenderer: PlateConfig = {
   readOnly: true,
   plugins: [
     ...wikiBaseEditorKit,
+    ...ViewCommentKit,
     TitleRendererBlock,
     PloneBlockAdapterRendererPlugin,
   ],

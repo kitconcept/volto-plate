@@ -7,7 +7,7 @@ import type { SlateElementProps } from 'platejs/static';
 import { BaseMentionPlugin } from '@platejs/mention';
 import { MentionInputPlugin, MentionPlugin } from '@platejs/mention/react';
 import Api from '@plone/volto/helpers/Api/Api';
-import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { SlateElement } from 'platejs/static';
 import {
   PlateElement,
@@ -284,7 +284,12 @@ export function VoltoMentionInputElement(
       const mentionPath = editor.selection?.anchor.path.slice(0, -1);
       if (mentionPath) {
         editor.tf.setNodes(
-          { mentionId, portrait: item.portrait ?? undefined } as any,
+          {
+            mentionId,
+            portrait: item.portrait
+              ? flattenToAppURL(item.portrait)
+              : undefined,
+          } as any,
           { at: mentionPath },
         );
       }

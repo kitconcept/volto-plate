@@ -1,6 +1,9 @@
 from datetime import datetime
 from datetime import UTC
 from kitconcept.plate.mentions import mentions_utility
+from kitconcept.plate.regions import get_plate_region
+from kitconcept.plate.regions import LEGACY_SOMERSAULT
+from kitconcept.plate.regions import PLATE_TYPE
 from plone import api
 from plone.restapi.interfaces import IBlockFieldDeserializationTransformer
 from zExceptions import BadRequest
@@ -14,10 +17,10 @@ from zope.publisher.interfaces.browser import IBrowserRequest
 @adapter(Interface, IBrowserRequest)
 @implementer(IBlockFieldDeserializationTransformer)
 class CommentsDeserializer:
-    """Handle comments in __somersault__ blocks."""
+    """Handle comments in Plate regions (``"@type": "plate"``)."""
 
     order = 100
-    block_type = "__somersault__"
+    block_type = PLATE_TYPE
     disabled = False
 
     def __init__(self, context, request):
@@ -84,13 +87,15 @@ class CommentsDeserializer:
         return block
 
     def _get_existing_block(self):
-        """Return the stored somersault block, if there is one."""
-        if hasattr(self.context, "blocks"):
-            blocks = self.context.blocks or {}
-            block = blocks.get("__somersault__")
-            if isinstance(block, dict):
-                return block
-        return {}
+        """Return the stored Plate region, if there is one.
+
+        Block transformers don't get the block's key, so this returns the
+        stored page body region (``main``, else the legacy
+        ``__somersault__``). That also covers content saved in the new shape
+        for the first time, whose stored region still has the legacy key.
+        """
+        _key, block = get_plate_region(getattr(self.context, "blocks", None))
+        return block or {}
 
     def _get_existing_discussions(self):
         """Get existing discussions from the context if available."""
@@ -159,3 +164,9 @@ class CommentsDeserializer:
                             "Cannot modify comment "
                             f"{comment_id} created by another user"
                         )
+
+
+class LegacyCommentsDeserializer(CommentsDeserializer):
+    """Handle comments in regions sent with the legacy ``__somersault__`` type."""
+
+    block_type = LEGACY_SOMERSAULT

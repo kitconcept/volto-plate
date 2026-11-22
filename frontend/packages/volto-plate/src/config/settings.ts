@@ -31,6 +31,9 @@ export default function install(config: ConfigType) {
     'theme',
     'base',
     'components',
+    // Block content styles of @plone/plate, below the Tailwind utilities so
+    // the editor's affordances (selection, hover, drop lines) win over them.
+    'plone-content',
     'utilities',
     'plone-components',
   ];

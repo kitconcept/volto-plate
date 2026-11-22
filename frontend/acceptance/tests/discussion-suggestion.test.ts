@@ -27,8 +27,8 @@ function withSomersaultDiscussionFixture({
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             {
@@ -75,6 +75,69 @@ function withSomersaultDiscussionFixture({
   };
 }
 
+function withLongSomersaultBody(targetText: string) {
+  return (body: Record<string, unknown>) => {
+    const title = typeof body.title === 'string' ? body.title : '';
+    const existingBlocks =
+      typeof body.blocks === 'object' && body.blocks !== null
+        ? (body.blocks as Record<string, unknown>)
+        : {};
+    const filler = Array.from({ length: 35 }, (_, index) => ({
+      id: `selection-filler-before-${index}`,
+      type: 'p',
+      children: [
+        {
+          text: `Filler paragraph ${index + 1}: enough content to exercise scrolling while a comment is saved.`,
+        },
+      ],
+    }));
+
+    return {
+      ...body,
+      blocks: {
+        ...existingBlocks,
+        main: {
+          '@type': 'plate',
+          value: [
+            {
+              id: 'selection-title',
+              type: 'title',
+              children: [{ text: title }],
+            },
+            ...filler,
+            {
+              '@type': 'plateimage',
+              alt: 'Selection regression image',
+              children: [{ text: '' }],
+              id: 'selection-void-image',
+              type: 'ploneBlock',
+              url: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
+            },
+            {
+              id: 'selection-target',
+              type: 'p',
+              children: [
+                { text: 'Select ' },
+                { text: targetText, bold: true },
+                { text: ' and keep the page here.' },
+              ],
+            },
+            ...Array.from({ length: 5 }, (_, index) => ({
+              id: `selection-filler-after-${index}`,
+              type: 'p',
+              children: [
+                {
+                  text: `Trailing paragraph ${index + 1}: content below the selected word.`,
+                },
+              ],
+            })),
+          ],
+        },
+      },
+    };
+  };
+}
+
 type DiscussionThreadFixture = {
   id: string;
   markText: string;
@@ -96,8 +159,8 @@ function withSomersaultThreadsFixture(threads: DiscussionThreadFixture[]) {
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             ...threads.map((thread) => ({
@@ -164,8 +227,9 @@ function withSomersaultSuggestionFixture({
     return {
       ...body,
       blocks: {
-        __somersault__: {
-          '@type': '__somersault__',
+        ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             {
@@ -216,9 +280,6 @@ function withSomersaultSuggestionFixture({
             : {}),
         },
       },
-      blocks_layout: {
-        items: ['__somersault__'],
-      },
     };
   };
 }
@@ -232,8 +293,9 @@ function withTwoSuggestionsFixture(body: Record<string, unknown>) {
   return {
     ...body,
     blocks: {
-      __somersault__: {
-        '@type': '__somersault__',
+      ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+      main: {
+        '@type': 'plate',
         value: [
           { type: 'title', children: [{ text: title }] },
           {
@@ -286,9 +348,170 @@ function withTwoSuggestionsFixture(body: Record<string, unknown>) {
         },
       },
     },
-    blocks_layout: {
-      items: ['__somersault__'],
+  };
+}
+
+// Two paragraphs split by a suggested line break: the block suggestion lives
+// on the first paragraph, as Plate stores it after pressing Enter in
+// suggestion mode.
+function withLineBreakSuggestionFixture(body: Record<string, unknown>) {
+  const title = typeof body.title === 'string' ? body.title : '';
+
+  return {
+    ...body,
+    blocks: {
+      ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+      main: {
+        '@type': 'plate',
+        value: [
+          { type: 'title', children: [{ text: title }] },
+          {
+            type: 'p',
+            suggestion: {
+              createdAt: 1760691600000,
+              id: 'linebreak',
+              isLineBreak: true,
+              type: 'insert',
+              userId: 'admin',
+            },
+            children: [{ text: 'First line of the paragraph' }],
+          },
+          { type: 'p', children: [{ text: 'Second line' }] },
+        ],
+        discussions: {
+          linebreak: {
+            id: 'linebreak',
+            comments: [],
+            createdAt: '2026-04-17T09:00:00+00:00',
+            isResolved: false,
+            userId: 'admin',
+          },
+        },
+        users: {
+          admin: { id: 'admin', fullname: 'Admin' },
+        },
+      },
     },
+  };
+}
+
+// The line-break indicator is absolutely positioned, so it only lands after
+// the text when it renders inside the block discussion wrapper. That depends
+// on the suggestion plugin being registered before the discussion plugin.
+async function expectLineBreakIndicatorAfterText(page: Page, text: string) {
+  const textString = page.locator('[data-slate-string]', { hasText: text });
+  const paragraph = page.locator('[data-slate-node="element"]', {
+    has: textString,
+  });
+  const indicator = paragraph.locator(
+    'span[contenteditable="false"]:has(svg.lucide-corner-down-left)',
+  );
+  await expect(indicator).toBeVisible();
+
+  const textBox = await textString.boundingBox();
+  const indicatorBox = await indicator.boundingBox();
+  if (!textBox || !indicatorBox) throw new Error('Missing bounding box');
+
+  expect(indicatorBox.x).toBeGreaterThanOrEqual(textBox.x + textBox.width - 1);
+  expect(indicatorBox.y).toBeLessThan(textBox.y + textBox.height);
+  expect(indicatorBox.y + indicatorBox.height).toBeGreaterThan(textBox.y);
+}
+
+function commentedLeaf(text: string) {
+  return { text, comment: true, comment_blockdiscussion: true };
+}
+
+const commentedTable = {
+  type: 'table',
+  children: [
+    {
+      type: 'tr',
+      children: [
+        {
+          type: 'td',
+          children: [{ type: 'p', children: [commentedLeaf('Cell one')] }],
+        },
+        {
+          type: 'td',
+          children: [{ type: 'p', children: [{ text: 'Cell two' }] }],
+        },
+      ],
+    },
+    {
+      type: 'tr',
+      children: [
+        {
+          type: 'td',
+          children: [{ type: 'p', children: [{ text: 'Cell three' }] }],
+        },
+        {
+          type: 'td',
+          children: [{ type: 'p', children: [{ text: 'Cell four' }] }],
+        },
+      ],
+    },
+  ],
+};
+
+const commentedCodeBlock = {
+  type: 'code_block',
+  lang: 'javascript',
+  children: [
+    { type: 'code_line', children: [commentedLeaf('const greeting = 1;')] },
+    { type: 'code_line', children: [{ text: 'console.log(greeting);' }] },
+  ],
+};
+
+function withSomersaultBlockDiscussionFixture({
+  block,
+  markText,
+  commentText,
+}: {
+  block: Record<string, unknown>;
+  markText: string;
+  commentText: string;
+}) {
+  return (body: Record<string, unknown>) => {
+    const title = typeof body.title === 'string' ? body.title : '';
+    const existingBlocks =
+      typeof body.blocks === 'object' && body.blocks !== null
+        ? (body.blocks as Record<string, unknown>)
+        : {};
+
+    return {
+      ...body,
+      blocks: {
+        ...existingBlocks,
+        main: {
+          '@type': 'plate',
+          value: [{ type: 'title', children: [{ text: title }] }, block],
+          discussions: {
+            blockdiscussion: {
+              id: 'blockdiscussion',
+              comments: [
+                {
+                  id: 'blockcomment',
+                  contentRich: [
+                    { type: 'p', children: [{ text: commentText }] },
+                  ],
+                  createdAt: '2026-04-17T09:00:00+00:00',
+                  discussionId: 'blockdiscussion',
+                  isEdited: false,
+                  userId: 'admin',
+                },
+              ],
+              createdAt: '2026-04-17T09:00:00+00:00',
+              documentContent: markText,
+              isResolved: false,
+              userId: 'admin',
+            },
+          },
+          users: {
+            admin: { id: 'admin', fullname: 'Admin' },
+          },
+        },
+      },
+    };
   };
 }
 
@@ -359,7 +582,7 @@ test.describe('Plate discussions and suggestions', () => {
     await login(page);
   });
 
-  test('hydrates persisted discussions from the somersault block', async ({
+  test('hydrates persisted discussions from the main region', async ({
     page,
   }) => {
     const commentText = 'Stored comment from acceptance test';
@@ -377,9 +600,10 @@ test.describe('Plate discussions and suggestions', () => {
     await expect(page.getByText(commentText)).toBeVisible();
   });
 
-  test('renders persisted discussions read-only in view mode', async ({
+  test('renders persisted discussions with comment actions in view mode', async ({
     page,
   }) => {
+    test.setTimeout(60_000);
     const commentText = 'Rendered comment from acceptance test';
     const { contentPath } = await createWikiPage(page, {
       contentId: 'discussion-renderer',
@@ -456,6 +680,7 @@ test.describe('Plate discussions and suggestions', () => {
     expect(dialogBox).not.toBeNull();
     expect(toolbarBox).not.toBeNull();
     expect(buttonBox!.height).toBeGreaterThanOrEqual(20);
+    expect(dialogBox!.y + dialogBox!.height).toBeLessThanOrEqual(markBox!.y);
     expect(dialogBox!.x).toBeGreaterThanOrEqual(
       toolbarBox!.x + toolbarBox!.width,
     );
@@ -484,12 +709,297 @@ test.describe('Plate discussions and suggestions', () => {
       Math.abs(dialogCenter - buttonCenter),
     );
 
-    await expect(discussionDialog.getByText('Reply...')).toBeHidden();
-    await expect(discussionDialog.getByText('Edit comment')).toBeHidden();
-    await expect(discussionDialog.getByText('Delete comment')).toBeHidden();
+    await expect(
+      discussionDialog.getByText('Reply to thread...'),
+    ).toBeVisible();
+    await expect(
+      discussionDialog.getByRole('button', { name: 'Resolve' }),
+    ).toBeVisible();
+
+    const replyEditor = discussionDialog.getByRole('textbox').last();
+    await replyEditor.click();
+    await page.keyboard.type('Reply saved from view mode');
+    await page.keyboard.press('Enter');
+    await expect(
+      discussionDialog.getByText('Reply saved from view mode'),
+    ).toBeVisible();
+
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('[data-comment-id="discussion1"]').click();
+    await expect(
+      page.getByRole('dialog').getByText('Reply saved from view mode'),
+    ).toBeVisible();
 
     await page.mouse.click(20, 20);
     await expect(discussionDialog).toBeHidden();
+  });
+
+  test('creates and persists a rich comment from a view-mode selection', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const bodyText = 'View mode selection target';
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'view-comment-create',
+      contentTitle: 'View comment create',
+      wikiId: 'wiki-view-comment-create',
+      transition: 'publish',
+      bodyModifier: withSomersaultBody(bodyText),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const target = page.getByText(bodyText, { exact: true });
+    await expect(target).toBeVisible();
+    await target.evaluate((element) => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+    });
+    await expect
+      .poll(() => page.evaluate(() => window.getSelection()?.toString()))
+      .toBe(bodyText);
+
+    await page
+      .getByRole('button', { name: 'Comment on selected text' })
+      .click();
+    const composer = page.locator('[data-inline-comment-composer]');
+    await expect(
+      composer.getByText('Add comment', { exact: true }),
+    ).toHaveCount(0);
+    const commentEditor = composer.getByRole('textbox');
+    await commentEditor.click();
+    await page.keyboard.type('Created without opening edit mode');
+    await page.keyboard.press('Enter');
+
+    await expect(composer).toBeHidden();
+    await expect(page.locator('[data-comment-id]').first()).toBeVisible();
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('[data-comment-id]').first().click();
+    await expect(
+      page.getByRole('dialog').getByText('Created without opening edit mode'),
+    ).toBeVisible();
+  });
+
+  test('comments a single mouse-selected word without losing scroll position', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const targetText = 'singleword';
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'view-comment-single-word',
+      contentTitle: 'View comment single word',
+      wikiId: 'wiki-view-comment-single-word',
+      transition: 'publish',
+      bodyModifier: withLongSomersaultBody(targetText),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const target = page.getByText(targetText, { exact: true });
+    await target.scrollIntoViewIfNeeded();
+    await target.dblclick();
+    await expect
+      .poll(() => page.evaluate(() => window.getSelection()?.toString()))
+      .toBe(targetText);
+
+    await page
+      .getByRole('button', { name: 'Comment on selected text' })
+      .click();
+    const composer = page.locator('[data-inline-comment-composer]');
+    const commentEditor = composer.getByRole('textbox');
+    await commentEditor.click();
+    await page.keyboard.type('Single word comment');
+    const scrollBeforeSave = await page.evaluate(() => window.scrollY);
+    expect(scrollBeforeSave).toBeGreaterThan(0);
+    await page.keyboard.press('Enter');
+
+    await expect(composer).toBeHidden();
+    await expect(page.locator('[data-comment-id]').first()).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBe(scrollBeforeSave);
+  });
+
+  test('centers the comment action over the first line of a multiline selection', async ({
+    page,
+  }) => {
+    const bodyText = `${'Selection geometry needs enough text to wrap naturally. '.repeat(8)}`;
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'view-comment-multiline-position',
+      contentTitle: 'View comment multiline position',
+      wikiId: 'wiki-view-comment-multiline-position',
+      transition: 'publish',
+      bodyModifier: withSomersaultBody(bodyText),
+    });
+
+    await page.setViewportSize({ height: 768, width: 1024 });
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const target = page.getByText(bodyText, { exact: true });
+    const selectionRects = await target.evaluate((element) => {
+      const textNode = element.firstChild;
+      if (!(textNode instanceof Text)) {
+        throw new Error('Expected the paragraph to contain a text node');
+      }
+
+      const range = document.createRange();
+      range.setStart(textNode, 24);
+      range.setEnd(textNode, 260);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+
+      const rects = [...range.getClientRects()];
+      const firstLine = rects.filter(
+        (rect) => Math.abs(rect.top - rects[0].top) < rects[0].height / 2,
+      );
+      const firstLeft = Math.min(...firstLine.map((rect) => rect.left));
+      const firstRight = Math.max(...firstLine.map((rect) => rect.right));
+      const boundingRect = range.getBoundingClientRect();
+      return {
+        boundingLeft: boundingRect.left,
+        firstCenter: (firstLeft + firstRight) / 2,
+        firstLeft,
+        firstTop: rects[0].top,
+      };
+    });
+
+    const commentAction = page.getByRole('button', {
+      name: 'Comment on selected text',
+    });
+    await expect(commentAction).toBeVisible();
+    const popover = commentAction.locator('..');
+    const popoverBox = await popover.boundingBox();
+    const arrowBox = await popover.locator('.rotate-45').boundingBox();
+
+    expect(popoverBox).not.toBeNull();
+    expect(arrowBox).not.toBeNull();
+    // The selection starts well after the left edge of the paragraph, so a
+    // popover placed from the whole selection box would be visibly off.
+    expect(
+      selectionRects.firstLeft - selectionRects.boundingLeft,
+    ).toBeGreaterThan(20);
+    expect(
+      Math.abs(
+        popoverBox!.x + popoverBox!.width / 2 - selectionRects.firstCenter,
+      ),
+    ).toBeLessThan(2);
+    expect(
+      Math.abs(arrowBox!.x + arrowBox!.width / 2 - selectionRects.firstCenter),
+    ).toBeLessThan(2);
+    expect(popoverBox!.y + popoverBox!.height).toBeLessThanOrEqual(
+      selectionRects.firstTop,
+    );
+  });
+
+  test('creates a comment spanning several paragraphs from view mode', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    const firstText = 'First paragraph of the selection';
+    const secondText = 'Second paragraph of the selection';
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'view-comment-multi-paragraph',
+      contentTitle: 'View comment multi paragraph',
+      wikiId: 'wiki-view-comment-multi-paragraph',
+      transition: 'publish',
+      bodyModifier: withSomersaultBody([firstText, secondText]),
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const first = page.getByText(firstText, { exact: true });
+    const second = page.getByText(secondText, { exact: true });
+    await expect(second).toBeVisible();
+    const startHandle = await first.elementHandle();
+    await second.evaluate((element, startElement) => {
+      const range = document.createRange();
+      range.setStart(
+        startElement!.firstChild!,
+        'First paragraph of the '.length,
+      );
+      range.setEnd(element.firstChild!, 'Second'.length);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+    }, startHandle);
+
+    await page
+      .getByRole('button', { name: 'Comment on selected text' })
+      .click();
+    const composer = page.locator('[data-inline-comment-composer]');
+    await composer.getByRole('textbox').click();
+    await page.keyboard.type('Spans two paragraphs');
+    await page.keyboard.press('Enter');
+    await expect(composer).toBeHidden();
+
+    await page.reload({ waitUntil: 'networkidle' });
+    await expect(
+      page.locator('.typeset [data-comment-id]').first(),
+    ).toBeVisible();
+    const highlighted = await page
+      .locator('.typeset [data-comment-id]')
+      .allTextContents();
+    expect(highlighted.join('')).toBe('selectionSecond');
+  });
+
+  test('does not offer view-mode commenting while the document is locked', async ({
+    page,
+  }) => {
+    const bodyText = 'Locked selection target';
+    const { contentPath } = await createWikiPage(page, {
+      contentId: 'view-comment-locked',
+      contentTitle: 'View comment locked',
+      wikiId: 'wiki-view-comment-locked',
+      transition: 'publish',
+      bodyModifier: withSomersaultBody(bodyText),
+    });
+    const hostname = process.env.BACKEND_HOST || '127.0.0.1';
+    const siteId = process.env.SITE_ID || 'plone';
+    const apiURL = process.env.API_PATH || `http://${hostname}:55001/${siteId}`;
+    const lockResponse = await page.request.post(
+      `${apiURL}${contentPath}/@lock`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Basic ${Buffer.from('admin:secret').toString('base64')}`,
+        },
+      },
+    );
+    expect(lockResponse.ok()).toBe(true);
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    const target = page.getByText(bodyText, { exact: true });
+    await target.evaluate((element) => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+    });
+
+    await expect(
+      page.getByRole('button', { name: 'Comment on selected text' }),
+    ).toHaveCount(0);
+    const lockNotice = page.locator('[data-inline-comment-lock]');
+    await expect(lockNotice).toBeVisible();
+    const [selectionBox, lockNoticeBox] = await Promise.all([
+      target.boundingBox(),
+      lockNotice.boundingBox(),
+    ]);
+    expect(lockNoticeBox).not.toBeNull();
+    expect(selectionBox).not.toBeNull();
+    expect(lockNoticeBox!.y + lockNoticeBox!.height).toBeLessThan(
+      selectionBox!.y,
+    );
+    await expect(lockNotice).toContainText('admin is editing this page');
+    await expect(lockNotice).toContainText(
+      'Inline comments are unavailable while this page is being edited.',
+    );
+    await expect(lockNotice).toContainText('Locked since');
   });
 
   test('resolving a discussion archives it and reopening restores it', async ({
@@ -526,18 +1036,18 @@ test.describe('Plate discussions and suggestions', () => {
     await page.locator('#toolbar-save').click();
     await page.waitForURL(contentPath, { waitUntil: 'load', timeout: 30_000 });
 
-    // Persisted and visible read-only in view mode, without the reopen action
+    // Persisted in view mode, where the thread can be reopened directly.
     await page.goto(contentPath, { waitUntil: 'networkidle' });
     await page.locator('[data-comment-id="discussion1"]').click();
     await expect(dialog.getByText('Resolved by Admin')).toBeVisible();
     await expect(dialog.getByText(commentText)).toBeVisible();
-    await expect(dialog.getByRole('button', { name: 'Reopen' })).toBeHidden();
+    await dialog.getByRole('button', { name: 'Reopen' }).click();
+    await expect(dialog.getByText('Resolved by Admin')).toBeHidden();
+    await expect(dialog.getByRole('button', { name: 'Resolve' })).toBeVisible();
 
     await page.goto(`${contentPath}/edit`, { waitUntil: 'networkidle' });
     await waitForPlateEditorReady(page);
     await page.getByRole('button', { name: '1' }).click();
-    await dialog.getByRole('button', { name: 'Reopen' }).click();
-
     await expect(dialog.getByText('Resolved by Admin')).toBeHidden();
     await expect(dialog.getByRole('button', { name: 'Resolve' })).toBeVisible();
     await expect(commentMark).not.toHaveAttribute('data-comment-resolved');
@@ -865,5 +1375,78 @@ test.describe('Plate discussions and suggestions', () => {
     await expect(dialog.getByText('Suggested adding')).toBeVisible();
     await expect(dialog.getByText('in der Regel')).toBeVisible();
     await expect(dialog.getByText('Suggested removing')).toBeHidden();
+  });
+
+  test('renders the line-break suggestion indicator after the text in edit and view mode', async ({
+    page,
+  }) => {
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'suggestion-line-break',
+      contentTitle: 'Suggestion line break',
+      bodyModifier: withLineBreakSuggestionFixture,
+    });
+
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+    await expectLineBreakIndicatorAfterText(
+      page,
+      'First line of the paragraph',
+    );
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+    await expectLineBreakIndicatorAfterText(
+      page,
+      'First line of the paragraph',
+    );
+  });
+
+  test('renders a table comment beside the table in edit and view mode', async ({
+    page,
+  }) => {
+    const commentText = 'Comment on a table cell';
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-table',
+      contentTitle: 'Discussion table',
+      bodyModifier: withSomersaultBlockDiscussionFixture({
+        block: commentedTable,
+        markText: 'Cell one',
+        commentText,
+      }),
+    });
+
+    // The comment trigger renders around the inner container, not inside the table.
+    const trigger = page.locator(
+      '.slate-table button:not(.block-inner-container *)',
+      { hasText: '1' },
+    );
+
+    await expect(trigger).toBeVisible();
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await expect(trigger).toBeVisible();
+  });
+
+  test('renders a code block comment beside the code block in edit and view mode', async ({
+    page,
+  }) => {
+    const commentText = 'Comment on a code line';
+    const { contentPath } = await openWikiPageEditor(page, {
+      contentId: 'discussion-code-block',
+      contentTitle: 'Discussion code block',
+      bodyModifier: withSomersaultBlockDiscussionFixture({
+        block: commentedCodeBlock,
+        markText: 'const greeting = 1;',
+        commentText,
+      }),
+    });
+
+    // The comment trigger renders around the inner container, not inside the code.
+    const trigger = page.locator(
+      '.slate-code_block button:not(.block-inner-container *)',
+      { hasText: '1' },
+    );
+
+    await expect(trigger).toBeVisible();
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await expect(trigger).toBeVisible();
   });
 });

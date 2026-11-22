@@ -2,6 +2,8 @@
 
 from kitconcept.plate.deserializers.comments import CommentsDeserializer
 from kitconcept.plate.mentions import mentions_utility
+from kitconcept.plate.mentions.utility import breadcrumbs
+from kitconcept.plate.mentions.utility import mention_excerpt
 from kitconcept.plate.mentions.utility import PENDING_MENTIONS_KEY
 from kitconcept.plate.types import Mention
 from plone import api
@@ -144,3 +146,67 @@ class TestQueueNotifications:
         ]
         assert author_id == author.getId()
         assert mentions == (Mention("new", "mentioned-user"),)
+
+
+@pytest.mark.parametrize("in_comment", [False, True])
+def test_mention_excerpt(make_mention, in_comment):
+    """Extract only the matching paragraph from documents and comments."""
+    value = [
+        {
+            "type": "p",
+            "children": [
+                {"text": "Please ask "},
+                make_mention("target"),
+                {"text": " to review."},
+            ],
+        }
+    ]
+    block = {"value": value}
+    if in_comment:
+        block = {"discussions": {"thread": {"comments": [{"contentRich": value}]}}}
+    assert mention_excerpt(block, "target") == "Please ask @Mentioned User to review."
+    assert mention_excerpt(block, "missing") == ""
+
+
+def test_breadcrumbs(portal, make_workspace):
+    """Breadcrumbs include the page but exclude the site."""
+    workspace = make_workspace("Engineering")
+    with api.env.adopt_roles(["Manager"]):
+        page = api.content.create(container=workspace, type="WikiPage", title="Notes")
+    assert breadcrumbs(page) == "Engineering › Notes"
+
+
+def test_email_alternatives_escape_html(portal, monkeypatch):
+    """Both alternatives preserve Unicode while content remains text in HTML."""
+    sent = {}
+    monkeypatch.setattr(api.portal, "send_email", lambda **kwargs: sent.update(kwargs))
+    text = 'Grüße <script>alert("test")</script> & review\n\nNext line'
+    utility = mentions_utility()
+    payload = {
+        "author": "Anna",
+        "page_title": "Notes",
+        "breadcrumbs": "Space › Notes",
+        "timestamp": "2026-10-29",
+        "site_name": "Site",
+        "page_url": 'https://example.com/page?x=1&y="two"',
+    }
+    rendered = utility._render_html(
+        payload, text, "https://example.com/page?mention=abc"
+    )
+    utility._send_email(
+        text, "recipient@example.com", "sender@example.com", "Subject", rendered
+    )
+    msg = sent["body"]
+    assert msg.get_content_type() == "multipart/alternative"
+    plain, html = msg.get_payload()
+    assert plain.get_payload(decode=True).decode("utf-8") == text
+    rendered = html.get_payload(decode=True).decode("utf-8")
+    assert "Grüße &lt;script&gt;" in rendered
+    assert "<script>" not in rendered
+    assert "&amp; review" in rendered
+    assert "<blockquote " in rendered
+    assert "border-left:3px solid" in rendered
+    assert "<hr " in rendered
+    assert 'href="https://example.com/page?x=1&amp;y=&quot;two&quot;"' in rendered
+    assert "Open the mention:" not in rendered
+    assert "View page:" not in rendered

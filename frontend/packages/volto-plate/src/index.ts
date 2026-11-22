@@ -3,6 +3,7 @@ import { defineMessages } from 'react-intl';
 import installSettings from './config/settings';
 import installBlocks from './config/blocks';
 import installSlots from './config/slots';
+import installDocumentModel from './config/documentModel';
 import './theme/tailwind.css';
 import '@plone/components/dist/basic.css';
 
@@ -35,12 +36,30 @@ export const messages = defineMessages({
     id: 'Reopen',
     defaultMessage: 'Reopen',
   },
+  pageLocked: {
+    id: 'This page is being edited',
+    defaultMessage: 'This page is being edited',
+  },
+  pageLockedBy: {
+    id: '{name} is editing this page',
+    defaultMessage: '{name} is editing this page',
+  },
+  inlineCommentsLocked: {
+    id: 'Inline comments are unavailable while this page is being edited. Wait until the editor finishes, or ask a site administrator to remove the lock.',
+    defaultMessage:
+      'Inline comments are unavailable while this page is being edited. Wait until the editor finishes, or ask a site administrator to remove the lock.',
+  },
+  lockedSince: {
+    id: 'Locked since {date}.',
+    defaultMessage: 'Locked since {date}.',
+  },
 });
 
 function applyConfig(config: ConfigType) {
   installSettings(config);
   installBlocks(config);
   installSlots(config);
+  installDocumentModel(config);
 
   return config;
 }

@@ -1,3 +1,5 @@
+from kitconcept.plate.regions import LEGACY_SOMERSAULT
+from kitconcept.plate.regions import PLATE_TYPE
 from plone import api
 from plone.restapi.interfaces import IBlockFieldSerializationTransformer
 from plone.restapi.services.users.get import getPortraitUrl
@@ -17,7 +19,7 @@ class CommentsSerializer:
     """
 
     order = 100
-    block_type = "__somersault__"
+    block_type = PLATE_TYPE
     disabled = False
 
     def __init__(self, context, request):
@@ -57,6 +59,12 @@ class CommentsSerializer:
             block.pop("discussions", None)
 
         return block
+
+
+class LegacyCommentsSerializer(CommentsSerializer):
+    """Handle comments in regions stored with the legacy ``__somersault__`` type."""
+
+    block_type = LEGACY_SOMERSAULT
 
 
 def get_portrait_url(user_id) -> str | None:

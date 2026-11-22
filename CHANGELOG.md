@@ -7,6 +7,199 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a43 (2026-11-18)
+
+### Backend
+
+
+#### Internal:
+
+- Re-releasing, since some deps were not updated. @sneridagh 
+
+
+
+### Frontend
+
+No significant changes.
+
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a42 (2026-11-18)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Added support for the wiki pages (`PlateEditorContentTypes`) to Volto's `@blocks-schema` endpoint, by registering their document model, `plone.plate`, so agents like the MCP servers know how to write their Plate document: its format, its native elements, and the Plone blocks it can hold. @sneridagh [#112](https://github.com/kitconcept/volto-plate/issues/112)
+
+
+#### Internal
+
+- Upgraded to Plone Aurora 1.0.0-alpha.24, and loaded the block content styles of `@plone/plate` (`styles/content.css`) in the new `plone-content` cascade layer, since its blocks are no longer styled with Tailwind utilities. @sneridagh 
+- Upgraded to Volto 19.8.0, which brings the `@blocks-schema` endpoint and its document models. @sneridagh 
+
+
+#### Tests
+
+- Added on-demand visual regression snapshots of the native blocks in view and edit mode (`make visual-baseline` / `make visual-compare`), for checking upgrades. @sneridagh 
+
+
+
+### Project
+
+
+#### Documentation
+
+- Describe in the README how wiki pages are documented for agents in the `@blocks-schema` endpoint, through the `plone.plate` document model. @sneridagh [#112](https://github.com/kitconcept/volto-plate/issues/112)
+
+
+
+## 1.0.0a41 (2026-11-18)
+
+### Backend
+
+
+#### New features:
+
+- Accept the new Plate region shape `blocks.main` with `"@type": "plate"` next to the legacy `blocks.__somersault__`, and add an upgrade step and a `bin/instance run` script that migrate `__somersault__` to `main` without changing the modification date, see plone/aurora#379. @sneridagh 
+
+
+#### Internal:
+
+- Test against Plone 6.2.3, the version kitconcept.core uses. @sneridagh 
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Store the Plate document in the `main` region with `"@type": "plate"` instead of the `__somersault__` block. Content not migrated yet by the backend upgrade step is still read, and the editor saves it as `main` and drops `__somersault__` from `blocks` and `blocks_layout`, see plone/aurora#379. @sneridagh [#plate-region](https://github.com/kitconcept/volto-plate/issues/plate-region)
+
+
+#### Bugfix
+
+- Add tooltip to the inline comments close button @iRohitSingh [#comment-tooltip](https://github.com/kitconcept/volto-plate/issues/comment-tooltip)
+- Fix Semantic UI checkboxes, radios and hidden dividers being removed from the page by the Tailwind `hidden` utility @sneridagh [#tailwind-hidden-semantic-ui](https://github.com/kitconcept/volto-plate/issues/tailwind-hidden-semantic-ui)
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a40 (2026-11-04)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Show colored initials instead of the silhouette in the person pill when there is no portrait. @iFlameing 
+
+
+
+### Project
+
+
+#### Bugfix
+
+- Fix outdated locale .mo files in release. @davisagli 
+
+
+
+## 1.0.0a39 (2026-10-30)
+
+### Backend
+
+
+#### New features:
+
+- Add email notifications for @mentions on wiki pages @iRohitSingh 
+
+
+
+### Frontend
+
+
+#### Bugfix
+
+- Fixed broken person pill portraits on deployed sites: server-rendered images pointed to the internal backend URL, and mentions stored the full URL of the host they were created on. @iFlameing 
+- Fixed comment text overflowing the comment popover: long quoted text and author names now wrap. @Tishasoumya-02 
+- Fixed the comment popover of tables and code blocks breaking their layout: it now renders around the block content instead of inside the table or code. @Tishasoumya-02 
+- Fixed the green line-break suggestion indicator showing on top of the text instead of after it. @iFlameing 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
+## 1.0.0a38 (2026-10-22)
+
+### Backend
+
+
+#### New features:
+
+- Add the ``@inline-comments`` REST service for creating, replying to, editing,
+  deleting, resolving, and reopening Plate comments outside the edit form, with
+  lock enforcement and rich mention support. 
+
+
+
+### Frontend
+
+
+#### Feature
+
+- Add view-mode inline commenting with text-selection UX, rich mention-enabled
+  comments, and persisted thread actions through ``@inline-comments``. 
+
+
+#### Bugfix
+
+- Fix overlapping hover frames on table of contents entries in the wiki page. @Tishasoumya-02 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a37 (2026-10-13)
 
 ### Backend

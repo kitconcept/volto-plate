@@ -11,4 +11,36 @@
       name="@mentions"
       />
 
+  <plone:service
+      method="GET"
+      factory=".inline_comments.InlineCommentsGet"
+      for="*"
+      permission="zope2.View"
+      name="@inline-comments"
+      />
+
+  <plone:service
+      method="POST"
+      factory=".inline_comments.InlineCommentsAdd"
+      for="*"
+      permission="kitconcept.plate.DiscussContent"
+      name="@inline-comments"
+      />
+
+  <plone:service
+      method="PATCH"
+      factory=".inline_comments.InlineCommentsUpdate"
+      for="*"
+      permission="kitconcept.plate.DiscussContent"
+      name="@inline-comments"
+      />
+
+  <plone:service
+      method="DELETE"
+      factory=".inline_comments.InlineCommentsDelete"
+      for="*"
+      permission="kitconcept.plate.DiscussContent"
+      name="@inline-comments"
+      />
+
 </configure>

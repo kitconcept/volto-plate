@@ -84,15 +84,15 @@ function withSomersaultBody(text: string) {
     return {
       ...body,
       blocks: {
-        __somersault__: {
-          '@type': '__somersault__',
+        ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             { type: 'p', children: [{ text }] },
           ],
         },
       },
-      blocks_layout: { items: ['__somersault__'] },
     };
   };
 }
@@ -103,8 +103,9 @@ function withCommentMention(body: Record<string, unknown>) {
   return {
     ...body,
     blocks: {
-      __somersault__: {
-        '@type': '__somersault__',
+      ...((body.blocks as Record<string, unknown> | undefined) ?? {}),
+      main: {
+        '@type': 'plate',
         value: [
           { type: 'title', children: [{ text: title }] },
           {
@@ -149,7 +150,6 @@ function withCommentMention(body: Record<string, unknown>) {
         users: { admin: { fullname: 'Admin', id: 'admin' } },
       },
     },
-    blocks_layout: { items: ['__somersault__'] },
   };
 }
 
@@ -323,6 +323,55 @@ test.describe('Plate mentions', () => {
     await page.keyboard.press('Enter');
 
     await expect(page.getByRole('button', { name: '1' })).toBeVisible();
+  });
+
+  test('selects a mention while composing a comment in view mode', async ({
+    page,
+  }) => {
+    const bodyText = 'Comment on this from view mode';
+    const { contentPath } = await createWikiPage(page, {
+      bodyModifier: withSomersaultBody(bodyText),
+      contentId: 'view-comment-mention',
+      contentTitle: 'View comment mention',
+      transition: 'publish',
+      wikiId: 'wiki-view-comment-mention',
+    });
+
+    await page.goto(contentPath, { waitUntil: 'networkidle' });
+    await page.getByText(bodyText, { exact: true }).evaluate((element) => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+    });
+    await page
+      .getByRole('button', { name: 'Comment on selected text' })
+      .click();
+
+    const composer = page.locator('[data-inline-comment-composer]');
+    const commentInput = composer.getByRole('textbox');
+    await commentInput.click();
+    await page.keyboard.type('@');
+    const searchRequest = page.waitForRequest(
+      (value) =>
+        value.url().includes('/@mentions') &&
+        value.url().includes('search=Mention'),
+    );
+    await page.keyboard.type('Mention');
+    await searchRequest;
+    await page.getByRole('option', { name: 'Mention Target' }).click();
+    await expect(
+      commentInput.getByText('Mention Target', { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByRole('listbox')).toBeHidden();
+    await page.keyboard.press('Enter');
+
+    await page.locator('[data-comment-id]').first().click();
+    await expect(
+      page.getByRole('dialog').getByText('Mention Target', { exact: true }),
+    ).toBeVisible();
   });
 
   test('selects the second match with arrow keys and Enter in the document editor', async ({

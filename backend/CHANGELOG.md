@@ -9,6 +9,51 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a43 (2026-11-18)
+
+
+### Internal:
+
+- Re-releasing, since some deps were not updated. @sneridagh 
+
+## 1.0.0a42 (2026-11-18)
+
+No significant changes.
+
+
+## 1.0.0a41 (2026-11-18)
+
+
+### New features:
+
+- Accept the new Plate region shape `blocks.main` with `"@type": "plate"` next to the legacy `blocks.__somersault__`, and add an upgrade step and a `bin/instance run` script that migrate `__somersault__` to `main` without changing the modification date, see plone/aurora#379. @sneridagh 
+
+
+### Internal:
+
+- Test against Plone 6.2.3, the version kitconcept.core uses. @sneridagh 
+
+## 1.0.0a40 (2026-11-04)
+
+No significant changes.
+
+
+## 1.0.0a39 (2026-10-30)
+
+
+### New features:
+
+- Add email notifications for @mentions on wiki pages @iRohitSingh 
+
+## 1.0.0a38 (2026-10-22)
+
+
+### New features:
+
+- Add the ``@inline-comments`` REST service for creating, replying to, editing,
+  deleting, resolving, and reopening Plate comments outside the edit form, with
+  lock enforcement and rich mention support. 
+
 ## 1.0.0a37 (2026-10-13)
 
 

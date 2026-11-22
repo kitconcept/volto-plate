@@ -16,7 +16,8 @@ export async function selectParagraphText(
   });
 }
 
-export function withSomersaultBody(bodyText: string) {
+export function withSomersaultBody(bodyText: string | string[]) {
+  const paragraphs = Array.isArray(bodyText) ? bodyText : [bodyText];
   return (body: Record<string, unknown>) => {
     const title = typeof body.title === 'string' ? body.title : '';
     const existingBlocks =
@@ -28,11 +29,14 @@ export function withSomersaultBody(bodyText: string) {
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
-            { type: 'p', children: [{ text: bodyText }] },
+            ...paragraphs.map((text) => ({
+              type: 'p',
+              children: [{ text }],
+            })),
           ],
         },
       },
@@ -61,8 +65,8 @@ export function withSomersaultLinkedBody({
       ...body,
       blocks: {
         ...existingBlocks,
-        __somersault__: {
-          '@type': '__somersault__',
+        main: {
+          '@type': 'plate',
           value: [
             { type: 'title', children: [{ text: title }] },
             {

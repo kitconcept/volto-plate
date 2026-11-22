@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    >
+
+  <genericsetup:upgradeSteps
+      profile="kitconcept.plate:default"
+      source="20260623001"
+      destination="20261112001"
+      >
+    <genericsetup:upgradeStep
+        title="Move blocks.__somersault__ to blocks.main with @type plate."
+        handler=".migrate_plate_regions"
+        />
+  </genericsetup:upgradeSteps>
+
+</configure>

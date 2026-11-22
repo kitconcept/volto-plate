@@ -619,6 +619,12 @@
     padding-inline-start: 20px;
   }
 
+  /* TOC entries carry Tailwind's `block` utility, so Volto's  
+     `.block .block:not(.inner)::before` selection frame (9px outset) matches. We have to override it. */
+  .slate-editor .block .block:hover::before {
+    border: none;
+  }
+
   /* Callout: #ECEBEB, 10px padding, box hugging its content.
      Plate paints the box on `.block-inner-container`, but that element is the
      width-constrained one (780px, centred with `margin-inline: auto`), so
