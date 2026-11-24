@@ -1,12 +1,13 @@
 import * as React from 'react';
 
-import type { TCommentText } from 'platejs';
+import type { TCommentText, TSuggestionText } from 'platejs';
 import type { PlateLeafProps } from 'platejs/react';
 
 import {
   getCommentCount,
   getCommentKeyId,
   getCommentKeys,
+  getDraftCommentKey,
 } from '@platejs/comment';
 import { CheckIcon } from 'lucide-react';
 import { PlateLeaf, useEditorPlugin, usePluginOption } from 'platejs/react';
@@ -16,6 +17,8 @@ import { Button } from '@plone/plate/components/ui/button';
 import { usePlatePlugins } from '@plone/plate/components/editor/plate-plugins-context';
 import { commentPlugin } from '@plone/plate/components/editor/plugins/comment-kit';
 import type { TDiscussion } from '@plone/plate/components/editor/plugins/discussion-kit';
+import { suggestionPlugin } from '@plone/plate/components/editor/plugins/suggestion-kit';
+import { SuggestionLeaf } from '@plone/plate/components/ui/suggestion-node';
 import { cn } from '@plone/plate/lib/utils';
 
 import { messages } from '../../index';
@@ -29,6 +32,14 @@ export type TArchivableDiscussion = TDiscussion & {
   resolvedAt?: string;
   resolvedBy?: string;
 };
+
+/**
+ * All discussion ids on a leaf excluding the draft comment key.
+ */
+export const getCommentIds = (leaf: TCommentText) =>
+  getCommentKeys(leaf)
+    .filter((key) => key !== getDraftCommentKey())
+    .map(getCommentKeyId);
 
 export const useDiscussionResolution = () => {
   const { currentUserId, setDiscussions } = usePlatePlugins();
@@ -147,7 +158,7 @@ export function ResolvedDiscussionBanner({
 export function VoltoCommentLeaf(props: PlateLeafProps<TCommentText>) {
   const { children, leaf } = props;
 
-  const { api, setOption } = useEditorPlugin(commentPlugin);
+  const { api, setOption } = useEditorPlugin(voltoCommentPlugin);
   const { discussions } = usePlatePlugins();
   const hoverId = usePluginOption(commentPlugin, 'hoverId');
   const activeId = usePluginOption(commentPlugin, 'activeId');
@@ -186,7 +197,10 @@ export function VoltoCommentLeaf(props: PlateLeafProps<TCommentText>) {
         ...props.attributes,
         'data-comment-id': currentId ?? undefined,
         'data-comment-resolved': isResolved || undefined,
-        onClick: () => setOption('activeId', currentId ?? null),
+        onClick: () => {
+          setOption('activeIds', getCommentIds(leaf));
+          setOption('activeId', currentId ?? null);
+        },
         onMouseEnter: () => setOption('hoverId', currentId ?? null),
         onMouseLeave: () => setOption('hoverId', null),
       }}
@@ -196,6 +210,74 @@ export function VoltoCommentLeaf(props: PlateLeafProps<TCommentText>) {
   );
 }
 
-export const voltoCommentPlugin = commentPlugin.configure({
-  node: { component: VoltoCommentLeaf },
-});
+export const voltoCommentPlugin = commentPlugin
+  .extend({
+    // Every comment id on the clicked text, so overlapping threads open
+    // together instead of only the last one.
+    options: { activeIds: null as string[] | null },
+  })
+  .extend(() => ({ node: { component: VoltoCommentLeaf } }));
+
+/**
+ * Discussions to show for the active comment: every thread on the clicked
+ * text when it carries several, otherwise the active one alone.
+ */
+export const useActiveDiscussions = <T extends { id: string }>(
+  discussions: T[],
+  activeId: string | null,
+) => {
+  const activeIds = usePluginOption(voltoCommentPlugin, 'activeIds');
+
+  if (!activeId) return [];
+
+  const ids = activeIds?.includes(activeId) ? activeIds : [activeId];
+
+  return discussions.filter((discussion) => ids.includes(discussion.id));
+};
+
+/**
+ * Suggestion mark that records every suggestion id on the clicked text, as
+ * `api.suggestion.nodeId` only returns the last one.
+ */
+export function VoltoSuggestionLeaf(props: PlateLeafProps<TSuggestionText>) {
+  const { api, setOption } = useEditorPlugin(voltoSuggestionPlugin);
+
+  return (
+    <SuggestionLeaf
+      {...props}
+      attributes={{
+        ...props.attributes,
+        onClick: () =>
+          setOption(
+            'activeIds',
+            api.suggestion.dataList(props.leaf).map((data) => data.id),
+          ),
+      }}
+    />
+  );
+}
+
+export const voltoSuggestionPlugin = suggestionPlugin
+  .extend({
+    options: { activeIds: null as string[] | null },
+  })
+  .extend(() => ({ render: { node: VoltoSuggestionLeaf } }));
+
+/**
+ * Suggestions to show for the active suggestion: every suggestion on the
+ * clicked text when it carries several, otherwise the active one alone.
+ */
+export const useActiveSuggestions = <T extends { suggestionId: string }>(
+  suggestions: T[],
+  activeId: string | null,
+) => {
+  const activeIds = usePluginOption(voltoSuggestionPlugin, 'activeIds');
+
+  if (!activeId) return [];
+
+  const ids = activeIds?.includes(activeId) ? activeIds : [activeId];
+
+  return suggestions.filter((suggestion) =>
+    ids.includes(suggestion.suggestionId),
+  );
+};

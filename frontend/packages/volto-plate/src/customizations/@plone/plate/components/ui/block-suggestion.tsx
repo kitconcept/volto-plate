@@ -8,6 +8,7 @@
  * PULL REQUEST: https://github.com/kitconcept/volto-plate/pull/55
  * CHANGELOG:
  *  - Render suggestion author with PersonPill instead of initials avatar (#55) @iFlameing
+ *  - Wrap long suggested text instead of overflowing the popover @Tishasoumya-02
  *
  */
 import * as React from 'react';
@@ -167,7 +168,9 @@ export function BlockSuggestionCard({
           {/* === END CUSTOMIZATION === */}
         </div>
 
-        <div className="relative mt-3 mb-4">
+        {/* === START CUSTOMIZATION === Wrap long suggested text */}
+        <div className="relative mt-3 mb-4 min-w-0 wrap-anywhere hyphens-auto">
+          {/* === END CUSTOMIZATION === */}
           <div className="flex flex-col gap-3">
             {suggestion.type === 'remove' && (
               <React.Fragment>
@@ -230,7 +233,9 @@ export function BlockSuggestionCard({
                         key={index}
                         className="flex items-start gap-2 text-quanta-emerald"
                       >
-                        <span className="text-sm">with:</span>
+                        {/* === START CUSTOMIZATION === Keep label on one line */}
+                        <span className="shrink-0 text-sm">with:</span>
+                        {/* === END CUSTOMIZATION === */}
                         <span className="text-sm">{text || 'line breaks'}</span>
                       </div>
                     </React.Fragment>
@@ -240,9 +245,11 @@ export function BlockSuggestionCard({
                 {suggestionText2Array(suggestion.text!).map((text, index) => (
                   <React.Fragment key={index}>
                     <div key={index} className="flex items-start gap-2">
-                      <span className="text-sm text-muted-foreground">
+                      {/* === START CUSTOMIZATION === Keep label on one line */}
+                      <span className="shrink-0 text-sm text-muted-foreground">
                         {index === 0 ? 'Replace:' : 'Delete:'}
                       </span>
+                      {/* === END CUSTOMIZATION === */}
                       <span className="text-sm">{text || 'line breaks'}</span>
                     </div>
                   </React.Fragment>
