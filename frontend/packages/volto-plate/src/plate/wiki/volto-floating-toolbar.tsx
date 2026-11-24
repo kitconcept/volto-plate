@@ -139,12 +139,20 @@ export function VoltoFloatingToolbar({
       blockEntry[0].type === TITLE_BLOCK_TYPE
     );
   }, []);
+  const isCodeBlockSelection = useEditorSelector(
+    (editor) => editor.api.some({ match: { type: KEYS.codeBlock } }),
+    [],
+  );
   const viewportPadding = useViewportPadding();
 
   const floatingToolbarState = useFloatingToolbarState({
     editorId,
     focusedEditorId,
-    hideToolbar: isFloatingLinkOpen || isAIChatOpen || isTitleBlockSelection,
+    hideToolbar:
+      isFloatingLinkOpen ||
+      isAIChatOpen ||
+      isTitleBlockSelection ||
+      isCodeBlockSelection,
     ...state,
     floatingOptions: {
       middleware: [
