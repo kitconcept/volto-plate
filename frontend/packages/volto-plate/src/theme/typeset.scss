@@ -427,12 +427,12 @@
       margin-block-start: var(--typeset-flow);
       margin-inline: 0;
       padding-block: 10px;
-      padding-inline-start: 20px;
 
-      .block-inner-container {
+      > .block-inner-container {
         padding-top: 10px;
         padding-bottom: 10px;
         border-inline-start: 1px solid currentColor;
+        padding-inline-start: 20px;
       }
     }
 
@@ -616,10 +616,9 @@
      ID does. The editor has no `#page-document`, where the rule above applies. */
   #page-document .typeset blockquote {
     padding-block: 10px;
-    padding-inline-start: 20px;
   }
 
-  /* TOC entries carry Tailwind's `block` utility, so Volto's  
+  /* TOC entries carry Tailwind's `block` utility, so Volto's
      `.block .block:not(.inner)::before` selection frame (9px outset) matches. We have to override it. */
   .slate-editor .block .block:hover::before {
     border: none;
