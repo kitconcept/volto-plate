@@ -19,6 +19,7 @@
  *  - Count comments instead of threads in the trigger and popover header, so
  *    replies and deletions update the count @iFlameing
  *  - Position discussion popovers above their selected text anchors.
+ *  - Allow bulk suggestion actions to wrap within the discussion popover @iRohitSingh
  *
  */
 import * as React from 'react';
@@ -90,7 +91,7 @@ import { cn } from '@plone/plate/lib/utils';
 
 export const discussionPopoverContentClassName = `
   max-h-[min(70dvh,calc(-24px+var(--radix-popper-available-height)))]
-  w-[min(320px,calc(100vw-24px))] min-w-[300px] overflow-y-auto
+  w-[min(380px,calc(100vw-24px))] min-w-[300px] overflow-y-auto
   rounded-[14px] border border-border bg-popover p-0
   shadow-[0_10px_30px_rgba(15,23,42,0.14)]
   data-[state=closed]:opacity-0
@@ -744,11 +745,12 @@ const BlockCommentContent = ({
                 values={{ count: suggestionsCount }}
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 className={`
-                  h-8 flex-1 gap-1.5 rounded-md bg-quanta-emerald text-sm!
-                  font-semibold text-white
+                  h-auto min-h-8 min-w-0 max-w-full flex-auto gap-1.5 rounded-md
+                  bg-quanta-emerald text-sm! font-semibold wrap-anywhere
+                  whitespace-normal text-white
                   hover:bg-quanta-turtle
                 `}
                 onClick={acceptAllSuggestions}
@@ -758,8 +760,9 @@ const BlockCommentContent = ({
               </Button>
               <Button
                 className={`
-                  h-8 flex-1 gap-1.5 rounded-md border border-border
-                  bg-background text-sm! font-semibold text-foreground
+                  h-auto min-h-8 min-w-0 max-w-full flex-auto gap-1.5 rounded-md
+                  border border-border bg-background text-sm! font-semibold
+                  wrap-anywhere whitespace-normal text-foreground
                   hover:bg-muted
                 `}
                 onClick={rejectAllSuggestions}
