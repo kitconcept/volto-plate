@@ -9,6 +9,31 @@
 @source '../**/*.{ts,tsx,js,jsx}';
 
 /*
+ * The content styles select Plate's class names, and Volto uses two of them
+ * for its own elements: `slate-editor` wraps volto-slate's text editor, and
+ * `slate-table` wraps the view of Volto's table block. Their `overflow: hidden`
+ * clipped the slash menu of Volto's text blocks and stopped them from wrapping
+ * around floated images in the editor.
+ *
+ * Plate's elements always carry a Slate data attribute (`data-slate-editor` on
+ * the editor root, `data-slate-node` on every element), Volto's wrappers
+ * don't. For them, roll back every declaration of this layer, so they keep
+ * Volto's styles. The rules sit in the same layer, after the import, and are
+ * more specific than its `:where()` selectors.
+ *
+ * The third shared name, `block-inner-container`, is shared on purpose: this
+ * add-on lays it out the same way for every Volto block (`_main.scss`).
+ */
+@layer plone-content {
+  .slate-editor:not([data-slate-editor]),
+  .slate-editor:not([data-slate-editor]) [data-slate-node],
+  .slate-editor:not([data-slate-editor]) strong,
+  .slate-table:not([data-slate-node]) {
+    all: revert-layer;
+  }
+}
+
+/*
  * Tailwind's `hidden` utility (`display: none`) collides with Semantic UI,
  * which uses `hidden` as a "laid out but invisible" state. Plate needs the
  * utility, so restore Semantic UI's behaviour for the elements Volto renders:
